@@ -21,8 +21,8 @@ Result:	Initializes OpenGL features that will
 GLfloat fPyramid[36]; // Pyramid data - 4 triangles of 3 vertices of 3 floats
 GLfloat fPyramidColor[36]; // Same for color
 
-UINT uiVBO[2]; // One VBO for vertices positions, one for colors
-UINT uiVAO[1]; // One VAO for pyramid
+GLuint uiVBO[2]; // One VBO for vertices positions, one for colors
+GLuint uiVAO[1]; // One VAO for pyramid
 
 GLboolean bShowFPS = false;
 GLboolean bVerticalSync = true;

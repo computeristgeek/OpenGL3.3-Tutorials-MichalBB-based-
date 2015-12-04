@@ -10,8 +10,8 @@ public:
 #define NOTHING 1
 
 GLvoid BuildFont();
-GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,UINT flags, const char*fmt,...);
-GLvoid CreateTexture(UINT *storage, LPSTR strFileName);
+GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,GLuint flags, const char*fmt,...);
+GLvoid CreateTexture(GLuint *storage, LPSTR strFileName);
 
 GLvoid BuildFont();
 GLvoid Start2D(),End2D();

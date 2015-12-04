@@ -152,9 +152,9 @@ public:
 	static anim_t	animlist[21];
 private:
 	GLboolean bLoaded;
-	UINT uiModelVAO;
+	GLuint uiModelVAO;
 	
-	vector<UINT> uiFramesBuffer;
+	vector<GLuint> uiFramesBuffer;
 
 	md2_t header;
 	
@@ -170,6 +170,6 @@ private:
 
 	CTexture tSkin;
 
-	UINT uiVAO;
+	GLuint uiVAO;
 };
 

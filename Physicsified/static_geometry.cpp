@@ -190,7 +190,7 @@ GLint GenerateCapsule(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHe
 GLint iCapsuleFaces;
 
 
-GLvoid LoadAllStaticObjects(CVertexBufferObject& dstVBO, UINT& dstVAO)
+GLvoid LoadAllStaticObjects(CVertexBufferObject& dstVBO, GLuint& dstVAO)
 {
 	dstVBO.CreateVBO();
 	glGenVertexArrays(1, &dstVAO); // Create one VAO

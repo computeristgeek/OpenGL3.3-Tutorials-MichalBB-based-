@@ -33,7 +33,7 @@ public:
 	CFramebuffer();
 private:
 	GLint iWidth, iHeight;
-	UINT uiFramebuffer;
-	UINT uiDepthRenderbuffer;
+	GLuint uiFramebuffer;
+	GLuint uiDepthRenderbuffer;
 	CTexture tFramebufferTex;
 };

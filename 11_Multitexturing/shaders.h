@@ -16,12 +16,12 @@ public:
 	GLvoid deleteShader();
 
 	GLboolean isLoaded();
-	UINT getShaderID();
+	GLuint getShaderID();
 
 	CShader();
 
 private:
-	UINT uiShader; // ID of shader
+	GLuint uiShader; // ID of shader
 	GLint iType; // GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
 	GLboolean bLoaded; // Whether shader was loaded and compiled
 };
@@ -46,7 +46,7 @@ public:
 
 	GLvoid useProgram();
 
-	UINT getProgramID();
+	GLuint getProgramID();
 
 
 	// Setting vectors
@@ -76,6 +76,6 @@ public:
 	CShaderProgram();
 
 private:
-	UINT uiProgram; // ID of program
+	GLuint uiProgram; // ID of program
 	GLboolean bLinked; // Whether program was linked and is ready to use
 };

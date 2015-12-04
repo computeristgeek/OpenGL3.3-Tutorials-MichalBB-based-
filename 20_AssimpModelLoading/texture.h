@@ -43,7 +43,7 @@ public:
 	GLint GetHeight();
 	GLint GetBPP();
 
-	UINT GetTextureID();
+	GLuint GetTextureID();
 
 	string GetPath();
 
@@ -53,8 +53,8 @@ public:
 private:
 
 	GLint iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
-	UINT uiTexture; // Texture name
-	UINT uiSampler; // Sampler name
+	GLuint uiTexture; // Texture name
+	GLuint uiSampler; // Sampler name
 	GLboolean bMipMapsGenerated;
 
 	GLint tfMinification, tfMagnification;

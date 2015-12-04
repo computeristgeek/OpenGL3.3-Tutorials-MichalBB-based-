@@ -1,6 +1,6 @@
 #include "mainheader.h"
 
-UINT uiExpTex, uiPartTex, uiSmokeTex;
+GLuint uiExpTex, uiPartTex, uiSmokeTex;
 CShockRifle gShockRifle;
 
 //====================

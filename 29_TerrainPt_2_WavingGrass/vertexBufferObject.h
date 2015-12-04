@@ -16,23 +16,23 @@ public:
 	GLvoid DeleteVBO();
 
 	void* MapBufferToMemory(GLint iUsageHint);
-	void* MapSubBufferToMemory(GLint iUsageHint, UINT uiOffset, UINT uiLength);
+	void* MapSubBufferToMemory(GLint iUsageHint, GLuint uiOffset, GLuint uiLength);
 	GLvoid UnmapBuffer();
 
 	GLvoid BindVBO(GLint a_iBufferType = GL_ARRAY_BUFFER);
 	GLvoid UploadDataToGPU(GLint iUsageHint);
 	
-	GLvoid AddData(void* ptrData, UINT uiDataSize);
+	GLvoid AddData(void* ptrData, GLuint uiDataSize);
 
 	void* GetDataPointer();
-	UINT GetBufferID();
+	GLuint GetBufferID();
 
 	GLint GetCurrentSize();
 
 	CVertexBufferObject();
 
 private:
-	UINT uiBuffer;
+	GLuint uiBuffer;
 	GLint iSize;
 	GLint iCurrentSize;
 	GLint iBufferType;

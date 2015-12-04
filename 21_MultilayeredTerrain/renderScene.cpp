@@ -19,7 +19,7 @@
 
 
 CVertexBufferObject vboSceneObjects;
-UINT uiVAOSceneObjects;
+GLuint uiVAOSceneObjects;
 
 CFreeTypeFont ftFont;
 

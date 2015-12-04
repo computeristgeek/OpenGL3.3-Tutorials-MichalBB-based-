@@ -12,7 +12,7 @@
 //
 ////////////////////////////////////////// INIT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-UINT textures[11]; // Create textures
+GLuint textures[11]; // Create textures
 Soldier g_soldier; // Create soldier
 FSOUND_SAMPLE *sounds[5]; // Creaate sounds
 vector<Machiner> machiners; // Create machine gunners
@@ -221,7 +221,7 @@ GLvoid RenderScene()
 //
 ////////////////////////////////////////// WNDPROC \\\\\\\\\\\\\\\\=\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-LRESULT CALLBACK WndProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

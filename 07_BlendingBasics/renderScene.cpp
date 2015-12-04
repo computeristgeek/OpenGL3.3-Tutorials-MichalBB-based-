@@ -16,7 +16,7 @@ in this tutorial vertex is stored as 3 floats for
 position and 2 floats for texture coordinate */
 
 CVertexBufferObject vboSceneObjects;
-UINT uiVAOs[2]; // First VAO is for textured objects, second for only colored (we must disable texture coordinates attribute)
+GLuint uiVAOs[2]; // First VAO is for textured objects, second for only colored (we must disable texture coordinates attribute)
 
 CShader shVertexTex, shFragmentTex, shVertexCol, shFragmentCol;
 CShaderProgram spTextured, spColored;

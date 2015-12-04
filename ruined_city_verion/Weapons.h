@@ -199,7 +199,7 @@ GLvoid renderWeaponsOrtho();
 
 GLvoid renderBox(CVector3 vPos);
 
-extern UINT uiExpTex, uiPartTex, uiSmokeTex;
+extern GLuint uiExpTex, uiPartTex, uiSmokeTex;
 extern CPlasmaThrower gPlasmaGun;
 
 #define ALLWEAPONS 7

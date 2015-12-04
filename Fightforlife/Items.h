@@ -95,7 +95,7 @@ GLvoid DeleteFromVector(vector<item> &vec,GLint index)
 	vec.pop_back();
 }
 
-extern UINT textures[11];
+extern GLuint textures[11];
 extern FSOUND_SAMPLE* sounds[5];
 extern Soldier g_soldier;
 extern vector<Machiner> machiners;

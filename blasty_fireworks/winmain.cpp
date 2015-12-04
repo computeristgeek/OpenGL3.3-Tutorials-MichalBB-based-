@@ -6,7 +6,7 @@ CApplication glAp;
 
 //====================
 
-LRESULT CALLBACK windowMsgs(HWND hWindow, UINT iMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK windowMsgs(GLuint hWindow, GLuint iMsg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 

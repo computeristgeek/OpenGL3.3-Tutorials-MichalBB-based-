@@ -8,7 +8,7 @@
 #include "Main.h"
 
 
-HWND g_Wnd;		  // Our global window variable used for lots of functions
+GLuint g_Wnd;		  // Our global window variable used for lots of functions
 HINSTANCE g_Inst; // Global application instance variable
 HDC g_DC;
 HGLRC g_RC;

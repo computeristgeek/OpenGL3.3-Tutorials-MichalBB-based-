@@ -477,7 +477,7 @@ DLL_API signed char		F_API FSOUND_SetOutput(GLint outputtype);
 DLL_API signed char		F_API FSOUND_SetDriver(GLint driver);
 DLL_API signed char		F_API FSOUND_SetMixer(GLint mixer);
 DLL_API signed char		F_API FSOUND_SetBufferSize(GLint len_ms);
-DLL_API signed char		F_API FSOUND_SetHWND(GLvoid *hwnd);
+DLL_API signed char		F_API FSOUND_SetGLuint(GLvoid *hwnd);
 DLL_API	signed char		F_API FSOUND_SetMinHardwareChannels(GLint min);
 DLL_API	signed char		F_API FSOUND_SetMaxHardwareChannels(GLint max);
 

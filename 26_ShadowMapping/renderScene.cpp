@@ -24,7 +24,7 @@
 #include "particle_system_tf.h"
 
 CVertexBufferObject vboSceneObjects;
-UINT uiVAOSceneObjects;
+GLuint uiVAOSceneObjects;
 
 CFreeTypeFont ftFont;
 
@@ -54,7 +54,7 @@ GLboolean bDisplayShadowMap = true;
 GLint iShadowMapTextureSize = 1024;
 
 CVertexBufferObject vboShadowMapQuad;
-UINT uiVAOShadowMapQuad;
+GLuint uiVAOShadowMapQuad;
 
 /*-----------------------------------------------
 

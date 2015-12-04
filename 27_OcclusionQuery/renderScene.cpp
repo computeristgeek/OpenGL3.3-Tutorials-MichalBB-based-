@@ -24,7 +24,7 @@ CFlyingCamera cCamera;
 CDirectionalLight dlSun;
 CMaterial matShiny;
 
-UINT uiOcclusionQuery;
+GLuint uiOcclusionQuery;
 
 GLboolean bDisplayNormals = false; // Do not display normals by default
 

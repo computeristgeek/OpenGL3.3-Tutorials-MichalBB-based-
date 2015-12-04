@@ -18,12 +18,12 @@ public:
 	GLboolean GetLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult);
 
 	GLboolean IsLoaded();
-	UINT GetShaderID();
+	GLuint GetShaderID();
 
 	CShader();
 
 private:
-	UINT uiShader; // ID of shader
+	GLuint uiShader; // ID of shader
 	GLint iType; // GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
 	GLboolean bLoaded; // Whether shader was loaded and compiled
 };
@@ -48,7 +48,7 @@ public:
 
 	GLvoid UseProgram();
 
-	UINT GetProgramID();
+	GLuint GetProgramID();
 
 	// Setting vectors
 	GLvoid SetUniform(string sName, glm::vec2* vVectors, GLint iCount = 1);
@@ -77,7 +77,7 @@ public:
 	CShaderProgram();
 
 private:
-	UINT uiProgram; // ID of program
+	GLuint uiProgram; // ID of program
 	GLboolean bLinked; // Whether program was linked and is ready to use
 };
 

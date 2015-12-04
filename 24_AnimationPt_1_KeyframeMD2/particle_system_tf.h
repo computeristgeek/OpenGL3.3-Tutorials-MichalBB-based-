@@ -57,13 +57,13 @@ public:
 private:
 	GLboolean bInitialized;
 	
-	UINT uiTransformFeedbackBuffer;
+	GLuint uiTransformFeedbackBuffer;
 
-	UINT uiParticleBuffer[2];
-	UINT uiVAO[2];
+	GLuint uiParticleBuffer[2];
+	GLuint uiVAO[2];
 
-	UINT uiQuery;
-	UINT uiTexture;
+	GLuint uiQuery;
+	GLuint uiTexture;
 
 	GLint iCurReadBuffer;
 	GLint iNumParticles;

@@ -19,7 +19,7 @@ public:
 
 	GLvoid DeleteSkybox();
 private:
-	UINT uiVAO;
+	GLuint uiVAO;
 	CVertexBufferObject vboRenderData;
 	CTexture tTextures[6];
 	string sDirectory;

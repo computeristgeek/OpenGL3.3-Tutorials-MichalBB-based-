@@ -5,7 +5,7 @@ public:
 	CVector3* vNorms;
 	CVector3* vFlags;
 	CVector2* vCoords;
-	GLint iNumT; UINT* uiTxt;
+	GLint iNumT; GLuint* uiTxt;
 	GLint iNumF, iAll;
 	GLint *iFacesT;
 

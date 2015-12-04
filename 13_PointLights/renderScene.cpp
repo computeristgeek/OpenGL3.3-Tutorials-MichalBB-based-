@@ -25,7 +25,7 @@ position, 2 floats for texture coordinate and
 
 CVertexBufferObject vboSceneObjects;
 
-UINT uiVAOs[1]; // Only one VAO now
+GLuint uiVAOs[1]; // Only one VAO now
 
 CShader shShaders[NUMSHADERS];
 CShaderProgram spPointLights, spOrtho2D, spFont2D, spColor;

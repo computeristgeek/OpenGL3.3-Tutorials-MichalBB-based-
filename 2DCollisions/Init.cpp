@@ -1,7 +1,7 @@
 
 #include "main.h"
 #include "resource.h"
-GLvoid CreateTexture(UINT textureArray[], LPSTR strFileName, GLint textureID)
+GLvoid CreateTexture(GLuint textureArray[], LPSTR strFileName, GLint textureID)
 {
 	AUX_RGBImageRec *pBitmap = NULL;
 	
@@ -104,9 +104,9 @@ GLvoid ChangeToFullScreen()
 /////
 ///////////////////////////////// CREATE MY WINDOW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-HWND CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
+GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
 {
-	HWND hWnd;
+	GLuint hWnd;
 	WNDCLASS wndclass;
 	
 	memset(&wndclass, 0, sizeof(WNDCLASS));				// Init the size of the class
@@ -264,7 +264,7 @@ GLvoid DeInit()
 
 GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow)
 {	
-	HWND hWnd;
+	GLuint hWnd;
 
 	// Check if we want full screen or not
 	if(MessageBox(NULL, "Click Yes to go to full screen (Recommended)", "Options", MB_YESNO | MB_ICONQUESTION) == IDNO)

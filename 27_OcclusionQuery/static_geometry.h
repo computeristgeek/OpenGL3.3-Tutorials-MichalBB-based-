@@ -4,8 +4,8 @@
 
 GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
 
-extern UINT uiVAOSceneObjects;
-extern UINT uiVAOOccluders;
+extern GLuint uiVAOSceneObjects;
+extern GLuint uiVAOOccluders;
 extern CVertexBufferObject vboSceneObjects;
 extern CVertexBufferObject vboOccluders;
 extern GLint iSphereFaces;

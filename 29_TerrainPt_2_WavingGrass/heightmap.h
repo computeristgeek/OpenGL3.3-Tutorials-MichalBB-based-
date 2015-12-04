@@ -42,7 +42,7 @@ public:
 	CMultiLayeredHeightmap();
 
 private:
-	UINT uiVAO, uiGrassVAO;
+	GLuint uiVAO, uiGrassVAO;
 
 	GLboolean bLoaded;
 	GLboolean bShaderProgramLoaded;

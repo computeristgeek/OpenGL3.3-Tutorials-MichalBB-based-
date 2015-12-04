@@ -30,6 +30,6 @@ private:
 	GLboolean loadMaterial(string sFullMtlFileName);
 
 	CVertexBufferObject vboModelData;
-	UINT uiVAO;
+	GLuint uiVAO;
 	CTexture tAmbientTexture;
 };

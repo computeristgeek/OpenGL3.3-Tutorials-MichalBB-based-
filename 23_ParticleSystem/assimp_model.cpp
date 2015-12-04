@@ -11,7 +11,7 @@
 #include <assimp/postprocess.h>     // Post processing flags
 
 CVertexBufferObject CAssimpModel::vboModelData;
-UINT CAssimpModel::uiVAO;
+GLuint CAssimpModel::uiVAO;
 vector<CTexture> CAssimpModel::tTextures;
 
 /*-----------------------------------------------

@@ -42,7 +42,7 @@ private:
 
 	GLboolean bLoaded;
 
-	UINT uiVAO;
+	GLuint uiVAO;
 	CVertexBufferObject vboData;
 
 	FT_Library ftLib;

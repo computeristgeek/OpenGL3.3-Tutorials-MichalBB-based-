@@ -10,12 +10,12 @@ GLboolean keys[5];
 
 
 								
-UINT g_Texture[MAX_TEXTURES];
+GLuint g_Texture[MAX_TEXTURES];
 GLboolean one=TRUE;
 GLboolean  g_bFullScreen = true;	
 GLfloat timer=0.0f;							// Set full screen as default
 GLfloat inc=0.0f;
-HWND  g_hWnd;											// This is the handle for the window
+GLuint  g_hWnd;											// This is the handle for the window
 RECT  g_rRect;											// This holds the window dimensions
 HDC   g_hDC;											// General HDC - (handle to device context)
 HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
@@ -25,7 +25,7 @@ GLint lasercount,rocketcount,plasmacount,enemyammo;
 GLfloat rotate;
 GLint win=0;
  
-GLvoid Init(HWND hWnd)
+GLvoid Init(GLuint hWnd)
 {
 	g_hWnd = hWnd;										// Assign the window handle to a global window handle
 	GetClientRect(g_hWnd, &g_rRect);					// Assign the windows rectangle to a global RECT
@@ -223,7 +223,7 @@ timer+=inc;
 
 }
 
-LRESULT CALLBACK WinProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

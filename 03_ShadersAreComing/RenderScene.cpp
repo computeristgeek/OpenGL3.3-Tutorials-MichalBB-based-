@@ -20,8 +20,8 @@ GLfloat fQuad[12]; // Data to render quad using triangle strips (4 vertices, eac
 GLfloat fTriangleColor[9];
 GLfloat fQuadColor[12];
 
-UINT uiVBO[4];
-UINT uiVAO[2];
+GLuint uiVBO[4];
+GLuint uiVAO[2];
 
 CShader shVertex, shFragment;
 CShaderProgram spMain;

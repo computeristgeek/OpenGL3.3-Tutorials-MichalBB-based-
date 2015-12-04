@@ -1,6 +1,6 @@
 #include "mainheader.h"
 
-UINT uiSWTex;
+GLuint uiSWTex;
 CVector2 vCCoord[4] = // Classic coordinates
 {
 	CVector2(0.0f, 1.0f),

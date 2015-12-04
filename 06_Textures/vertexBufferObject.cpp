@@ -72,7 +72,7 @@ Result:	Maps specified part of buffer to memory.
 
 /*---------------------------------------------*/
 
-void* CVertexBufferObject::mapSubBufferToMemory(GLint iUsageHint, UINT uiOffset, UINT uiLength)
+void* CVertexBufferObject::mapSubBufferToMemory(GLint iUsageHint, GLuint uiOffset, GLuint uiLength)
 {
 	if(!bDataUploaded)return NULL;
 	void* ptrRes = glMapBufferRange(iBufferType, uiOffset, uiLength, iUsageHint);
@@ -138,7 +138,7 @@ Result:	Adds arbitrary data to VBO.
 
 /*---------------------------------------------*/
 
-GLvoid CVertexBufferObject::addData(void* ptrData, UINT uiDataSize)
+GLvoid CVertexBufferObject::addData(void* ptrData, GLuint uiDataSize)
 {
 	data.insert(data.end(), (BYTE*)ptrData, (BYTE*)ptrData+uiDataSize);
 }
@@ -169,7 +169,7 @@ Result:	Returns VBO ID.
 
 /*---------------------------------------------*/
 
-UINT CVertexBufferObject::getBuffer()
+GLuint CVertexBufferObject::getBuffer()
 {
 	return uiBuffer;
 }

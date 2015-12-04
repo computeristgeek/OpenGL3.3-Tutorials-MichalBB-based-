@@ -32,9 +32,9 @@ GLvoid ChangeToFullScreen()
 }
 
 
-HWND CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
+GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
 {
-	HWND hWnd;
+	GLuint hWnd;
 	WNDCLASS wndclass;
 	
 	memset(&wndclass, 0, sizeof(WNDCLASS));				// Init the size of the class
@@ -189,7 +189,7 @@ KillFont();
 
 GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow)
 {	
-	HWND hWnd;
+	GLuint hWnd;
 
 
 	hWnd = CreateMyWindow("Winter Wars 2", SCREEN_WIDTH, SCREEN_HEIGHT, 0, g_bFullScreen, hInstance);

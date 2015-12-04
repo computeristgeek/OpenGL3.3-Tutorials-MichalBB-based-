@@ -36,7 +36,7 @@ public:
 	CMultiLayeredHeightmap();
 
 private:
-	UINT uiVAO;
+	GLuint uiVAO;
 
 	GLboolean bLoaded;
 	GLboolean bShaderProgramLoaded;

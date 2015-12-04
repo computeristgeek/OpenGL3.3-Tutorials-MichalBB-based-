@@ -1,6 +1,6 @@
 #include "mainheader.h"
 
-vector<pair<string, UINT> > tTextures;
+vector<pair<string, GLuint> > tTextures;
 vector<CParticle> pParts;
 
 //====================

@@ -121,7 +121,7 @@ Result:	Registers application window class.
 
 /*---------------------------------------------*/
 
-LRESULT CALLBACK GlobalMessageHandler(HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK GlobalMessageHandler(GLuint hWnd, GLuint uiMsg, WPARAM wParam, LPARAM lParam)
 {
 	return appMain.MsgHandlerMain(hWnd, uiMsg, wParam, lParam);
 }
@@ -239,7 +239,7 @@ Result:	Application messages handler.
 
 /*---------------------------------------------*/
 
-LRESULT CALLBACK COpenGLWinApp::MsgHandlerMain(HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK COpenGLWinApp::MsgHandlerMain(GLuint hWnd, GLuint uiMsg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 

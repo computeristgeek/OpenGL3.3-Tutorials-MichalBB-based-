@@ -31,7 +31,7 @@ private:
 	GLboolean LoadMaterial(string sFullMtlFileName);
 
 	CVertexBufferObject vboModelData, vboModelBB, vboModelBBIndices;
-	UINT uiVAO;
-	UINT uiBBVAO;
+	GLuint uiVAO;
+	GLuint uiBBVAO;
 	CTexture tAmbientTexture;
 };

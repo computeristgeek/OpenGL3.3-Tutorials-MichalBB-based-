@@ -24,7 +24,7 @@
 #include "particle_system_tf.h"
 
 CVertexBufferObject vboSceneObjects;
-UINT uiVAOSceneObjects;
+GLuint uiVAOSceneObjects;
 
 CFreeTypeFont ftFont;
 

@@ -43,7 +43,7 @@ struct CWorld
 	vector<CVector3> vVerts;
 	vector<CVector3> vNorms;
 	vector<CVector2> vCoords;
-	vector<UINT> uiTextures;
+	vector<GLuint> uiTextures;
 	vector<int> iNumFaces;
 
 	CMSMModel* mModels;
@@ -72,7 +72,7 @@ GLvoid changeDir(char* strNew);
 //====================
 
 extern CCamera camMain;
-extern vector<pair<string, UINT> > tTextures;
+extern vector<pair<string, GLuint> > tTextures;
 extern CWorld wWorld;
 
 //====================

@@ -75,7 +75,7 @@ Result:	Returns ID of a generated shader.
 
 /*---------------------------------------------*/
 
-UINT CShader::GetShaderID()
+GLuint CShader::GetShaderID()
 {
 	return uiShader;
 }

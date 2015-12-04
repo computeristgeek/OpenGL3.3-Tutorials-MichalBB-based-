@@ -28,7 +28,7 @@ position, 2 floats for texture coordinate and
 3 floats for normal vector. */
 
 CVertexBufferObject vboSceneObjects;
-UINT uiVAOs[1]; // Only one VAO now
+GLuint uiVAOs[1]; // Only one VAO now
 
 CFreeTypeFont ftFont;
 

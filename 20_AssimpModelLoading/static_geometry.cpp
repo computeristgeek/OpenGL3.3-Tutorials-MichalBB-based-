@@ -280,7 +280,7 @@ Result: Adds all static objects to scene.
 
 /*---------------------------------------------*/
 
-GLvoid CreateStaticSceneObjects(UINT* uiVAO, CVertexBufferObject& vboDest)
+GLvoid CreateStaticSceneObjects(GLuint* uiVAO, CVertexBufferObject& vboDest)
 {
 	vboDest.CreateVBO();
 	glGenVertexArrays(1, uiVAO); // Create one VAO

@@ -12,7 +12,7 @@
 
 CVertexBufferObject CAssimpModel::vboModelData;
 CVertexBufferObject CAssimpModel::vboBumpMapData;
-UINT CAssimpModel::uiVAO;
+GLuint CAssimpModel::uiVAO;
 vector<CTexture> CAssimpModel::tTextures;
 
 /*-----------------------------------------------

@@ -134,7 +134,7 @@ Result:	Returns ID of a generated shader.
 
 /*---------------------------------------------*/
 
-UINT CShader::getShaderID()
+GLuint CShader::getShaderID()
 {
 	return uiShader;
 }
@@ -257,7 +257,7 @@ Result:	Returns OpenGL generated shader program ID.
 
 /*---------------------------------------------*/
 
-UINT CShaderProgram::getProgramID()
+GLuint CShaderProgram::getProgramID()
 {
 	return uiProgram;
 }

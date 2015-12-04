@@ -6,16 +6,16 @@ GLint ammop;
 
 GLboolean hrot;GLfloat x,y,xinc,yinc;
 GLboolean  g_bFullScreen = TRUE;								
-HWND  g_hWnd;											
+GLuint  g_hWnd;											
 RECT  g_rRect;											// This holds the window dimensions
 HDC   g_hDC;											// General HDC - (handle to device context)
 HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
 HINSTANCE g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
 GLfloat rotation;
 const GLfloat piover180 = 0.0174532925f;
-UINT g_Texture[MAX_TEXTURES];	
+GLuint g_Texture[MAX_TEXTURES];	
 
-GLvoid Init(HWND hWnd)
+GLvoid Init(GLuint hWnd)
 {
 	g_hWnd = hWnd;										
 	GetClientRect(g_hWnd, &g_rRect);					
@@ -88,7 +88,7 @@ StopMidi();
 timer+=inc;
 }
 
-LRESULT CALLBACK WinProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

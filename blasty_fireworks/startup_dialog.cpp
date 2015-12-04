@@ -7,7 +7,7 @@ CApplication::DispMode dm;
 
 //====================
 
-GLvoid getModes(HWND hDialog, GLint iResID)
+GLvoid getModes(GLuint hDialog, GLint iResID)
 {
 	DEVMODE dmSet; EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmSet);
 	SendDlgItemMessage(hDialog, iResID, CB_RESETCONTENT, 0, 0);
@@ -30,7 +30,7 @@ GLvoid getModes(HWND hDialog, GLint iResID)
 
 //======================
 
-LRESULT CALLBACK dlgStartup(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, WPARAM wParam, LPARAM lParam)
 {
 	switch(uMessage)
 	{

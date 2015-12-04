@@ -14,7 +14,7 @@ in this tutorial vertex is stored as 3 floats for
 position and 2 floats for texture coordinate */
 
 CVertexBufferObject vboSceneObjects;
-UINT uiVAO; // And one VAO
+GLuint uiVAO; // And one VAO
 
 CShader shVertex, shFragment;
 CShaderProgram spMain;

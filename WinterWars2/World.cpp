@@ -1,6 +1,6 @@
 #include "main.h"
 #include "Weapons.h"
-GLvoid CreateTexture(UINT textureArray[], LPSTR strFileName, GLint textureID)
+GLvoid CreateTexture(GLuint textureArray[], LPSTR strFileName, GLint textureID)
 {
 	AUX_RGBImageRec *pBitmap = NULL;
 	

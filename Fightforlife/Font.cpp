@@ -6,16 +6,16 @@
 
 #include "Main.h"
 
-UINT font[256]; // Here are stored display list characters
-UINT fonts[2];
+GLuint font[256]; // Here are stored display list characters
+GLuint fonts[2];
 
 ///////////////////////////////////// CREATETEXTURE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 //
-//						This function creates texture GLint UINT storage.
+//						This function creates texture GLint GLuint storage.
 //
 ///////////////////////////////////// CREATETEXTURE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLvoid CreateTexture(UINT *storage, LPSTR strFileName)
+GLvoid CreateTexture(GLuint *storage, LPSTR strFileName)
 {
 	if(!strFileName)									// Return from the function if no file name was passed in
 		return;
@@ -109,7 +109,7 @@ GLvoid End2D()
 	glEnable(GL_DEPTH_TEST);
 }
 
-GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,UINT flags, const char*fmt,...)
+GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,GLuint flags, const char*fmt,...)
 {
 	GLint character=0; // This is list id
 	char final[255]={0}; // Final text to display

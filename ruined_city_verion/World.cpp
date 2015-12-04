@@ -20,7 +20,7 @@ GLvoid CWorld::loadWorld(char* strFile)
 	char line[255];
 	sscanf(readline(fp, line), "TEXTURES %d", &iNumT);
 	
-	uiTxt = new UINT[iNumT];
+	uiTxt = new GLuint[iNumT];
 	iFacesT = new int[iNumT];
 	vector<CVector3> vPts;
 	vector<CVector2> vCrds;
@@ -85,7 +85,7 @@ GLvoid CWorld::loadWorld(char* strFile)
 
 //====================
 
-UINT uiFlagTex;
+GLuint uiFlagTex;
 
 //====================
 
@@ -165,7 +165,7 @@ GLvoid CWorld::renderWorld()
 	}
 }
 
-UINT uiSky[6];
+GLuint uiSky[6];
 char* strSky[] = {"front.bmp", "left.bmp", "back.bmp", "right.bmp", "top.bmp"};
 
 //====================

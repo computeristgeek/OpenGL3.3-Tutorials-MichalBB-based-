@@ -10,7 +10,7 @@
 
 //====================
 
-LRESULT CALLBACK dlgStartup(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, WPARAM wParam, LPARAM lParam);
 extern GLint iStartRes;
 extern CApplication::DispMode dm;
 

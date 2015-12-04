@@ -34,7 +34,7 @@ GLboolean COpenGLControl::InitGLEW(HINSTANCE hInstance)
 
 	RegisterSimpleOpenGLClass(hInstance);
 
-	HWND hWndFake = CreateWindow(SIMPLE_OPENGL_CLASS_NAME, "FAKE", WS_OVERLAPPEDWINDOW | WS_MAXIMIZE | WS_CLIPCHILDREN,
+	GLuint hWndFake = CreateWindow(SIMPLE_OPENGL_CLASS_NAME, "FAKE", WS_OVERLAPPEDWINDOW | WS_MAXIMIZE | WS_CLIPCHILDREN,
 		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
 		NULL, hInstance, NULL);
 
@@ -100,7 +100,7 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(LPVOID), GLvoid (*a_ptrRenderScene)(LPVOID), void(*a_ptrReleaseScene)(LPVOID), LPVOID lpParam)
+GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(LPVOID), GLvoid (*a_ptrRenderScene)(LPVOID), void(*a_ptrReleaseScene)(LPVOID), LPVOID lpParam)
 {
 	if(!InitGLEW(hInstance))return false;
 
@@ -153,7 +153,7 @@ GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iM
 		};
 
 		GLint iPixelFormat, iNumFormats;
-		wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &iPixelFormat, (UINT*)&iNumFormats);
+		wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &iPixelFormat, (GLuint*)&iNumFormats);
 
 		// PFD seems to be only redundant parameter now
 		if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -329,7 +329,7 @@ Result:	Handles messages from windows that use
 
 /*---------------------------------------------*/
 
-LRESULT CALLBACK msgHandlerSimpleOpenGLClass(HWND hWnd, UINT uiMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK msgHandlerSimpleOpenGLClass(GLuint hWnd, GLuint uiMsg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	switch(uiMsg)

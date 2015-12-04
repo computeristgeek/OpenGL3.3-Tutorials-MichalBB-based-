@@ -29,7 +29,7 @@ using namespace std;
 
 #define class_name "Fight for life"
 
-extern HWND g_Wnd;		  // Our global window variable used for lots of functions
+extern GLuint g_Wnd;		  // Our global window variable used for lots of functions
 extern HINSTANCE g_Inst; // Global application instance variable
 extern HDC g_DC;		// Global device context variable
 extern HGLRC g_RC;      // Global rendering context variable
@@ -45,7 +45,7 @@ GLvoid UpdateFPS5();
 // Freeing memory, variables and everything in the end of application
 	GLvoid QuitApplication();
 // Window message handling
-	LRESULT CALLBACK WndProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam);
 // Initializes OpenGL
 	GLvoid InitOpenGL(GLint w, GLint h);
 	extern GLboolean quitapp;

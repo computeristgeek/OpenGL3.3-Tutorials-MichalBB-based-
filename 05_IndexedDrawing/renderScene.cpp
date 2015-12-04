@@ -21,10 +21,10 @@ Result:	Initializes OpenGL features that will
 #define HM_SIZE_X 4 // Dimensions of our heightmap
 #define HM_SIZE_Y 4
 
-UINT uiVBOHeightmapData; // Here are stored heightmap data (vertices)
-UINT uiVBOIndices; // And here indices for rendering heightmap
+GLuint uiVBOHeightmapData; // Here are stored heightmap data (vertices)
+GLuint uiVBOIndices; // And here indices for rendering heightmap
 
-UINT uiVAOHeightmap; // One VAO for heightmap
+GLuint uiVAOHeightmap; // One VAO for heightmap
 
 GLboolean bShowFPS = false;
 GLboolean bVerticalSync = true;

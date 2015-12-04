@@ -21,7 +21,7 @@
 
 CSpotLight slFlashLight;
 CVertexBufferObject vboSceneObjects;
-UINT uiVAOSceneObjects;
+GLuint uiVAOSceneObjects;
 
 CFreeTypeFont ftFont;
 
@@ -398,7 +398,7 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-vector<UINT> generators;
+vector<GLuint> generators;
 vector<float> genTimes;
 
 GLvoid ApplyExplosion(glm::vec3 vPosition, GLfloat fForce, BYTE r, BYTE g, BYTE b)
@@ -409,7 +409,7 @@ GLvoid ApplyExplosion(glm::vec3 vPosition, GLfloat fForce, BYTE r, BYTE g, BYTE 
 	GLfloat fVelocityMin[] = {-25.0f, -25.0f, -25.0f};
 	GLfloat fVelocityMax[] = {25.0f, 25.0f, 25.0f};
 
-	UINT id = psEngine->createPointParticleGenerator((float*)glm::value_ptr(vPosition), fVelocityMin, fVelocityMax, 0.05f, 0.10f, 30, 40, 1.5f, 1.0f, 1);
+	GLuint id = psEngine->createPointParticleGenerator((float*)glm::value_ptr(vPosition), fVelocityMin, fVelocityMax, 0.05f, 0.10f, 30, 40, 1.5f, 1.0f, 1);
 	psEngine->setGeneratorColor(id, r, g, b);
 	generators.push_back(id);
 	genTimes.push_back(1);

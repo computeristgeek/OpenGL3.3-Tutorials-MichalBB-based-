@@ -62,7 +62,7 @@ extern vector<CTower> tTowers;
 extern vector<CSpider> sSpiders;
 extern vector<CSpiderWeb> swWebs;
 
-extern UINT uiSWTex;
+extern GLuint uiSWTex;
 extern CVector2 vCCoord[4]; // Classic coordinates
 
 GLvoid loadEnemies(GLint iNModels);

@@ -1,7 +1,7 @@
 #include "mainheader.h"
 
 vector<string> strMNames; // Names of materials already loaded
-vector<UINT> uiStor; // UINT storage for texture
+vector<GLuint> uiStor; // GLuint storage for texture
 vector<char> cTrans; // If the material is transparent
 
 //====================

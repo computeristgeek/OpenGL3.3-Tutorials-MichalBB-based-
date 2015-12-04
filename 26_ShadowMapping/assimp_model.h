@@ -19,7 +19,7 @@ public:
 private:
 	GLboolean bLoaded;
 	static CVertexBufferObject vboModelData;
-	static UINT uiVAO;
+	static GLuint uiVAO;
 	static vector<CTexture> tTextures;
 	vector<int> iMeshStartIndices;
 	vector<int> iMeshSizes;

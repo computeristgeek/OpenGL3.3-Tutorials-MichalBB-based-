@@ -234,7 +234,7 @@ GLint CTexture::GetBPP()
 	return iBPP;
 }
 
-UINT CTexture::GetTextureID()
+GLuint CTexture::GetTextureID()
 {
 	return uiTexture;
 }

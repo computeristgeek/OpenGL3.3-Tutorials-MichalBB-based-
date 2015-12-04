@@ -4,8 +4,8 @@
 
 CVertexBufferObject vboSceneObjects;
 CVertexBufferObject vboOccluders;
-UINT uiVAOSceneObjects;
-UINT uiVAOOccluders;
+GLuint uiVAOSceneObjects;
+GLuint uiVAOOccluders;
 GLfloat fCubeHalfSize = 30.0f;
 GLint iSphereFaces;
 

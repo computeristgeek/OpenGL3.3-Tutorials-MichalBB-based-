@@ -16,7 +16,7 @@ Result:	Initializes OpenGL features that will
 GLfloat fTriangle[9]; // Data to render triangle (3 vertices, each has 3 floats)
 GLfloat fQuad[12]; // Data to render quad using triangle strips (4 vertices, each has 3 floats)
 
-UINT uiVBO[2];
+GLuint uiVBO[2];
 
 GLvoid InitScene(LPVOID lpParam)
 {

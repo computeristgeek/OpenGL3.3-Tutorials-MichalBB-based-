@@ -86,7 +86,7 @@ public:
 class CApplication
 {
 public:
-	HWND hWindow; // Handle to a window
+	GLuint hWindow; // Handle to a window
 	HDC hDC; // Window's device context
 	HGLRC hRC; // Rendering context
 
@@ -218,7 +218,7 @@ CVector3 closestPointOnLine(CVector3 vA, CVector3 vB, CVector3 vPoint);
 #define LINEAR 1
 #define MIPMAP 2
 
-GLvoid textureBMP(UINT *uiStor, char* strFileName, GLboolean bClamp, GLboolean bTrans, UINT uiFilter);
+GLvoid textureBMP(GLuint *uiStor, char* strFileName, GLboolean bClamp, GLboolean bTrans, GLuint uiFilter);
 GLvoid ortho2DBegin(GLint w, GLint h);
 GLvoid ortho2DEnd();
 
