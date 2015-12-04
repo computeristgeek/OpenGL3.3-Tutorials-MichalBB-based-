@@ -1,0 +1,45 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Winter Wars 2 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\MICHAL~1\LOCALS~1\Temp\RSP166.tmp" with contents
+[
+/nologo /ML /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Release/Winter Wars 2.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Ujci a cetky\Mišo\Mišo- Programovanie\Real OpenGL Projects\Game Tutorials\Winter Wars 2\Artificial Intelligence.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\MICHAL~1\LOCALS~1\Temp\RSP166.tmp" 
+Creating temporary file "C:\DOCUME~1\MICHAL~1\LOCALS~1\Temp\RSP167.tmp" with contents
+[
+winmm.lib glu32.lib glaux.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/Winter Wars 2.pdb" /machine:I386 /out:"Release/Winter Wars 2.exe" 
+".\Release\Artificial Intelligence.obj"
+".\Release\Camera.obj"
+".\Release\Engine.obj"
+".\Release\Fonts.obj"
+".\Release\Init.obj"
+".\Release\Main.obj"
+".\Release\Midi.obj"
+".\Release\MilkshapeModel.obj"
+".\Release\Model.obj"
+".\Release\Shooting.obj"
+".\Release\Weapons and Ammo.obj"
+".\Release\World.obj"
+".\Release\Ikona.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\MICHAL~1\LOCALS~1\Temp\RSP167.tmp"
+<h3>Output Window</h3>
+Compiling...
+Artificial Intelligence.cpp
+Linking...
+LINK : warning LNK4089: all references to "ADVAPI32.dll" discarded by /OPT:REF
+
+
+
+<h3>Results</h3>
+Winter Wars 2.exe - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>
