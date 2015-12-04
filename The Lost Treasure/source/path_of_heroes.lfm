@@ -1,0 +1,42 @@
+object Form1: TForm1
+  Left = 183
+  Height = 876
+  Top = -19
+  Width = 1436
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'Form1'
+  ClientHeight = 876
+  ClientWidth = 1436
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyUp = FormKeyUp
+  OnPaint = OpenGLControl1Paint
+  OnResize = OpenGLControl1Resize
+  LCLVersion = '0.9.28.2'
+  WindowState = wsMaximized
+  object StaticText1: TStaticText
+    Left = 1040
+    Height = 206
+    Top = 16
+    Width = 182
+    Caption = 'There are two attributes you can upgrade: First is Attack Speed - investing single skill point increases your attack speed by 3%. Second is Fortitude - skill point assigned here will increase your HP by 7% and increases regeneration rate as well. Press 1 to add skill point to Attack Speed. Press 2 to assign it to Fortitude.'
+    TabOrder = 0
+  end
+  object StaticText2: TStaticText
+    Left = 1034
+    Height = 85
+    Top = 234
+    Width = 185
+    Caption = 'Your hitpoints also increase as you advance to higher levels.'
+    OnClick = StaticText2Click
+    TabOrder = 1
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = Timer1Timer
+    left = 365
+    top = 14
+  end
+end
