@@ -273,7 +273,7 @@ GLvoid RenderScene(LPVOID lpParam)
 	// the places in heightmap where path should be and how intense should it be
 	FOR(i, 5)
 	{
-		char sSamplerName[256];
+		GLchar sSamplerName[256];
 		sprintf(sSamplerName, "gSampler[%d]", i);
 		tTextures[i].BindTexture(i);
 		spTerrain->SetUniform(sSamplerName, i);

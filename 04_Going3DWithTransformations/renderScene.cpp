@@ -184,7 +184,7 @@ GLvoid renderScene(LPVOID lpParam)
 	}
 	if(bShowFPS)
 	{
-		char buf[55]; sprintf(buf, "FPS: %d, V-Sync: %s", oglControl->getFPS(), bVerticalSync ? "On": "Off");
+		GLchar buf[55]; sprintf(buf, "FPS: %d, V-Sync: %s", oglControl->getFPS(), bVerticalSync ? "On": "Off");
 		SetWindowText(appMain.hWnd, buf);
 	}
 

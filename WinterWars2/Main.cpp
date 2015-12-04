@@ -83,9 +83,9 @@ GLfloat z;
 
 GLint myfrag,compfrag,fragsall=1;
 
-char compfrags[100];
-char myfrags[100];
-char frags[100];
+GLchar compfrags[100];
+GLchar myfrags[100];
+GLchar frags[100];
 GLboolean addone=true;
 GLboolean subone=true;
 

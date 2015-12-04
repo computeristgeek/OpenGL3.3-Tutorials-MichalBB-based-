@@ -37,7 +37,7 @@ namespace Keys
 {
 	GLint key(GLint iKey);
 	GLint onekey(GLint iKey);
-	extern char kp[256];
+	extern GLchar kp[256];
 }
 
 extern COpenGLWinApp appMain;

@@ -138,7 +138,7 @@ public:
 	public:
 		CVector3 vPos, vDirA, vDirB, vStart;
 		GLfloat fSize;
-		char cOnlyBeam;
+		GLchar cOnlyBeam;
 	};
 	GLfloat fTime;
 	vector<CImpact> iImpact;

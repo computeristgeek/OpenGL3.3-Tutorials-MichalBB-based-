@@ -110,7 +110,7 @@ GLvoid DeInit();
 
 GLvoid CreateTexture(GLuint textureArray[], LPSTR strFileName, GLint textureID);
 GLvoid CreateWorld();
-BOOL PlayMidi(char *sFileName);
+BOOL PlayMidi(GLchar *sFileName);
 BOOL PauseMidi();
 BOOL ResumeMidi();
 BOOL StopMidi();
@@ -120,9 +120,9 @@ GLvoid Ortho();
 GLGLvoid BuildFont(GLvoid);
 GLGLvoid KillFont(GLvoid);
 
-GLGLvoid glPrintFast(GLGLint x, GLGLint y, char *string, GLint set);
+GLGLvoid glPrintFast(GLGLint x, GLGLint y, GLchar *string, GLint set);
 extern GLuint a[2];
-GLuGLint LoadGLTexture( const char *filename );
+GLuGLint LoadGLTexture( const GLchar *filename );
 extern GLint ammol;
 GLvoid BuildAmmo();
 #endif 

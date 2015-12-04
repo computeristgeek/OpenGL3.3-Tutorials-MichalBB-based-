@@ -21,7 +21,7 @@ GLvoid glInit()
 	ft.createFont("Font.ttf", 32);
 /*
 	FILE* fp = fopen("Textures\\World2.msm", "rb");
-	char strLine[50]; fgets(strLine, 50, fp);
+	GLchar strLine[50]; fgets(strLine, 50, fp);
 
 	WORD iNMat, wNGroups, wNAnims; fread(&wNGroups, sizeof(WORD), 1, fp);
 	fread(&iNMat, sizeof(WORD), 1, fp);
@@ -35,7 +35,7 @@ GLvoid glInit()
 	FOR(i, wNGroups)
 	{
 		fgets(strLine, 255, fp); // Name of group, just ignore
-		char cMIndex; fread(&cMIndex, sizeof(char), 1, fp);
+		GLchar cMIndex; fread(&cMIndex, sizeof(char), 1, fp);
 		BYTE bBlend; fread(&bBlend, sizeof(BYTE), 1, fp);
 		WORD wNFaces; fread(&wNFaces, sizeof(WORD), 1, fp);
 		FOR(j, wNFaces)
@@ -57,12 +57,12 @@ GLvoid glInit()
 	{
 		fgets(strLine, 255, fp);
 		string strName = strLine; strName = strName.substr(0, strName.length() - 1);
-		char trans; fread(&trans, sizeof(char), 1, fp);
+		GLchar trans; fread(&trans, sizeof(char), 1, fp);
 		namez.push_back(strName);
 	}	
 	fclose(fp);
 	fp = fopen("City.rcw", "wt");
-	char aaa[222]; sprintf(aaa, "TEXTURES %d\n", iNMat);
+	GLchar aaa[222]; sprintf(aaa, "TEXTURES %d\n", iNMat);
 	fputs(aaa, fp);
 	FOR(i, iNMat)
 	{

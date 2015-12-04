@@ -121,7 +121,7 @@ const GLfloat PIover180 = 3.1415f/180.0f;
 
 GLvoid displayTextureFiltersInfo()
 {
-	char buf[255];
+	GLchar buf[255];
 	string sInfoMinification[] = 
 	{
 		"Nearest",

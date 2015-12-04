@@ -272,7 +272,7 @@ GLvoid updateFireworks()
 	if(fTime > 0.0f && !iWorking)
 	{
 		GLint iSize = 35+(int)((fTime-(float)((int)fTime))*14.0f);
-		char strText[256]; sprintf(strText, "Fireworks begin in %d...", (int)fTime+1);
+		GLchar strText[256]; sprintf(strText, "Fireworks begin in %d...", (int)fTime+1);
 		GLint iXsize = ft.getxsize(FT(strText), iSize);
 		glColor3ub(0, 0, 255);
 		ft.print(CFData(iSize, ft.getcenterx(iXsize, 0, glAp.dm.iScrX), glAp.dm.iScrY/2-iSize/2), strText);

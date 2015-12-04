@@ -38,7 +38,7 @@ GLvoid InitFMOD()
 {
     if (FSOUND_GetVersion() < FMOD_VERSION)
     {
-		char strError[255];
+		GLchar strError[255];
 		sprintf(strError, "You are using the wrong FMOD DLL version!  You should be using FMOD %.02f\n", FMOD_VERSION);
 		MessageBox(glAp.hWindow, strError, "Error", MB_ICONERROR | MB_OK);
     }
@@ -46,8 +46,8 @@ GLvoid InitFMOD()
 	{
 		MessageBox(glAp.hWindow, "Sound couldn't be initialized!", "Error", MB_ICONERROR | MB_OK);
 	}
-	char strCur[512]; GetCurrentDirectory(512, strCur);
-	char strOld[512]; strcpy(strOld, strCur);
+	GLchar strCur[512]; GetCurrentDirectory(512, strCur);
+	GLchar strOld[512]; strcpy(strOld, strCur);
 	strcat(strCur, "\\Sounds");
 	SetCurrentDirectory(strCur);
 	loadSounds(18);

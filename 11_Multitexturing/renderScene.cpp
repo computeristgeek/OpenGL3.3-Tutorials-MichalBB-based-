@@ -270,7 +270,7 @@ GLvoid renderScene(LPVOID lpParam)
 
 	// Get maximal number of texture units;
 	GLint iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
-	char buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
+	GLchar buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
 	ftFont.print(buf, 20, 50, 24);
 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
 

@@ -14,7 +14,7 @@
 #define MAX_TEXTURES 2
 extern GLuint g_Texture[MAX_TEXTURES];
 // *EXTERNING VARIABLES*
-BOOL PlayMidi(char *sFileName);
+BOOL PlayMidi(GLchar *sFileName);
 BOOL StopMidi();
 extern GLboolean  g_bFullScreen;								// Set full screen as default
 extern GLuint  g_hWnd;									// This is the handle for the window

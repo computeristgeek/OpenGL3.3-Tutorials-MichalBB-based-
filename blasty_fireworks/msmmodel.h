@@ -9,7 +9,7 @@ public:
 
 	struct CGroup
 	{
-		char cMat;
+		GLchar cMat;
 		CVector3* vVerts;
 		CVector3* vNorms;
 		CVector2* vCoords;

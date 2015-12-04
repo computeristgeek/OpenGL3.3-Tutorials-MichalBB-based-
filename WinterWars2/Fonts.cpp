@@ -43,7 +43,7 @@ GLGLvoid KillFont(GLvoid)									// Delete The Font From Memory
 }
 
 
-GLGLvoid glPrintFast(GLGLint x, GLGLint y, char *string, GLint set)	
+GLGLvoid glPrintFast(GLGLint x, GLGLint y, GLchar *string, GLint set)	
 {
 	if (set>1)set=1;
 	glBlendFunc(GL_ZERO,GL_ONE_MINUS_SRC_COLOR);
@@ -60,7 +60,7 @@ glDisable(GL_BLEND);
 
 }
 
-GLGLvoid glPrint(GLGLint x, GLGLint y, char *string, GLint set,GLfloat scalex, GLfloat scaley, GLfloat scalez)	
+GLGLvoid glPrint(GLGLint x, GLGLint y, GLchar *string, GLint set,GLfloat scalex, GLfloat scaley, GLfloat scalez)	
 {
 		
 	glDisable(GL_DEPTH_TEST);							// Enables Depth Testing

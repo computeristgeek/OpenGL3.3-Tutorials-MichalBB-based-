@@ -205,11 +205,11 @@ GLint ammol=50;
 GLint ammorocket=20;
 GLint ammoplasma=20;
 GLint armora=-1;
-char ammoll[1];
-char armor[1];
-char text[1];
-char ammorocketer[1];
-char ammoplas[1];
+GLchar ammoll[1];
+GLchar armor[1];
+GLchar text[1];
+GLchar ammorocketer[1];
+GLchar ammoplas[1];
 GLvoid Ortho(){
 	
 	glDisable(GL_DEPTH_TEST);							// Enables Depth Testing
@@ -260,7 +260,7 @@ glColor3f(1,1,1);
 
 
 
-AUX_RGBImageRec *LoadBMP(const char *Filename)						// Loads A Bitmap Image
+AUX_RGBImageRec *LoadBMP(const GLchar *Filename)						// Loads A Bitmap Image
 {
 
 	FILE *File=NULL;												// File Handle
@@ -281,7 +281,7 @@ AUX_RGBImageRec *LoadBMP(const char *Filename)						// Loads A Bitmap Image
 	return NULL;													// If Load Failed Return NULL
 }
 
-GLuGLint LoadGLTexture( const char *filename )						// Load Bitmaps And Convert To Textures
+GLuGLint LoadGLTexture( const GLchar *filename )						// Load Bitmaps And Convert To Textures
 {
 	AUX_RGBImageRec *pImage;										// Create Storage Space For The Texture
 	GLuGLint texture = 0;												// Texture ID

@@ -2,7 +2,7 @@ class CGroup
 {
 public:
 	WORD wNFaces;
-	char cMIndex;
+	GLchar cMIndex;
 	BYTE bBlend;
 	CVector3* vVerts;
 	CVector3* vNorms3;

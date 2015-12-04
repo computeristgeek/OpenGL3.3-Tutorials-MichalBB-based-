@@ -42,7 +42,7 @@ GLvoid drawarocket();
 GLvoid DisplayLaser();
 GLvoid InitLaser(); 
 GLvoid InitAmmo();
-GLGLvoid glPrint(GLGLint x, GLGLint y, char *string, GLint set,GLfloat scalex, GLfloat scaley, GLfloat scalez);
+GLGLvoid glPrint(GLGLint x, GLGLint y, GLchar *string, GLint set,GLfloat scalex, GLfloat scaley, GLfloat scalez);
 extern GLint count;
 extern GLint ammorocket;
 extern GLint ammoplasma;

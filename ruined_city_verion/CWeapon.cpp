@@ -93,7 +93,7 @@ GLvoid CLightingGun::shoot(){}
 
 GLvoid loadWeapons()
 {
-	char strDir[512], strCopy[512]; GetCurrentDirectory(512, strDir);
+	GLchar strDir[512], strCopy[512]; GetCurrentDirectory(512, strDir);
 	strcpy(strCopy, strDir);
 	strcat(strDir, "\\Weapons");
 	SetCurrentDirectory(strDir);
@@ -199,7 +199,7 @@ GLvoid renderWeaponsOrtho()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	char aa[112]; sprintf(aa, "%d", wWeapons[iCurWeapon]->iAmmo);
+	GLchar aa[112]; sprintf(aa, "%d", wWeapons[iCurWeapon]->iAmmo);
 	ft.print(CFData(50, 40, 20), aa);
 	
 	if(fPrintName > 0.0f)

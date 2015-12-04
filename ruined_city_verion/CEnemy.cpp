@@ -21,14 +21,14 @@ vector<CSpider> sSpiders;
 
 GLvoid loadEnemies(GLint iNModels)
 {
-	char strCur[512]; GetCurrentDirectory(512, strCur);
-	char strOld[512]; strcpy(strOld, strCur);
+	GLchar strCur[512]; GetCurrentDirectory(512, strCur);
+	GLchar strOld[512]; strcpy(strOld, strCur);
 	strcat(strCur, "\\Enemies");
 	SetCurrentDirectory(strCur);
 	mEnemies = new CMSModel[iNModels];
 	FOR(i, iNModels)mEnemies[i].loadModelData(strNames[i]);
 	FILE* fp = fopen("Enemies.txt", "rt");
-	char strLine[255]; GLint iNum;
+	GLchar strLine[255]; GLint iNum;
 	sscanf(readline(fp, strLine), "TOWERS %d", &iNum);
 	CTower tNew;
 	sscanf(readline(fp, strLine), "COLBOX %d", &tNew.iNumCB);
@@ -61,7 +61,7 @@ GLvoid loadEnemies(GLint iNModels)
 	{
 		FOR(j, 4)sscanf(readline(fp, strLine), "%f %f %f", &swNew.vPoints[j].x, &swNew.vPoints[j].y, &swNew.vPoints[j].z);
 		swNew.iAll = 0;
-		char strType[20] = {0};
+		GLchar strType[20] = {0};
 		sscanf(readline(fp, strLine), "TYPE %s", strType);
 		swNew.iType = strcmp(strType, "NORMAL");
 		sscanf(readline(fp, strLine), "NESTS %d", &swNew.iNests);

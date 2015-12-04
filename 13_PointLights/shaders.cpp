@@ -78,7 +78,7 @@ GLboolean CShader::getLinesFromFile(string sFile, GLboolean bIncludePart, vector
 
 	// Get all lines from a file
 
-	char sLine[255];
+	GLchar sLine[255];
 
 	GLboolean bInIncludePart = false;
 

@@ -169,7 +169,7 @@ GLboolean COpenGLControl::initOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint 
 	if(bError)
 	{
 		// Generate error messages
-		char sErrorMessage[255], sErrorTitle[255];
+		GLchar sErrorMessage[255], sErrorTitle[255];
 		sprintf(sErrorMessage, "OpenGL %d.%d is not supported! Please download latest GPU drivers!", iMajorVersion, iMinorVersion);
 		sprintf(sErrorTitle, "OpenGL %d.%d Not Supported", iMajorVersion, iMinorVersion);
 		MessageBox(*hWnd, sErrorMessage, sErrorTitle, MB_ICONINFORMATION);

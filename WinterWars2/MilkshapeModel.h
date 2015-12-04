@@ -29,7 +29,7 @@ class MilkshapeModel : public Model
 			Load the model data into the private variables. 
 				filename			Model filename
 		*/
-		virtual GLboolean loadModelData(const char *filename);
+		virtual GLboolean loadModelData(const GLchar *filename);
 };
 
 #endif // ndef MILKSHAPEMODEL_H

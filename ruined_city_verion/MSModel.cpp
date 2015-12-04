@@ -6,21 +6,21 @@ vector<char> cTrans; // If the material is transparent
 
 //====================
 
-GLvoid pri(GLint tt){char ttt[222]; sprintf(ttt, "NUMBWER IS %d", tt); MessageBox(NULL, ttt, "TTT", MB_OK);}
+GLvoid pri(GLint tt){GLchar ttt[222]; sprintf(ttt, "NUMBWER IS %d", tt); MessageBox(NULL, ttt, "TTT", MB_OK);}
 GLvoid CMSModel::loadModelData(char* strFile)
 {
 	FILE* fp = fopen(strFile, "rb");
 	if(fp == NULL)
 	{
-		char strText[255]; sprintf(strText, "Model %s wasn't found! Re-install application!", strFile);
+		GLchar strText[255]; sprintf(strText, "Model %s wasn't found! Re-install application!", strFile);
 		MessageBox(glAp.hWindow, strText, "Error", MB_ICONERROR | MB_OK);
 		return;
 	}
-	char strLine[50]; fgets(strLine, 50, fp);
+	GLchar strLine[50]; fgets(strLine, 50, fp);
 	string str4 = strLine; str4 = str4.substr(0, 4); 
 	if(str4 != "MSMV")
 	{
-		char strMsg[255]; sprintf(strMsg, "The model %s isn't a MS Model File!", strFile);
+		GLchar strMsg[255]; sprintf(strMsg, "The model %s isn't a MS Model File!", strFile);
 		MessageBox(glAp.hWindow, strMsg, "Error loading model", MB_ICONERROR | MB_OK);
 		fclose(fp);
 		return;
@@ -62,7 +62,7 @@ GLvoid CMSModel::loadModelData(char* strFile)
 	{
 		fgets(strLine, 255, fp);
 		string strName = strLine; strName = strName.substr(0, strName.length() - 1);
-		char trans; fread(&trans, sizeof(char), 1, fp);
+		GLchar trans; fread(&trans, sizeof(char), 1, fp);
 		GLboolean bFound = false; GLint iInd = -1;
 		FOR(j, ESZ(strMNames))if(strMNames[j] == strName && trans == cTrans[j]){iInd = j; break;}
 		if(iInd == -1)
@@ -120,7 +120,7 @@ GLvoid CMSModel::loadModelData(char* strFile)
 			{
 				if(aAnims[i].bBitFld[j][k / 8] & (1 << (k % 8)))
 				{
-					char cTexture; fread(&cTexture, sizeof(char), 1, fp);
+					GLchar cTexture; fread(&cTexture, sizeof(char), 1, fp);
 					if(cTexture != -1)aAnims[i].cTexture[j][k] = mInd[cTexture];
 					else aAnims[i].cTexture[j][k] = -1;
 					BYTE bBlend; fread(&bBlend, sizeof(BYTE), 1, fp);

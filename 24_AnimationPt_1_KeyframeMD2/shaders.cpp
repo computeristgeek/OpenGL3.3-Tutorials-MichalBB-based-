@@ -108,8 +108,8 @@ GLboolean CShader::LoadShader(string sFile, GLint a_iType)
 
 	if(iCompilationStatus == GL_FALSE)
 	{
-		char sInfoLog[1024];
-		char sFinalMessage[1536];
+		GLchar sInfoLog[1024];
+		GLchar sFinalMessage[1536];
 		GLint iLogLength;
 		glGetShaderInfoLog(uiShader, 1024, &iLogLength, sInfoLog);
 		sprintf(sFinalMessage, "Error! Shader file %s wasn't compiled! The compiler returned:\n\n%s", sFile.c_str(), sInfoLog);
@@ -154,7 +154,7 @@ GLboolean CShader::GetLinesFromFile(string sFile, GLboolean bIncludePart, vector
 
 	// Get all lines from a file
 
-	char sLine[255];
+	GLchar sLine[255];
 
 	GLboolean bInIncludePart = false;
 

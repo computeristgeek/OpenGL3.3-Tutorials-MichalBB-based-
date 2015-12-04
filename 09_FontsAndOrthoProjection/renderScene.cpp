@@ -166,7 +166,7 @@ GLvoid renderScene(LPVOID lpParam)
 	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
 
-	char buf[255];
+	GLchar buf[255];
 	sprintf(buf, "Font Size: %d\nPress UP and DOWN arrow key to change\n\nTotal Torus Faces: %d", iFontSize, iTorusFaces);
 
 	ftFont.print(buf, 20, oglControl->getViewportHeight()-10-iFontSize, iFontSize);

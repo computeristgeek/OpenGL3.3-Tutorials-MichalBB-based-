@@ -20,7 +20,7 @@ GLvoid getModes(GLuint hDialog, GLint iResID)
 		dmSet.dmBitsPerPel = 16;
 		if(ChangeDisplaySettings(&dmSet, CDS_TEST | CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL)
 		{
-			char strText[50]; sprintf(strText, "%dx%d", iScrX[i], iScrY[j]);
+			GLchar strText[50]; sprintf(strText, "%dx%d", iScrX[i], iScrY[j]);
 			SendDlgItemMessage(hDialog, iResID, CB_INSERTSTRING, iCur, (LPARAM)strText);
 			iCur++;
 		}
@@ -53,7 +53,7 @@ LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, WPARAM wParam, LPARAM 
 		{
 			case ID_OK:
 			{
-				char strText[50]; GLint iCurSel = (int)SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETCURSEL, 0, 0);
+				GLchar strText[50]; GLint iCurSel = (int)SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETCURSEL, 0, 0);
 				SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETLBTEXT, iCurSel, (LPARAM)strText);
 				if(!strcmp(strText, "Choose one"))
 				{

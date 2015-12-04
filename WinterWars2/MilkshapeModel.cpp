@@ -41,13 +41,13 @@ MilkshapeModel::~MilkshapeModel()
 #	error you must byte-align these structures with the appropriate compiler directives
 #endif
 
-typedef unsigned char byte;
+typedef unsigned GLchar byte;
 typedef unsigned short word;
 
 // File header
 struct MS3DHeader
 {
-	char m_ID[10];
+	GLchar m_ID[10];
 	GLint m_version;
 } PACK_STRUCT;
 
@@ -56,7 +56,7 @@ struct MS3DVertex
 {
 	byte m_flags;
 	GLfloat m_vertex[3];
-	char m_boneID;
+	GLchar m_boneID;
 	byte m_refCount;
 } PACK_STRUCT;
 
@@ -74,7 +74,7 @@ struct MS3DTriangle
 // Material information
 struct MS3DMaterial
 {
-    char m_name[32];
+    GLchar m_name[32];
     GLfloat m_ambient[4];
     GLfloat m_diffuse[4];
     GLfloat m_specular[4];
@@ -82,16 +82,16 @@ struct MS3DMaterial
     GLfloat m_shininess;	// 0.0f - 128.0f
     GLfloat m_transparency;	// 0.0f - 1.0f
     byte m_mode;	// 0, 1, 2 is unused now
-    char m_texture[128];
-    char m_alphamap[128];
+    GLchar m_texture[128];
+    GLchar m_alphamap[128];
 } PACK_STRUCT;
 
 //	JoGLint information
 struct MS3DJoint
 {
 	byte m_flags;
-	char m_name[32];
-	char m_parentName[32];
+	GLchar m_name[32];
+	GLchar m_parentName[32];
 	GLfloat m_rotation[3];
 	GLfloat m_translation[3];
 	word m_numRotationKeyframes;
@@ -112,7 +112,7 @@ struct MS3DKeyframe
 
 #undef PACK_STRUCT
 
-GLboolean MilkshapeModel::loadModelData( const char *filename)
+GLboolean MilkshapeModel::loadModelData( const GLchar *filename)
 {
 	ifstream inputFile( filename, ios::in | ios::binary | ios::nocreate );
 	if ( inputFile.fail())
@@ -185,8 +185,8 @@ GLboolean MilkshapeModel::loadModelData( const char *filename)
 			pPtr += sizeof( word );
 		}
 
-		char materialIndex = *( char* )pPtr;
-		pPtr += sizeof( char );
+		GLchar materialIndex = *( char* )pPtr;
+		pPtr += sizeof( GLchar );
 	
 		m_pMeshes[i].m_materialIndex = materialIndex;
 		m_pMeshes[i].m_numTriangles = nTriangles;

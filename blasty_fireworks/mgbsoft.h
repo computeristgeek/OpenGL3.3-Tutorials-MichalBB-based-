@@ -142,7 +142,7 @@ public:
 
 	GLint key(GLint iKey);
 	GLint onekey(GLint iKey);
-	char kp[256];
+	GLchar kp[256];
 
 	//-----------------
 

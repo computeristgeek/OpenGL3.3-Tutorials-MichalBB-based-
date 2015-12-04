@@ -66,7 +66,7 @@ GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR cmdLine, GL
 	glAp.appBody(); // Run main app body
 	if(nnum == 0.0f)afps = 0.0f;
 	else afps /= nnum;
-	char aaa[222]; sprintf(aaa, "AVERAGE FPS:\n%.3f", afps);
+	GLchar aaa[222]; sprintf(aaa, "AVERAGE FPS:\n%.3f", afps);
 	MessageBox(NULL, aaa, "INFO", MB_ICONINFORMATION | MB_OK);
 	return 0;
 }

@@ -112,7 +112,7 @@ GLvoid End2D()
 GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,GLuint flags, const char*fmt,...)
 {
 	GLint character=0; // This is list id
-	char final[255]={0}; // Final text to display
+	GLchar final[255]={0}; // Final text to display
 
 	va_list arg;
 	va_start(arg,fmt);

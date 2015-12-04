@@ -46,8 +46,8 @@ typedef struct
 // md2 compressed vertex
 typedef struct
 {
-	unsigned char   v[3];                // compressed vertex (x, y, z) coordinates
-	unsigned char   lightnormalindex;    // index to a normal vector for the lighting
+	unsigned GLchar   v[3];                // compressed vertex (x, y, z) coordinates
+	unsigned GLchar   lightnormalindex;    // index to a normal vector for the lighting
 
 } vertex_t;
 
@@ -56,7 +56,7 @@ typedef struct
 {
 	GLfloat       scale[3];       // scale values
 	GLfloat       translate[3];   // translation vector
-	char        name[16];       // frame name
+	GLchar        name[16];       // frame name
 	vertex_t    verts[1];       // first vertex of this frame
 
 } frame_t;

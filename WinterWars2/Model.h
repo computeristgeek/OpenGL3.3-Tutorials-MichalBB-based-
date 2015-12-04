@@ -31,7 +31,7 @@ class Model
 			GLfloat m_ambient[4], m_diffuse[4], m_specular[4], m_emissive[4];
 			GLfloat m_shininess;
 			GLuGLint m_texture;
-			char *m_pTextureFilename;
+			GLchar *m_pTextureFilename;
 		};
 
 		//	Triangle structure
@@ -45,7 +45,7 @@ class Model
 		//	Vertex structure
 		struct Vertex
 		{
-			char m_boneID;	// for skeletal animation
+			GLchar m_boneID;	// for skeletal animation
 			GLfloat m_location[3];
 		};
 
@@ -60,7 +60,7 @@ class Model
 			Load the model data into the private variables. 
 				filename			Model filename
 		*/
-		virtual GLboolean loadModelData( const char *filename ) = 0;
+		virtual GLboolean loadModelData( const GLchar *filename ) = 0;
 
 		/*
 			Draw the model.

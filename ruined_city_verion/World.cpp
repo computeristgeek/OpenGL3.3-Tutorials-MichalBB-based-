@@ -17,7 +17,7 @@ char* readline(FILE* fp, char* buffer)
 GLvoid CWorld::loadWorld(char* strFile)
 {
 	FILE* fp = fopen(strFile, "rt");
-	char line[255];
+	GLchar line[255];
 	sscanf(readline(fp, line), "TEXTURES %d", &iNumT);
 	
 	uiTxt = new GLuint[iNumT];

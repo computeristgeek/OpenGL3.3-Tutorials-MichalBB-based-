@@ -33,9 +33,9 @@ GLvoid Init()
 	InitOpenGL(rect.right,rect.bottom); // Set OpenGL screen to client window
 	BuildFont(); // Build font
 
-	char lastdir[355]={0};
+	GLchar lastdir[355]={0};
 	GetCurrentDirectory(355,lastdir);
-	char newdir[400]={0};
+	GLchar newdir[400]={0};
 	strcat(newdir,lastdir);
 	strcat(newdir,"/Data/Textures");
 	SetCurrentDirectory(newdir);

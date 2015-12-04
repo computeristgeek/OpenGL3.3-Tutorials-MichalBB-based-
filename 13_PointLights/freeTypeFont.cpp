@@ -74,7 +74,7 @@ GLvoid CFreeTypeFont::createChar(GLint iIndex)
 	};
 	glm::vec2 vTexQuad[] = {glm::vec2(0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f)};
 
-	// Add this char to VBO
+	// Add this GLchar to VBO
 	FOR(i, 4)
 	{
 		vboData.addData(&vQuad[i], sizeof(glm::vec2));
@@ -136,7 +136,7 @@ Result:	Loads system font (from system Fonts
 
 GLboolean CFreeTypeFont::loadSystemFont(string sName, GLint iPXSize)
 {
-	char buf[512]; GetWindowsDirectory(buf, 512);
+	GLchar buf[512]; GetWindowsDirectory(buf, 512);
 	string sPath = buf;
 	sPath += "\\Fonts\\";
 	sPath += sName;
@@ -208,7 +208,7 @@ Result:	Prints formatted text at specified position
 
 GLvoid CFreeTypeFont::printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
 {
-	char buf[512];
+	GLchar buf[512];
 	va_list ap;
 	va_start(ap, sText);
 	vsprintf(buf, sText, ap);

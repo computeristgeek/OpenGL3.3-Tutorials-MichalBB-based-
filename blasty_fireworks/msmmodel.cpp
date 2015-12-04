@@ -49,7 +49,7 @@ GLvoid CMSMModel::loadModel(char* strFile)
 	FOR(i, mHeader.nMaterials)
 	{
 		readline(fp); // Ignore material name
-		char cTex; fread(&cTex, sizeof(char), 1, fp);
+		GLchar cTex; fread(&cTex, sizeof(char), 1, fp);
 		mMats[i].iTexture = cTex != -1 ? tIndices[cTex] : -1;
 		BYTE bArray[4]; GLfloat fArray[4];
 		fread(bArray, 4, sizeof(BYTE), fp);

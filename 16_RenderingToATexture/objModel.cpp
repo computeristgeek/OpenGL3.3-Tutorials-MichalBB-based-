@@ -73,7 +73,7 @@ GLboolean CObjModel::LoadModel(string sFileName, string sMtlFileName)
 
 	if(fp == NULL)return false;
 
-	char line[255];
+	GLchar line[255];
 
 	vector<glm::vec3> vVertices;
 	vector<glm::vec2> vTexCoords;
@@ -280,7 +280,7 @@ GLboolean CObjModel::LoadMaterial(string sFullMtlFileName)
 
 	if(fp == NULL)return false;
 
-	char line[255];
+	GLchar line[255];
 
 	while(fgets(line, 255, fp))
 	{

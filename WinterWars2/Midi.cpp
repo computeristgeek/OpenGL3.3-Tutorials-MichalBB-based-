@@ -12,9 +12,9 @@
 // 
 //------------------------------------------------------------------ 
 
-BOOL PlayMidi(char *sFileName) 
+BOOL PlayMidi(GLchar *sFileName) 
 {     
-	char buf[256];
+	GLchar buf[256];
     sprintf(buf, "open %s type sequencer alias MUSIC", sFileName);
 	if (mciSendString("close all", NULL, 0, NULL) != 0)
 	{ 

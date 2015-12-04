@@ -82,7 +82,7 @@ GLvoid CFreeTypeFont::CreateChar(GLint iIndex, GLubyte* bData)
 		glm::vec2(float(iCol+1)*fOneStep, float(iRow)*fOneStep)
 	};
 
-	// Add this char to VBO
+	// Add this GLchar to VBO
 	FOR(i, 4)
 	{
 		vboData.AddData(&vQuad[i], sizeof(glm::vec2));
@@ -178,7 +178,7 @@ Result:	Loads system font (from system Fonts
 
 GLboolean CFreeTypeFont::LoadSystemFont(string sName, GLint iPXSize, GLint iMaxCharSupport)
 {
-	char buf[512]; GetWindowsDirectory(buf, 512);
+	GLchar buf[512]; GetWindowsDirectory(buf, 512);
 	string sPath = buf;
 	sPath += "\\Fonts\\";
 	sPath += sName;
@@ -320,7 +320,7 @@ Result:	Prints formatted text at specified position
 
 GLvoid CFreeTypeFont::PrintFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
 {
-	char buf[512];
+	GLchar buf[512];
 	va_list ap;
 	va_start(ap, sText);
 	vsprintf(buf, sText, ap);

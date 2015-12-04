@@ -46,7 +46,7 @@ char* fileDir(char* strFileName)
 
 GLvoid changeDir(char* strNew)
 {
-	static char strDef[256] = {0};
+	static GLchar strDef[256] = {0};
 	if(strDef[0] == 0)GetCurrentDirectory(256, strDef);
 	if(strlen(strNew) == 0)SetCurrentDirectory(strDef);
 	else SetCurrentDirectory(strNew);

@@ -4,7 +4,7 @@
 
 COpenGLWinApp appMain;
 
-char Keys::kp[256] = {0};
+GLchar Keys::kp[256] = {0};
 
 /*-----------------------------------------------
 

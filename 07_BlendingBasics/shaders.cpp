@@ -26,7 +26,7 @@ GLboolean CShader::loadShader(string sFile, GLint a_iType)
 	// Get all lines from a file
 
 	vector<string> sLines;
-	char sLine[255];
+	GLchar sLine[255];
 	while(fgets(sLine, 255, fp))sLines.push_back(sLine);
 	fclose(fp);
 
