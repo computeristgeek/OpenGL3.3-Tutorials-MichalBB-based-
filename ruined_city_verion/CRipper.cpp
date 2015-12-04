@@ -6,7 +6,7 @@ CRipper gRipper;
 
 //====================
 
-void getAngles(CVector3 vDir, float &fAnX, float &fAnY)
+GLvoid getAngles(CVector3 vDir, GLfloat &fAnX, GLfloat &fAnY)
 {
 	CVector3 vDir2 = vDir; vDir2.y = 0;
 	fAnY = (float)vecAngle(vDir2, CVector3(0, 0, -1)) * 180 / PI;
@@ -17,7 +17,7 @@ void getAngles(CVector3 vDir, float &fAnX, float &fAnY)
 
 //====================
 
-void CRipper::renderWeapon()
+GLvoid CRipper::renderWeapon()
 {
 	if(!bLoaded && iAmmo > 0){bLoaded = true; mWeapon.startAnimation("init", 1, &adWeapon);}
 	if(bLoaded && adWeapon.iAnim == -1){mWeapon.startAnimation("loop", -1, &adWeapon); bShooting = false;}
@@ -26,7 +26,7 @@ void CRipper::renderWeapon()
 
 //====================
 
-void CRipper::shoot()
+GLvoid CRipper::shoot()
 {
 	if(bShooting)return;
 	if(iAmmo == 0)return;
@@ -54,7 +54,7 @@ void CRipper::shoot()
 
 //====================
 
-void CRipper::renderAmmo()
+GLvoid CRipper::renderAmmo()
 {
 	if(iCurWeapon != RIPPER)bLoaded = false;
 	FOR(i, ESZ(rdDiscs))
@@ -74,7 +74,7 @@ void CRipper::renderAmmo()
 		if(vDifA.x * vDifB.x < 0.0f || vDifA.y * vDifB.y < 0.0f || vDifA.z * vDifB.z < 0.0f)
 		{
 			FSOUND_PlaySound(FSOUND_FREE, sndData[1]);
-			float fBehind = vecDist(rdDiscs[i].vNext, rdDiscs[i].vPos) + 0.1f;
+			GLfloat fBehind = vecDist(rdDiscs[i].vNext, rdDiscs[i].vPos) + 0.1f;
 			rdDiscs[i].vDir = lv1.vNorms[rdDiscs[i].iFIndex] * 2.0f * vecDot(rdDiscs[i].vDir * -1.0f, lv1.vNorms[rdDiscs[i].iFIndex]) + rdDiscs[i].vDir;
 			rdDiscs[i].vPos = rdDiscs[i].vNext + rdDiscs[i].vDir * fBehind;
 			rdDiscs[i].vNext = getIntersection(rdDiscs[i].vPos, rdDiscs[i].vPos + rdDiscs[i].vDir);
@@ -89,7 +89,7 @@ void CRipper::renderAmmo()
 			i--;
 			continue;
 		}
-		int iCollide = collisionLineEnemies(rdDiscs[i].vPos, rdDiscs[i].vLastPos);
+		GLint iCollide = collisionLineEnemies(rdDiscs[i].vPos, rdDiscs[i].vLastPos);
 		if(iCollide)
 		{
 			rdDiscs.erase(rdDiscs.begin() + i);
@@ -100,4 +100,4 @@ void CRipper::renderAmmo()
 
 //====================
 
-void CRipper::renderBlended(){}
+GLvoid CRipper::renderBlended(){}

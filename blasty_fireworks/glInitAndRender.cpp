@@ -6,7 +6,7 @@ CFreeType ft;
 
 //====================
 
-void glInit()
+GLvoid glInit()
 {
 	glEnable(GL_DEPTH_TEST); // Enables depth-testing
 	glEnable(GL_TEXTURE_2D); // Enables texturing
@@ -25,7 +25,7 @@ void glInit()
 
 //====================
 
-void glScene()
+GLvoid glScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffer
 	glLoadIdentity(); // Reset matrix
@@ -41,7 +41,7 @@ void glScene()
 
 //====================
 
-void freeEverything()
+GLvoid freeEverything()
 {
 	while(ESZ(tTextures) > 0)
 	{

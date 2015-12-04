@@ -28,17 +28,17 @@ Result:	Creates one single character (its
 
 /*---------------------------------------------*/
 
-inline int next_p2(int n){int res = 1; while(res < n)res <<= 1; return res;}
+inline GLint next_p2(GLint n){GLint res = 1; while(res < n)res <<= 1; return res;}
 
-void CFreeTypeFont::createChar(int iIndex)
+GLvoid CFreeTypeFont::createChar(GLint iIndex)
 {
 	FT_Load_Glyph(ftFace, FT_Get_Char_Index(ftFace, iIndex), FT_LOAD_DEFAULT);
 
 	FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL);
 	FT_Bitmap* pBitmap = &ftFace->glyph->bitmap;
 
-	int iW = pBitmap->width, iH = pBitmap->rows;
-	int iTW = next_p2(iW), iTH = next_p2(iH);
+	GLint iW = pBitmap->width, iH = pBitmap->rows;
+	GLint iTW = next_p2(iW), iTH = next_p2(iH);
 
 	GLubyte* bData = new GLubyte[iTW*iTH];
 	// Copy glyph data and add dark pixels elsewhere
@@ -94,7 +94,7 @@ Result:	Loads whole font.
 
 /*---------------------------------------------*/
 
-bool CFreeTypeFont::loadFont(string sFile, int iPXSize)
+GLboolean CFreeTypeFont::loadFont(string sFile, GLint iPXSize)
 {
 	BOOL bError = FT_Init_FreeType(&ftLib);
 	
@@ -134,7 +134,7 @@ Result:	Loads system font (from system Fonts
 
 /*---------------------------------------------*/
 
-bool CFreeTypeFont::loadSystemFont(string sName, int iPXSize)
+GLboolean CFreeTypeFont::loadSystemFont(string sName, GLint iPXSize)
 {
 	char buf[512]; GetWindowsDirectory(buf, 512);
 	string sPath = buf;
@@ -157,7 +157,7 @@ Result:	Prints text at specified position
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::print(string sText, int x, int y, int iPXSize)
+GLvoid CFreeTypeFont::print(string sText, GLint x, GLint y, GLint iPXSize)
 {
 	if(!bLoaded)return;
 
@@ -165,9 +165,9 @@ void CFreeTypeFont::print(string sText, int x, int y, int iPXSize)
 	shShaderProgram->setUniform("gSampler", 0);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	int iCurX = x, iCurY = y;
+	GLint iCurX = x, iCurY = y;
 	if(iPXSize == -1)iPXSize = iLoadedPixelSize;
-	float fScale = float(iPXSize)/float(iLoadedPixelSize);
+	GLfloat fScale = float(iPXSize)/float(iLoadedPixelSize);
 	FOR(i, ESZ(sText))
 	{
 		if(sText[i] == '\n')
@@ -176,7 +176,7 @@ void CFreeTypeFont::print(string sText, int x, int y, int iPXSize)
 			iCurY -= iNewLine*iPXSize/iLoadedPixelSize;
 			continue;
 		}
-		int iIndex = int(sText[i]);
+		GLint iIndex = int(sText[i]);
 		iCurX += iBearingX[iIndex]*iPXSize/iLoadedPixelSize;
 		if(sText[i] != ' ')
 		{
@@ -206,7 +206,7 @@ Result:	Prints formatted text at specified position
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::printFormatted(int x, int y, int iPXSize, char* sText, ...)
+GLvoid CFreeTypeFont::printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
 {
 	char buf[512];
 	va_list ap;
@@ -226,7 +226,7 @@ Result:	Deletes all font textures.
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::releaseFont()
+GLvoid CFreeTypeFont::releaseFont()
 {
 	FOR(i, 128)tCharTextures[i].releaseTexture();
 	vboData.releaseVBO();
@@ -243,7 +243,7 @@ Result:	Sets shader program that font uses.
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::setShaderProgram(CShaderProgram* a_shShaderProgram)
+GLvoid CFreeTypeFont::setShaderProgram(CShaderProgram* a_shShaderProgram)
 {
 	shShaderProgram = a_shShaderProgram;
 }

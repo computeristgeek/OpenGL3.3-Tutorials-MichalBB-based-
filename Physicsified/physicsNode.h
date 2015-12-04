@@ -10,10 +10,10 @@ public:
 	btRigidBody* _body;
 	btCollisionShape* _shape;
 
-	int iMaterialUsed;
+	GLint iMaterialUsed;
 
-	virtual void CreateNode(float fMass, glm::vec3 initVelocity, float fRestitution, float fFriction, btDiscreteDynamicsWorld* _world) = NULL;
-	void SetPosition(glm::vec3 vInitPosition);
+	virtual GLvoid CreateNode(GLfloat fMass, glm::vec3 initVelocity, GLfloat fRestitution, GLfloat fFriction, btDiscreteDynamicsWorld* _world) = NULL;
+	GLvoid SetPosition(glm::vec3 vInitPosition);
 
 	CPhysicsNode();
 protected:
@@ -24,8 +24,8 @@ protected:
 class CBoxPhysicsNode : public CPhysicsNode
 {
 public:
-	void CreateNode(float fMass, glm::vec3 initVelocity, float fRestitution, float fFriction, btDiscreteDynamicsWorld* _world);
-	void SetBoxSize(glm::vec3 a_vHalfExtents);
+	GLvoid CreateNode(GLfloat fMass, glm::vec3 initVelocity, GLfloat fRestitution, GLfloat fFriction, btDiscreteDynamicsWorld* _world);
+	GLvoid SetBoxSize(glm::vec3 a_vHalfExtents);
 
 	glm::vec3 vHalfExtents;
 };
@@ -33,30 +33,30 @@ public:
 class CCapsulePhysicsNode : public CPhysicsNode
 {
 public:
-	void CreateNode(float fMass, glm::vec3 initVelocity, float fRestitution, float fFriction, btDiscreteDynamicsWorld* _world);
-	void SetCapsuleSize(float a_fRadius, float a_fHeight);
+	GLvoid CreateNode(GLfloat fMass, glm::vec3 initVelocity, GLfloat fRestitution, GLfloat fFriction, btDiscreteDynamicsWorld* _world);
+	GLvoid SetCapsuleSize(GLfloat a_fRadius, GLfloat a_fHeight);
 
-	float fHeight;
-	float fRadius;
+	GLfloat fHeight;
+	GLfloat fRadius;
 };
 
 class CCapsulePhysicsNodeX : public CPhysicsNode
 {
 public:
-	void CreateNode(float fMass, glm::vec3 initVelocity, float fRestitution, float fFriction, btDiscreteDynamicsWorld* _world);
-	void SetCapsuleSize(float a_fRadius, float a_fHeight);
+	GLvoid CreateNode(GLfloat fMass, glm::vec3 initVelocity, GLfloat fRestitution, GLfloat fFriction, btDiscreteDynamicsWorld* _world);
+	GLvoid SetCapsuleSize(GLfloat a_fRadius, GLfloat a_fHeight);
 
-	float fHeight;
-	float fRadius;
+	GLfloat fHeight;
+	GLfloat fRadius;
 };
 
 
 class CCapsulePhysicsNodeZ : public CPhysicsNode
 {
 public:
-	void CreateNode(float fMass, glm::vec3 initVelocity, float fRestitution, float fFriction, btDiscreteDynamicsWorld* _world);
-	void SetCapsuleSize(float a_fRadius, float a_fHeight);
+	GLvoid CreateNode(GLfloat fMass, glm::vec3 initVelocity, GLfloat fRestitution, GLfloat fFriction, btDiscreteDynamicsWorld* _world);
+	GLvoid SetCapsuleSize(GLfloat a_fRadius, GLfloat a_fHeight);
 
-	float fHeight;
-	float fRadius;
+	GLfloat fHeight;
+	GLfloat fRadius;
 };

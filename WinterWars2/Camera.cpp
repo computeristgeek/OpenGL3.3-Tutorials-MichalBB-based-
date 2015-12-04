@@ -15,7 +15,7 @@ CVector3 Cross(CVector3 vVector1, CVector3 vVector2)
 }
 
 
-float Magnitude(CVector3 vNormal)
+GLfloat Magnitude(CVector3 vNormal)
 {
 	// Here is the equation:  magnitude = sqrt(V.x^2 + V.y^2 + V.z^2) : Where V is the vector
 	return (float)sqrt( (vNormal.x * vNormal.x) + 
@@ -26,7 +26,7 @@ float Magnitude(CVector3 vNormal)
 CVector3 Normalize(CVector3 vVector)
 {
 	// Get the magnitude of our normal
-	float magnitude = Magnitude(vVector);				
+	GLfloat magnitude = Magnitude(vVector);				
 
 	vVector = vVector / magnitude;		
 	
@@ -48,9 +48,9 @@ CCamera::CCamera()
 }
 
 
-void CCamera::PositionCamera(float positionX, float positionY, float positionZ,
-				  		     float viewX,     float viewY,     float viewZ,
-							 float upVectorX, float upVectorY, float upVectorZ)
+GLvoid CCamera::PositionCamera(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
+				  		     GLfloat viewX,     GLfloat viewY,     GLfloat viewZ,
+							 GLfloat upVectorX, GLfloat upVectorY, GLfloat upVectorZ)
 {
 	CVector3 vPosition	= CVector3(positionX, positionY, positionZ);
 	CVector3 vView		= CVector3(viewX, viewY, viewZ);
@@ -65,15 +65,15 @@ void CCamera::PositionCamera(float positionX, float positionY, float positionZ,
 }
 
 
-	float angleY;						
-	float angleZ;				
-void CCamera::SetViewByMouse()
+	GLfloat angleY;						
+	GLfloat angleZ;				
+GLvoid CCamera::SetViewByMouse()
 {
 	POINT mousePos;									// This is a window structure that holds an X and Y
-	int middleX = SCREEN_WIDTH >> 1;				// This is a binary shift to get half the width
-	int middleY = SCREEN_HEIGHT >> 1;				// This is a binary shift to get half the height
+	GLint middleX = SCREEN_WIDTH >> 1;				// This is a binary shift to get half the width
+	GLint middleY = SCREEN_HEIGHT >> 1;				// This is a binary shift to get half the height
 
-	static float currentRotX = 0.0f;
+	static GLfloat currentRotX = 0.0f;
 	GetCursorPos(&mousePos);						
 	if( (mousePos.x == middleX) && (mousePos.y == middleY) )return;
 	SetCursorPos(middleX, middleY);							
@@ -100,7 +100,7 @@ void CCamera::SetViewByMouse()
 	}
 }
 
-void CCamera::RotateView(float angle, float x, float y, float z)
+GLvoid CCamera::RotateView(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 {
 	CVector3 vNewView;
 
@@ -108,8 +108,8 @@ void CCamera::RotateView(float angle, float x, float y, float z)
 	CVector3 vView = m_vView - m_vPosition;		
 
 	// Calculate the sine and cosine of the angle once
-	float cosTheta = (float)cos(angle);
-	float sinTheta = (float)sin(angle);
+	GLfloat cosTheta = (float)cos(angle);
+	GLfloat sinTheta = (float)sin(angle);
 
 	// Find the new x position for the new rotated point
 	vNewView.x  = (cosTheta + (1 - cosTheta) * x * x)		* vView.x;
@@ -132,7 +132,7 @@ void CCamera::RotateView(float angle, float x, float y, float z)
 
 
 
-void CCamera::StrafeCamera(float speed)
+GLvoid CCamera::StrafeCamera(GLfloat speed)
 {
 
 	m_vPosition.x += m_vStrafe.x * speed;
@@ -144,7 +144,7 @@ void CCamera::StrafeCamera(float speed)
 }
 
 
-void CCamera::MoveCamera(float speed)
+GLvoid CCamera::MoveCamera(GLfloat speed)
 {
 	// Get the current view vector (the direction we are looking)
 	CVector3 vVector = m_vView - m_vPosition;
@@ -157,7 +157,7 @@ void CCamera::MoveCamera(float speed)
 	m_vView.z += vVector.z * speed;			// Add our acceleration to our view's Z
 }
 
-void CCamera::CheckForMovement()
+GLvoid CCamera::CheckForMovement()
 {
 
 	if(GetKeyState(VK_UP) & 0x80) {	
@@ -190,7 +190,7 @@ void CCamera::CheckForMovement()
 
 //////////////////////////// UPDATE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void CCamera::Update() 
+GLvoid CCamera::Update() 
 {
 
 	CVector3 vCross = Cross(m_vView - m_vPosition, m_vUpVector);
@@ -207,7 +207,7 @@ void CCamera::Update()
 
 
 
-void CCamera::Look()
+GLvoid CCamera::Look()
 {
 	// Give openGL our camera position, then camera view, then camera up vector
 	gluLookAt(m_vPosition.x, m_vPosition.y, m_vPosition.z,	

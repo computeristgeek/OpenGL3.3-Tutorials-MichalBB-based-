@@ -22,32 +22,32 @@ Purpose:	Wraps FreeType fonts and
 class CFreeTypeFont
 {
 public:
-	bool LoadFont(string sFile, int iPXSize, int iMaxCharSupport = 128);
-	bool LoadSystemFont(string sName, int iPXSize, int iMaxCharSupport = 128);
+	GLboolean LoadFont(string sFile, GLint iPXSize, GLint iMaxCharSupport = 128);
+	GLboolean LoadSystemFont(string sName, GLint iPXSize, GLint iMaxCharSupport = 128);
 
-	int GetTextWidth(string sText, int iPXSize);
+	GLint GetTextWidth(string sText, GLint iPXSize);
 
-	void Print(string sText, int x, int y, int iPXSize = -1);
-	void Print(wstring sText, int x, int y, int iPXSize = -1);
-	void PrintFormatted(int x, int y, int iPXSize, char* sText, ...);
-	void PrintFormatted(int x, int y, int iPXSize, wchar_t* sText, ...);
+	GLvoid Print(string sText, GLint x, GLint y, GLint iPXSize = -1);
+	GLvoid Print(wstring sText, GLint x, GLint y, GLint iPXSize = -1);
+	GLvoid PrintFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...);
+	GLvoid PrintFormatted(GLint x, GLint y, GLint iPXSize, wchar_t* sText, ...);
 
-	void DeleteFont();
+	GLvoid DeleteFont();
 
-	void SetShaderProgram(CShaderProgram* a_shShaderProgram);
+	GLvoid SetShaderProgram(CShaderProgram* a_shShaderProgram);
 
 	CFreeTypeFont();
 private:
-	void CreateChar(int iIndex, GLubyte* bData);
+	GLvoid CreateChar(GLint iIndex, GLubyte* bData);
 
 	vector<CTexture> tCharTextures;
 	vector<int> iAdvX, iAdvY;
 	vector<int> iBearingX, iBearingY;
 	vector<int> iCharWidth, iCharHeight;
-	int iLoadedPixelSize, iNewLine;
-	int iOneCharSquareSize;
+	GLint iLoadedPixelSize, iNewLine;
+	GLint iOneCharSquareSize;
 
-	bool bLoaded;
+	GLboolean bLoaded;
 
 	UINT uiVAO;
 	CVertexBufferObject vboData;

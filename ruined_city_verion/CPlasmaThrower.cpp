@@ -4,7 +4,7 @@ CPlasmaThrower gPlasmaGun;
 
 //====================
 
-void CPlasmaThrower::renderWeapon()
+GLvoid CPlasmaThrower::renderWeapon()
 {
 	if(iPhase == 1)
 	{
@@ -22,15 +22,15 @@ void CPlasmaThrower::renderWeapon()
 
 //====================
 
-void CPlasmaThrower::renderAmmo()
+GLvoid CPlasmaThrower::renderAmmo()
 {
 	glDisable(GL_TEXTURE_2D);
 	glColor3ub(0, 64, 128);
 	//glBegin(GL_QUADS);
 	FOR(i, ESZ(pPlasmas))
 	{
-		float sine = sin(pPlasmas[i].fAngle * PI / 180.0f);
-		float cosine = cos(pPlasmas[i].fAngle * PI / 180.0f);
+		GLfloat sine = sin(pPlasmas[i].fAngle * PI / 180.0f);
+		GLfloat cosine = cos(pPlasmas[i].fAngle * PI / 180.0f);
 		
 		CVector3 vPos = pPlasmas[i].vPos
 			+ pPlasmas[i].vUp * cosine * 0.5f
@@ -55,7 +55,7 @@ void CPlasmaThrower::renderAmmo()
 		CVector3 vDif1 = pPlasmas[i].vLastPos - pPlasmas[i].vEnd;
 		CVector3 vDif2 = pPlasmas[i].vPos - pPlasmas[i].vEnd;
 
-		int iCollide = collisionLineEnemies(pPlasmas[i].vLastPos, pPlasmas[i].vPos);
+		GLint iCollide = collisionLineEnemies(pPlasmas[i].vLastPos, pPlasmas[i].vPos);
 		if(vDif1.x * vDif2.x < 0.0f || vDif1.y * vDif2.y < 0.0f || vDif1.z * vDif2.z < 0.0f || pPlasmas[i].fLife < 0.0f || iCollide)
 		{
 			pPlasmas.erase(pPlasmas.begin() + i);
@@ -68,7 +68,7 @@ void CPlasmaThrower::renderAmmo()
 
 //====================
 
-void CPlasmaThrower::shoot()
+GLvoid CPlasmaThrower::shoot()
 {
 	if(iPhase == 0 && iAmmo != 0)
 	{
@@ -94,8 +94,8 @@ void CPlasmaThrower::shoot()
 
 //====================
 
-void CPlasmaThrower::renderBlended()
+GLvoid CPlasmaThrower::renderBlended()
 {
 }
 
-void CLightingGun::renderBlended(){}
+GLvoid CLightingGun::renderBlended(){}

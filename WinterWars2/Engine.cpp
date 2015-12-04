@@ -1,10 +1,10 @@
 #include "Weapons.h"
 #include "MilkshapeModel.h"
 #include "Camera.h"
-int weapon=Lasergun;
-int lsrammo;
-int plasma;
-int rocket;
+GLint weapon=Lasergun;
+GLint lsrammo;
+GLint plasma;
+GLint rocket;
 Object LaserAmmo[LASERAMMO];
 Object RocketLauncher;
 Object PlasmaThrower;
@@ -13,7 +13,7 @@ Object Rocketammo[ROCKETAMMO];
 Object Health[HEALTH];
 Object SuperHealth;
 Object Armor[ARMOR];
-void PrepareAmmo(){
+GLvoid PrepareAmmo(){
 	for(lsrammo=0;lsrammo<LASERAMMO;lsrammo++){
 LaserAmmo[lsrammo].active=TRUE;
 LaserAmmo[lsrammo].x=float(rand()%100)*1.0f;
@@ -43,7 +43,7 @@ LaserAmmo[9].x=27;
 LaserAmmo[9].z=-52;
 }
 
-void PrepareWeapons(){
+GLvoid PrepareWeapons(){
 RocketLauncher.x=-50;
 RocketLauncher.z=-10;
 PlasmaThrower.z=80;
@@ -53,7 +53,7 @@ PlasmaThrower.taken=FALSE;
 RocketLauncher.active=TRUE;
 RocketLauncher.taken=FALSE;
 
-for(int hel=0;hel<HEALTH;hel++){
+for(GLint hel=0;hel<HEALTH;hel++){
 	Health[hel].x=-100+(rand()%150)*1.4f;
 		Health[hel].z=-100+(rand()%150)*1.38f;
 			Health[hel].active=true;
@@ -62,16 +62,16 @@ SuperHealth.x=-20;
 SuperHealth.z=0;
 SuperHealth.active=true;
 
-for(int arm=0;arm<ARMOR;arm++){
+for(GLint arm=0;arm<ARMOR;arm++){
 	Armor[arm].x=100-(rand()%150)*1.4f;
 		Armor[arm].z=100-(rand()%150)*1.38f;
 			Armor[arm].active=true;
 }
 }
 
-float rot;
+GLfloat rot;
 Model *pModel[MODEL];
-void Drawthem(){
+GLvoid Drawthem(){
 
 
 glPushMatrix();
@@ -97,7 +97,7 @@ glScalef(0.15f,0.15f,0.15f);
 glTranslatef(-90.0f,-0.2f,90.0f);
 pModel[4]->draw();
 glPopMatrix();
-for(int r=0;r<LASERAMMO;r++){
+for(GLint r=0;r<LASERAMMO;r++){
 	glPushMatrix();
 glTranslatef(LaserAmmo[r].x,0,LaserAmmo[r].z);
 glRotatef(rot,0,1,0);
@@ -114,7 +114,7 @@ if(camerax-0.6f<LaserAmmo[r].x && camerax+0.6f>LaserAmmo[r].x && cameraz-0.6f<La
 {ammol+=50; LaserAmmo[r].active=FALSE; Sound("Data/Sounds/Ammotake.wav");}
 // Count time if player took lasers
 if(!LaserAmmo[r].active){LaserAmmo[r].respawn+=0.01f;}
-// Print for a short time
+// PrGLint for a short time
 if(LaserAmmo[r].respawn>0 && LaserAmmo[r].respawn<1.5f){  glPrint(250,200,"Lasers +50",0,1,1,1);}
 // When Lasers comes back
 if(LaserAmmo[r].respawn>8){LaserAmmo[r].active=TRUE;LaserAmmo[r].respawn=0;}
@@ -127,7 +127,7 @@ if(camerax-0.8f<PlasmaThrower.x && camerax+0.8f>PlasmaThrower.x && cameraz-0.8f<
 {PlasmaThrower.active=false;Sound("Data/Sounds/Weapontake.wav");weapon=Plasmathrow; PlasmaThrower.taken=true;}
 if(camerax-0.7f<RocketLauncher.x && camerax+0.7f>RocketLauncher.x && cameraz-0.7f<RocketLauncher.z && cameraz+0.7f>RocketLauncher.z && RocketLauncher.active){RocketLauncher.active=false;Sound("Data/Sounds/Weapontake.wav");weapon=RocketLNCH;RocketLauncher.taken=true;}
 if(!PlasmaThrower.active){PlasmaThrower.respawn+=0.01f;}
-// Print a text
+// PrGLint a text
 if(PlasmaThrower.respawn>0 && PlasmaThrower.respawn<2){glPrint(230,300,"XL 23 Electro Plasma Thrower",0,1,1,1);}
 if(PlasmaThrower.respawn>15){PlasmaThrower.active=TRUE; PlasmaThrower.respawn=0;}
 if(!RocketLauncher.active){RocketLauncher.respawn+=0.01f;}
@@ -137,7 +137,7 @@ if(GetKeyState('1') & 0x80){weapon=Lasergun;}
 if(GetKeyState('2') & 0x80 && RocketLauncher.taken){weapon=RocketLNCH;}
 if(GetKeyState('3') & 0x80 && PlasmaThrower.taken){weapon=Plasmathrow;}
 
-for(int p=0;p<PLASMAAMMO;p++){
+for(GLint p=0;p<PLASMAAMMO;p++){
 	glPushMatrix();
 glTranslatef(Plasmaammo[p].x,0,Plasmaammo[p].z);
 glRotatef(rot,0,1,0);
@@ -155,7 +155,7 @@ ammoplasma+=25; Plasmaammo[p].active=FALSE; Sound("Data/Sounds/Ammotake.wav");
 		}
 // Count time if ammo is deactivated
 if(!Plasmaammo[p].active){Plasmaammo[p].respawn+=0.01f;}
-// Print Plasmas
+// PrGLint Plasmas
 if(Plasmaammo[p].respawn>0 && Plasmaammo[p].respawn<1.5f){glPrint(250,180,"Plasma +25",0,1,1,1);}
 // Display plasma again
 if(Plasmaammo[p].respawn>12){Plasmaammo[p].active=TRUE;Plasmaammo[p].respawn=0;}
@@ -163,7 +163,7 @@ if(Plasmaammo[p].respawn>12){Plasmaammo[p].active=TRUE;Plasmaammo[p].respawn=0;}
 if(ammoplasma>250){ammoplasma=250;}
 	}
 
-for(int rocket=0;rocket<ROCKETAMMO;rocket++){
+for(GLint rocket=0;rocket<ROCKETAMMO;rocket++){
 	glPushMatrix();
 glTranslatef(Rocketammo[rocket].x,0,Rocketammo[rocket].z);
 glRotatef(rot,0,1,0);
@@ -182,7 +182,7 @@ ammorocket+=10; Rocketammo[rocket].active=FALSE; Sound("Data/Sounds/Ammotake.wav
 		}
 // Count time if ammo is deactivated
 if(!Rocketammo[rocket].active){Rocketammo[rocket].respawn+=0.01f;}
-// Print a text
+// PrGLint a text
 if(Rocketammo[rocket].respawn>0 && Rocketammo[rocket].respawn<1.5f){glPrint(250,190,"Rockets +10",0,1,1,1);}
 // Display rockets again
 if(Rocketammo[rocket].respawn>9){Rocketammo[rocket].active=TRUE;Rocketammo[rocket].respawn=0;}
@@ -190,7 +190,7 @@ if(Rocketammo[rocket].respawn>9){Rocketammo[rocket].active=TRUE;Rocketammo[rocke
 if(ammorocket>100){ammorocket=100;}
 	}
 
-for(int hel=0;hel<HEALTH;hel++){
+for(GLint hel=0;hel<HEALTH;hel++){
 	glPushMatrix();
 glTranslatef(Health[hel].x,0,Health[hel].z);
 glRotatef(rot,0,1,0);
@@ -208,7 +208,7 @@ else if(life>=75 && life<100 && camerax-0.6f<Health[hel].x && camerax+0.6f>Healt
 {life+=100-life; Health[hel].active=false; Sound("Data/Sounds/Health.wav");}
 // Count time until object comes back
 if(!Health[hel].active){Health[hel].respawn+=0.01f;}
-// Print Health +25 for a short period time
+// PrGLint Health +25 for a short period time
 if(Health[hel].respawn>0 && Health[hel].respawn<1.5f){glPrint(250,210,"Health +25",0,1,1,1);}
 // When health comes back
 if(Health[hel].respawn>6){Health[hel].active=TRUE;Health[hel].respawn=0;}
@@ -233,7 +233,7 @@ if(life>200)life=200;
 
 
 
-for(int arm=0;arm<ARMOR;arm++){
+for(GLint arm=0;arm<ARMOR;arm++){
 	glPushMatrix();
 glTranslatef(Armor[arm].x,0,Armor[arm].z);
 glRotatef(rot,0,1,0);
@@ -248,7 +248,7 @@ if(camerax-1<Armor[arm].x && camerax+1>Armor[arm].x && cameraz-1<Armor[arm].z &&
 {Armor[arm].active=false;Sound("Data/Sounds/Armor.wav");armora+=25;}
 // Count time until object comes back
 if(!Armor[arm].active){Armor[arm].respawn+=0.01f;}
-// Print Health +25 for a short period time
+// PrGLint Health +25 for a short period time
 if(Armor[arm].respawn>0 && Armor[arm].respawn<1.5f){glPrint(250,210,"Armor +25",0,1,1,1);}
 // When health comes back
 if(Armor[arm].respawn>6){Armor[arm].active=TRUE;Armor[arm].respawn=0;}
@@ -264,7 +264,7 @@ if(armora>150){armora=150;}
 
 
 
-void LoadTextures()												
+GLvoid LoadTextures()												
 {
 		pModel[0]->reloadTextures("Data/Models/Rocket.bmp");
 	pModel[1]->reloadTextures("Data/Models/HEG.bmp");
@@ -284,7 +284,7 @@ pModel[11]->reloadTextures("Data/Models/Armor.bmp");
 
 
 
-void LoadModels(){
+GLvoid LoadModels(){
 pModel[0] = new MilkshapeModel();								
 pModel[0]->loadModelData("Data/Models/Rockets.ms3d");
 pModel[1] = new MilkshapeModel();									// Memory To Hold The Model
@@ -312,16 +312,16 @@ pModel[11]->loadModelData("Data/Models/Armor.ms3d");		// Loads The Model And Che
 }
 
 
-void drawarocket(){
+GLvoid drawarocket(){
 	pModel[7]->draw();
 }
 
 
-void DrawPlasma(){
+GLvoid DrawPlasma(){
 glScalef(1.12f,1.12f,1.12f);
 pModel[8]->draw();
 }
 
-void DrawEnemy(){
+GLvoid DrawEnemy(){
 	pModel[3]->draw();
 }

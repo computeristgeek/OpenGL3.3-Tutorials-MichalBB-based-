@@ -50,9 +50,9 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -134,7 +134,7 @@ void initScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.0f, 0.26f, 0.48f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
@@ -154,7 +154,7 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
+GLfloat fGlobalAngle;
 
 #define FOG_EQUATION_LINEAR		0
 #define FOG_EQUATION_EXP		1
@@ -162,14 +162,14 @@ float fGlobalAngle;
 
 namespace FogParameters
 {
-	float fDensity = 0.04f;
-	float fStart = 10.0f;
-	float fEnd = 75.0f;
+	GLfloat fDensity = 0.04f;
+	GLfloat fStart = 10.0f;
+	GLfloat fEnd = 75.0f;
 	glm::vec4 vFogColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-	int iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
+	GLint iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
 };
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -216,11 +216,11 @@ void renderScene(LPVOID lpParam)
 
 	tTextures[1].bindTexture();
 
-	float dx[] = {1.0f, 0.0f, -1.0f, 0.0f};
-	float dz[] = {0.0f, -1.0f, 0.0f, 1.0f};
-	int iCurDir = 0;
+	GLfloat dx[] = {1.0f, 0.0f, -1.0f, 0.0f};
+	GLfloat dz[] = {0.0f, -1.0f, 0.0f, 1.0f};
+	GLint iCurDir = 0;
 	glm::vec3 vBoxPos(0.0f, 7.48f, 0.0f);
-	const int iSpiralLevels = 12;
+	const GLint iSpiralLevels = 12;
 	SFOR(i, 1, iSpiralLevels)
 	{
 		FOR(j, i)
@@ -242,7 +242,7 @@ void renderScene(LPVOID lpParam)
 	tTextures[2].bindTexture();
 	spFogAndLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	
-	// Now it's gonna float in the air
+	// Now it's gonna GLfloat in the air
 	glm::vec3 vPos = glm::vec3(0.0f, 50.0, 0.0f);
 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -266,11 +266,11 @@ void renderScene(LPVOID lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	// Print something over scene
+	// PrGLint something over scene
 
 	spFont2D.useProgram();
 	glDisable(GL_DEPTH_TEST);
-	int w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
+	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
 	spFont2D.setUniform("matrices.projectionMatrix", oglControl->getOrthoMatrix());
 
 	spFont2D.setUniform("vColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -319,7 +319,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

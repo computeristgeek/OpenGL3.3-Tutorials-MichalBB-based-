@@ -2,12 +2,12 @@ class CRomanLighter
 {
 public:
 	CVector3 vPos, vDir;
-	int iPartLeft;
+	GLint iPartLeft;
 	vector<CParticle> pBombs;
-	float fWait, fFade;
+	GLfloat fWait, fFade;
 
 	CRomanLighter(){fWait = 2.0f; fFade = 1.0f;}
-	void renderAndUpdate();
+	GLvoid renderAndUpdate();
 };
 
 //====================
@@ -16,12 +16,12 @@ class CBlastyBlaster
 {
 public:
 	CVector3 vPos, vDir;
-	int iPartLeft, iPos;
+	GLint iPartLeft, iPos;
 	vector<CParticle> pBombs;
-	float fWait, fFade;
+	GLfloat fWait, fFade;
 
 	CBlastyBlaster(){fWait = 2.0f; fFade = 1.0f; iPos = 0;}
-	void renderAndUpdate();
+	GLvoid renderAndUpdate();
 };
 
 //====================
@@ -30,21 +30,21 @@ class CVolcano
 {
 public:
 	CVector3 vPos, vDir;
-	int iUp;
+	GLint iUp;
 	vector<CParticle> pParts;
-	float fWait, fFade, fHeight;
+	GLfloat fWait, fFade, fHeight;
 
 	CVolcano(){fWait = 2.5f; fFade = 1.0f; fHeight = 0.0f; iUp = 1;}
-	void renderAndUpdate();
+	GLvoid renderAndUpdate();
 };
 
 //====================
 
 extern vector<CParticle> pParts;
 
-void createParticles(CVector3 vPos, float fMaxSpeed, int iCount, BYTE* bColor);
-float randValue(float fMin, float fMax);
-void renderAllParticles(vector<CParticle> &pParts, int iFade);
+GLvoid createParticles(CVector3 vPos, GLfloat fMaxSpeed, GLint iCount, BYTE* bColor);
+GLfloat randValue(GLfloat fMin, GLfloat fMax);
+GLvoid renderAllParticles(vector<CParticle> &pParts, GLint iFade);
 
-void loadFireworksModels();
-void updateFireworks();
+GLvoid loadFireworksModels();
+GLvoid updateFireworks();

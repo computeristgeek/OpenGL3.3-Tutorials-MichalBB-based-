@@ -13,15 +13,15 @@ class CWalkingCamera
 {
 public:
 	glm::mat4 look();
-	void update();
+	GLvoid update();
 
-	void rotateViewY(float fAngle);
-	void move(float fBy);
+	GLvoid rotateViewY(GLfloat fAngle);
+	GLvoid move(GLfloat fBy);
 
 	CWalkingCamera();
-	CWalkingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, float a_fSpeed);
+	CWalkingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, GLfloat a_fSpeed);
 
 private:
 	glm::vec3 vEye, vView, vUp;
-	float fSpeed;
+	GLfloat fSpeed;
 };

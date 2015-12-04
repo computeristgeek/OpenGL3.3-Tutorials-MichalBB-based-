@@ -22,7 +22,7 @@ Result:	Creates texture from provided data.
 
 /*---------------------------------------------*/
 
-void CTexture::CreateEmptyTexture(int a_iWidth, int a_iHeight, GLenum format)
+GLvoid CTexture::CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLenum format)
 {
 	glGenTextures(1, &uiTexture);
 	glBindTexture(GL_TEXTURE_2D, uiTexture);
@@ -49,7 +49,7 @@ Result:	Creates texture from provided data.
 
 /*---------------------------------------------*/
 
-void CTexture::CreateFromData(BYTE* bData, int a_iWidth, int a_iHeight, int a_iBPP, GLenum format, bool bGenerateMipMaps)
+GLvoid CTexture::CreateFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
 {
 	// Generate an OpenGL texture ID for this texture
 	glGenTextures(1, &uiTexture);
@@ -83,7 +83,7 @@ Result:	Loads texture from a file, supports most
 
 /*---------------------------------------------*/
 
-bool CTexture::LoadTexture2D(string a_sPath, bool bGenerateMipMaps)
+GLboolean CTexture::LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 {
 	if(a_sPath == "data\\textures\\grass.png")
 		INT A = 5;
@@ -111,7 +111,7 @@ bool CTexture::LoadTexture2D(string a_sPath, bool bGenerateMipMaps)
 		return false;
 
 	GLenum format = 0;
-	int bada = FreeImage_GetBPP(dib);
+	GLint bada = FreeImage_GetBPP(dib);
 	if(FreeImage_GetBPP(dib) == 32)format = GL_RGBA;
 	if(FreeImage_GetBPP(dib) == 24)format = GL_BGR;
 	if(FreeImage_GetBPP(dib) == 8)format = GL_LUMINANCE;
@@ -128,7 +128,7 @@ bool CTexture::LoadTexture2D(string a_sPath, bool bGenerateMipMaps)
 	return true; // Success
 }
 
-void CTexture::SetSamplerParameter(GLenum parameter, GLenum value)
+GLvoid CTexture::SetSamplerParameter(GLenum parameter, GLenum value)
 {
 	glSamplerParameteri(uiSampler, parameter, value);
 }
@@ -147,7 +147,7 @@ Result:	Sets magnification and minification
 
 /*---------------------------------------------*/
 
-void CTexture::SetFiltering(int a_tfMagnification, int a_tfMinification)
+GLvoid CTexture::SetFiltering(GLint a_tfMagnification, GLint a_tfMinification)
 {
 	glBindSampler(0, uiSampler);
 
@@ -183,7 +183,7 @@ Result:	Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CTexture::BindTexture(int iTextureUnit)
+GLvoid CTexture::BindTexture(GLint iTextureUnit)
 {
 	glActiveTexture(GL_TEXTURE0+iTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, uiTexture);
@@ -200,7 +200,7 @@ Result:	Frees all memory used by texture.
 
 /*---------------------------------------------*/
 
-void CTexture::DeleteTexture()
+GLvoid CTexture::DeleteTexture()
 {
 	glDeleteSamplers(1, &uiSampler);
 	glDeleteTextures(1, &uiTexture);
@@ -216,27 +216,27 @@ Result:	... They get something :D
 
 /*---------------------------------------------*/
 
-int CTexture::GetMinificationFilter()
+GLint CTexture::GetMinificationFilter()
 {
 	return tfMinification;
 }
 
-int CTexture::GetMagnificationFilter()
+GLint CTexture::GetMagnificationFilter()
 {
 	return tfMagnification;
 }
 
-int CTexture::GetWidth()
+GLint CTexture::GetWidth()
 {
 	return iWidth;
 }
 
-int CTexture::GetHeight()
+GLint CTexture::GetHeight()
 {
 	return iHeight;
 }
 
-int CTexture::GetBPP()
+GLint CTexture::GetBPP()
 {
 	return iBPP;
 }
@@ -251,7 +251,7 @@ string CTexture::GetPath()
 	return sPath;
 }
 
-bool CTexture::ReloadTexture()
+GLboolean CTexture::ReloadTexture()
 {
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	FIBITMAP* dib(0);
@@ -276,7 +276,7 @@ bool CTexture::ReloadTexture()
 		return false;
 
 	GLenum format;
-	int bada = FreeImage_GetBPP(dib);
+	GLint bada = FreeImage_GetBPP(dib);
 	if(FreeImage_GetBPP(dib) == 32)format = GL_RGBA;
 	if(FreeImage_GetBPP(dib) == 24)format = GL_BGR;
 	if(FreeImage_GetBPP(dib) == 8)format = GL_LUMINANCE;
@@ -290,21 +290,21 @@ bool CTexture::ReloadTexture()
 	return true; // Success
 }
 
-void CTexture::SetWrap()
+GLvoid CTexture::SetWrap()
 {
 	glBindSampler(0, uiSampler);
 	glSamplerParameteri(uiSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glSamplerParameteri(uiSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void CTexture::SetAnisotropyLevel( float fAnisotropyLevel )
+GLvoid CTexture::SetAnisotropyLevel( GLfloat fAnisotropyLevel )
 {
 	glSamplerParameterf(uiSampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, fAnisotropyLevel);
 }
 
 CTexture tTextures[NUMTEXTURES];
 
-void LoadAllTextures()
+GLvoid LoadAllTextures()
 {
 	// Load textures
 

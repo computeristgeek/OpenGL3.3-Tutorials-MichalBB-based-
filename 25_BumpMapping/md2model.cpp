@@ -70,7 +70,7 @@ Result:	Loads MD2 model from file.
 
 /*---------------------------------------------*/
 
-void CMD2Model::LoadModel(char* sFilename)
+GLvoid CMD2Model::LoadModel(char* sFilename)
 {
 	FILE* fp = fopen(sFilename, "rb");
 	
@@ -103,8 +103,8 @@ void CMD2Model::LoadModel(char* sFilename)
 	fseek(fp, header.ofs_glcmds, SEEK_SET);
 	fread(&glCommands[0], sizeof(int), header.num_glcmds, fp);
 	
-	int i = 0;
-	int iTotalVertices = 0;
+	GLint i = 0;
+	GLint iTotalVertices = 0;
 
 	// And start with creating VBOs for vertices, textue coordinates and normals
 	vboFrameVertices.resize(header.num_frames);
@@ -113,11 +113,11 @@ void CMD2Model::LoadModel(char* sFilename)
 	
 	while(1) // We while loop until we come to 0 value, which is the end of OpenGL commands
 	{
-		int action = glCommands[i];
+		GLint action = glCommands[i];
 		if(action == 0)break;
 
-		int renderMode = action < 0 ? GL_TRIANGLE_FAN : GL_TRIANGLE_STRIP; // Extract rendering mode
-		int numVertices = action < 0 ? -action : action; // And number of vertices
+		GLint renderMode = action < 0 ? GL_TRIANGLE_FAN : GL_TRIANGLE_STRIP; // Extract rendering mode
+		GLint numVertices = action < 0 ? -action : action; // And number of vertices
 		i++;
 
 		renderModes.push_back(renderMode); // Remember the values
@@ -125,10 +125,10 @@ void CMD2Model::LoadModel(char* sFilename)
 
 		FOR(j, numVertices)
 		{
-			float s = *((float*)(&glCommands[i++])); // Extract texture coordinates
-			float t = *((float*)(&glCommands[i++]));
+			GLfloat s = *((float*)(&glCommands[i++])); // Extract texture coordinates
+			GLfloat t = *((float*)(&glCommands[i++]));
 			t = 1.0f - t; // Flip t, because it is (from some reasons) stored from top to bottom
-			int vi = glCommands[i++];
+			GLint vi = glCommands[i++];
 
 			vboTextureCoords.AddData(&s, 4); // Add texture coords to VBO
 			vboTextureCoords.AddData(&t, 4);
@@ -181,7 +181,7 @@ void CMD2Model::LoadModel(char* sFilename)
 	// Find texture name (modelname.jpg, modelname.png...)
 
 	string sPath = sFilename;
-	int index = sPath.find_last_of("\\/");
+	GLint index = sPath.find_last_of("\\/");
 	string sDirectory = index != -1 ? sPath.substr(0, index+1) : "";
 	string sPureFilename = index != -1 ? sPath.substr(index+1) : sFilename;
 
@@ -214,11 +214,11 @@ Result:	Renders model.
 
 /*---------------------------------------------*/
 
-void CMD2Model::RenderModel(animState_t* animState)
+GLvoid CMD2Model::RenderModel(animState_t* animState)
 {
 	glBindVertexArray(uiVAO);
 
-	int iTotalOffset = 0;
+	GLint iTotalOffset = 0;
 	tSkin.BindTexture();
 	if(animState == NULL)
 	{
@@ -308,7 +308,7 @@ Result:	Updates data in animation structure (performs
 
 /*---------------------------------------------*/
 
-void CMD2Model::UpdateAnimation(animState_t* animState, float fTimePassed)
+GLvoid CMD2Model::UpdateAnimation(animState_t* animState, GLfloat fTimePassed)
 {
 	animState->curr_time += fTimePassed;
 

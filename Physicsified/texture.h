@@ -24,44 +24,44 @@ Purpose:	Wraps OpenGL texture
 class CTexture
 {
 public:
-	void CreateEmptyTexture(int a_iWidth, int a_iHeight, GLenum format);
-	void CreateFromData(BYTE* bData, int a_iWidth, int a_iHeight, int a_iBPP, GLenum format, bool bGenerateMipMaps = false);
+	GLvoid CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLenum format);
+	GLvoid CreateFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
 
-	bool ReloadTexture();
+	GLboolean ReloadTexture();
 	
-	bool LoadTexture2D(string a_sPath, bool bGenerateMipMaps = false);
-	void BindTexture(int iTextureUnit = 0);
+	GLboolean LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
+	GLvoid BindTexture(GLint iTextureUnit = 0);
 
-	void SetFiltering(int a_tfMagnification, int a_tfMinification);
+	GLvoid SetFiltering(GLint a_tfMagnification, GLint a_tfMinification);
 
-	void SetSamplerParameter(GLenum parameter, GLenum value);
+	GLvoid SetSamplerParameter(GLenum parameter, GLenum value);
 
-	int GetMinificationFilter();
-	int GetMagnificationFilter();
+	GLint GetMinificationFilter();
+	GLint GetMagnificationFilter();
 
-	int GetWidth();
-	int GetHeight();
-	int GetBPP();
+	GLint GetWidth();
+	GLint GetHeight();
+	GLint GetBPP();
 
 	UINT GetTextureID();
 
 	string GetPath();
 
-	void DeleteTexture();
+	GLvoid DeleteTexture();
 
 	CTexture();
 private:
 
-	int iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
+	GLint iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
 	UINT uiTexture; // Texture name
 	UINT uiSampler; // Sampler name
-	bool bMipMapsGenerated;
+	GLboolean bMipMapsGenerated;
 
-	int tfMinification, tfMagnification;
+	GLint tfMinification, tfMagnification;
 
 	string sPath;
 };
 
 #define NUMTEXTURES 6
 extern CTexture tTextures[NUMTEXTURES];
-void LoadAllTextures();
+GLvoid LoadAllTextures();

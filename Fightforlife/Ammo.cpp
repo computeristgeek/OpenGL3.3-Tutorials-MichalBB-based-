@@ -6,7 +6,7 @@
 
 #include "Main.h"
 
-void Ammo::Draw();
+GLvoid Ammo::Draw();
 
 ////////////////////////////////////// BULLET::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 //
@@ -14,7 +14,7 @@ void Ammo::Draw();
 //
 ////////////////////////////////////// BULLET::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Bullet::Draw()
+GLvoid Bullet::Draw()
 {
 	glColor3f(0.8f,0.8f,0.8f); // Set grey color
 	glBegin(GL_QUADS); // Render
@@ -33,7 +33,7 @@ void Bullet::Draw()
 //
 ////////////////////////////////////// ROCKET::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Rocket::Draw()
+GLvoid Rocket::Draw()
 {
 	glColor3f(1,1,1); // Set color to white
 	glBindTexture(GL_TEXTURE_2D, textures[3]); // Bind rocket texture
@@ -53,7 +53,7 @@ void Rocket::Draw()
 //
 /////////////////////////////////////// BOLT::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Bolt::Draw()
+GLvoid Bolt::Draw()
 {
 	glColor3f(0,1,1); // Set bright blue color
 	glBegin(GL_LINE_STRIP); // Render

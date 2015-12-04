@@ -7,26 +7,26 @@
 class CMaterial
 {
 public:
-	int iTexture;
+	GLint iTexture;
 };
 
 class CAssimpModel
 {
 public:
-	bool LoadModelFromFile(char* sFilePath);
+	GLboolean LoadModelFromFile(char* sFilePath);
 
-	static void FinalizeVBO();
-	static void BindModelsVAO();
+	static GLvoid FinalizeVBO();
+	static GLvoid BindModelsVAO();
 
-	void RenderModel();
+	GLvoid RenderModel();
 	CAssimpModel();
 private:
-	bool bLoaded;
+	GLboolean bLoaded;
 	static CVertexBufferObject vboModelData;
 	static UINT uiVAO;
 	static vector<CTexture> tTextures;
 	vector<int> iMeshStartIndices;
 	vector<int> iMeshSizes;
 	vector<int> iMaterialIndices;
-	int iNumMaterials;
+	GLint iNumMaterials;
 };

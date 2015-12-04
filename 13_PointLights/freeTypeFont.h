@@ -19,29 +19,29 @@ Purpose: Wraps FreeType fonts and
 class CFreeTypeFont
 {
 public:
-	bool loadFont(string sFile, int iPXSize);
-	bool loadSystemFont(string sName, int iPXSize);
+	GLboolean loadFont(string sFile, GLint iPXSize);
+	GLboolean loadSystemFont(string sName, GLint iPXSize);
 
-	int getTextWidth(string sText, int iPXSize);
+	GLint getTextWidth(string sText, GLint iPXSize);
 
-	void print(string sText, int x, int y, int iPXSize = -1);
-	void printFormatted(int x, int y, int iPXSize, char* sText, ...);
+	GLvoid print(string sText, GLint x, GLint y, GLint iPXSize = -1);
+	GLvoid printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...);
 
-	void releaseFont();
+	GLvoid releaseFont();
 
-	void setShaderProgram(CShaderProgram* a_shShaderProgram);
+	GLvoid setShaderProgram(CShaderProgram* a_shShaderProgram);
 
 	CFreeTypeFont();
 private:
-	void createChar(int iIndex);
+	GLvoid createChar(GLint iIndex);
 
 	CTexture tCharTextures[256];
-	int iAdvX[256], iAdvY[256];
-	int iBearingX[256], iBearingY[256];
-	int iCharWidth[256], iCharHeight[256];
-	int iLoadedPixelSize, iNewLine;
+	GLint iAdvX[256], iAdvY[256];
+	GLint iBearingX[256], iBearingY[256];
+	GLint iCharWidth[256], iCharHeight[256];
+	GLint iLoadedPixelSize, iNewLine;
 
-	bool bLoaded;
+	GLboolean bLoaded;
 
 	UINT uiVAO;
 	CVertexBufferObject vboData;

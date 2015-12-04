@@ -57,9 +57,9 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -122,7 +122,7 @@ void initScene(LPVOID lpParam)
 	FOR(i, NUMSHADERS)
 	{
 		string sExt = sShaderFileNames[i].substr(ESZ(sShaderFileNames[i])-4, 4);
-		int iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
+		GLint iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
 		shShaders[i].loadShader("data\\shaders\\"+sShaderFileNames[i], iShaderType);
 	}
 
@@ -165,7 +165,7 @@ void initScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.0f, 0.26f, 0.48f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
@@ -190,10 +190,10 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
-bool bWireFrame = false;
+GLfloat fGlobalAngle;
+GLboolean bWireFrame = false;
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -260,7 +260,7 @@ void renderScene(LPVOID lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
@@ -268,7 +268,7 @@ void renderScene(LPVOID lpParam)
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.setUniform("matrices.projMatrix", oglControl->getOrthoMatrix());
 
-	int w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
+	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
 	
 	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
@@ -298,7 +298,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

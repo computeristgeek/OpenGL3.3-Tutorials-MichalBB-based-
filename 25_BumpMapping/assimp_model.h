@@ -7,15 +7,15 @@
 class CAssimpModel
 {
 public:
-	bool LoadModelFromFile(char* sFilePath, char* sTexturePath = NULL, char* sNormalTexturePath = NULL);
+	GLboolean LoadModelFromFile(char* sFilePath, char* sTexturePath = NULL, char* sNormalTexturePath = NULL);
 
-	static void FinalizeVBO();
-	static void BindModelsVAO();
+	static GLvoid FinalizeVBO();
+	static GLvoid BindModelsVAO();
 
-	void RenderModel(GLenum   = GL_TRIANGLES);
+	GLvoid RenderModel(GLenum   = GL_TRIANGLES);
 	CAssimpModel();
 private:
-	bool bLoaded;
+	GLboolean bLoaded;
 	static CVertexBufferObject vboModelData;
 	static CVertexBufferObject vboBumpMapData;
 	static UINT uiVAO;
@@ -23,8 +23,8 @@ private:
 	vector<int> iMeshStartIndices;
 	vector<int> iMeshSizes;
 	vector<int> iMaterialIndices;
-	int iNumMaterials;
+	GLint iNumMaterials;
 
-	bool bHasBumpMap;
+	GLboolean bHasBumpMap;
 	CTexture tNormalMap;
 };

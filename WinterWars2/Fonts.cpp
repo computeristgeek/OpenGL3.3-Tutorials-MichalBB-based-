@@ -9,7 +9,7 @@ GLfloat	cnt1;				// 1st Counter Used To Move Text & For Coloring
 GLfloat	cnt2;				// 2nd Counter Used To Move Text & For Coloring
 
 
-GLvoid BuildFont(GLvoid)								// Build Our Font Display List
+GLGLvoid BuildFont(GLvoid)								// Build Our Font Display List
 {
 	float	cx;											// Holds Our X Character Coord
 	float	cy;											// Holds Our Y Character Coord
@@ -37,13 +37,13 @@ GLvoid BuildFont(GLvoid)								// Build Our Font Display List
 	}													// Loop Until All 256 Are Built
 }
 
-GLvoid KillFont(GLvoid)									// Delete The Font From Memory
+GLGLvoid KillFont(GLvoid)									// Delete The Font From Memory
 {
 	glDeleteLists(base,256);							// Delete All 256 Display Lists
 }
 
 
-GLvoid glPrintFast(GLint x, GLint y, char *string, int set)	
+GLGLvoid glPrintFast(GLGLint x, GLGLint y, char *string, GLint set)	
 {
 	if (set>1)set=1;
 	glBlendFunc(GL_ZERO,GL_ONE_MINUS_SRC_COLOR);
@@ -60,7 +60,7 @@ glDisable(GL_BLEND);
 
 }
 
-GLvoid glPrint(GLint x, GLint y, char *string, int set,float scalex, float scaley, float scalez)	
+GLGLvoid glPrint(GLGLint x, GLGLint y, char *string, GLint set,GLfloat scalex, GLfloat scaley, GLfloat scalez)	
 {
 		
 	glDisable(GL_DEPTH_TEST);							// Enables Depth Testing

@@ -10,4 +10,4 @@ extern glm::vec3 vGround[6];
 extern glm::vec3 vBuildingNormals[4];
 extern glm::vec3 vBuilding[24];
 
-int generateTorus(CVertexBufferObject &vboDest, float fRadius, float fTubeRadius, int iSubDivAround, int iSubDivTube);
+GLint generateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);

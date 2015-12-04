@@ -2,10 +2,10 @@
 
 //====================
 
-void CWorld::loadWorld(char* strFile)
+GLvoid CWorld::loadWorld(char* strFile)
 {
 	FILE* fp = fopen(strFile, "rt");
-	int iCnt, iCnt2;
+	GLint iCnt, iCnt2;
 	sscanf(readline(fp), "TEXTURES %d", &iCnt);
 	FOR(i, iCnt)
 	{
@@ -65,9 +65,9 @@ void CWorld::loadWorld(char* strFile)
 
 //====================
 
-void CWorld::renderWorld()
+GLvoid CWorld::renderWorld()
 {
-	int l = 0;
+	GLint l = 0;
 	glColor3ub(255, 255, 255);
 	glEnable(GL_TEXTURE_2D);
 	FOR(i, ESZ(uiTextures))

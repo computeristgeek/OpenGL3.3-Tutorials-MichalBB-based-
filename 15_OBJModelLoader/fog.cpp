@@ -13,7 +13,7 @@ CFogParameters::CFogParameters()
 	iEquation = FOG_EQUATION_EXP;
 }
 
-CFogParameters::CFogParameters(glm::vec4 a_vFogColor, float a_fStart, float a_fEnd, float a_fDensity, int a_iEquation)
+CFogParameters::CFogParameters(glm::vec4 a_vFogColor, GLfloat a_fStart, GLfloat a_fEnd, GLfloat a_fDensity, GLint a_iEquation)
 {
 	vFogColor = a_vFogColor;
 
@@ -35,7 +35,7 @@ Result:	Sets all fog parameters.
 
 /*---------------------------------------------*/
 
-void CFogParameters::setUniformData(CShaderProgram *spProgram, std::string sFogVarName)
+GLvoid CFogParameters::setUniformData(CShaderProgram *spProgram, std::string sFogVarName)
 {
 	spProgram->setUniform(sFogVarName+".vFogColor", vFogColor);
 

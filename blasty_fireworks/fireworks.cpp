@@ -1,7 +1,7 @@
 #include "mainheader.h"
 
-int iWorking = 0;
-int iCur = 0, iShowFPS = 1;
+GLint iWorking = 0;
+GLint iCur = 0, iShowFPS = 1;
 
 char* strNames[] = 
 {
@@ -17,7 +17,7 @@ vector<CVolcano> vVolcanos;
 
 //====================
 
-void CRomanLighter::renderAndUpdate()
+GLvoid CRomanLighter::renderAndUpdate()
 {
 	glPushMatrix();
 	glTranslatef(vPos.x, vPos.y, vPos.z);
@@ -66,7 +66,7 @@ void CRomanLighter::renderAndUpdate()
 
 //====================
 
-void CBlastyBlaster::renderAndUpdate()
+GLvoid CBlastyBlaster::renderAndUpdate()
 {
 	glPushMatrix();
 	glTranslatef(vPos.x, vPos.y, vPos.z);
@@ -118,7 +118,7 @@ void CBlastyBlaster::renderAndUpdate()
 
 //====================
 
-void CVolcano::renderAndUpdate()
+GLvoid CVolcano::renderAndUpdate()
 {
 	glPushMatrix();
 	glTranslatef(vPos.x, vPos.y, vPos.z);
@@ -164,7 +164,7 @@ void CVolcano::renderAndUpdate()
 
 //====================
 
-void loadFireworksModels()
+GLvoid loadFireworksModels()
 {
 	mRomanLighter.loadModel("models\\romanlighter.msm");
 	mBlastyBlaster.loadModel("models\\blastyblaster.msm");
@@ -173,9 +173,9 @@ void loadFireworksModels()
 
 //====================
 
-void updateFireworks()
+GLvoid updateFireworks()
 {
-	static float fTime = -100.0f;
+	static GLfloat fTime = -100.0f;
 	if(glAp.onekey(' '))
 	{
 		if(iWorking)
@@ -266,14 +266,14 @@ void updateFireworks()
 	ortho2DBegin(glAp.dm.iScrX, glAp.dm.iScrY);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	int iXSize = ft.getxsize(FT(strNames[iCur]), 20);
+	GLint iXSize = ft.getxsize(FT(strNames[iCur]), 20);
 	glColor3ub(255, 0, 0);
 	ft.print(CFData(20, glAp.dm.iScrX-10-iXSize, 30), strNames[iCur]);
 	if(fTime > 0.0f && !iWorking)
 	{
-		int iSize = 35+(int)((fTime-(float)((int)fTime))*14.0f);
+		GLint iSize = 35+(int)((fTime-(float)((int)fTime))*14.0f);
 		char strText[256]; sprintf(strText, "Fireworks begin in %d...", (int)fTime+1);
-		int iXsize = ft.getxsize(FT(strText), iSize);
+		GLint iXsize = ft.getxsize(FT(strText), iSize);
 		glColor3ub(0, 0, 255);
 		ft.print(CFData(iSize, ft.getcenterx(iXsize, 0, glAp.dm.iScrX), glAp.dm.iScrY/2-iSize/2), strText);
 	}

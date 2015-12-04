@@ -6,8 +6,8 @@ vector<char> cTrans; // If the material is transparent
 
 //====================
 
-void pri(int tt){char ttt[222]; sprintf(ttt, "NUMBWER IS %d", tt); MessageBox(NULL, ttt, "TTT", MB_OK);}
-void CMSModel::loadModelData(char* strFile)
+GLvoid pri(GLint tt){char ttt[222]; sprintf(ttt, "NUMBWER IS %d", tt); MessageBox(NULL, ttt, "TTT", MB_OK);}
+GLvoid CMSModel::loadModelData(char* strFile)
 {
 	FILE* fp = fopen(strFile, "rb");
 	if(fp == NULL)
@@ -63,7 +63,7 @@ void CMSModel::loadModelData(char* strFile)
 		fgets(strLine, 255, fp);
 		string strName = strLine; strName = strName.substr(0, strName.length() - 1);
 		char trans; fread(&trans, sizeof(char), 1, fp);
-		bool bFound = false; int iInd = -1;
+		GLboolean bFound = false; GLint iInd = -1;
 		FOR(j, ESZ(strMNames))if(strMNames[j] == strName && trans == cTrans[j]){iInd = j; break;}
 		if(iInd == -1)
 		{
@@ -176,7 +176,7 @@ void CMSModel::loadModelData(char* strFile)
 
 		FOR(j, wNGroups) // Set first keyframe as base for dynamic programming
 		{
-			int iInd = j / 8, iBit = j % 8;
+			GLint iInd = j / 8, iBit = j % 8;
 			if(aAnims[i].bBitFld[0][iInd] & (1 << iBit))
 			{
 				if(aAnims[i].bKFData[0] & 2) // If animating vertices
@@ -206,7 +206,7 @@ void CMSModel::loadModelData(char* strFile)
 		{
 			FOR(k, wNGroups)
 			{
-				int iInd = k / 8, iBit = k % 8, iKF2 = (j + 1) % aAnims[i].bNumKF;
+				GLint iInd = k / 8, iBit = k % 8, iKF2 = (j + 1) % aAnims[i].bNumKF;
 				
 				// Here we initiate first pointer to all animation data
 				if(j != 0) // Keyframe 1 is already set
@@ -272,11 +272,11 @@ void CMSModel::loadModelData(char* strFile)
 
 //====================
 
-void CMSModel::renderModel(CAnimData* aData)
+GLvoid CMSModel::renderModel(CAnimData* aData)
 {
 	if(!bLoaded)return; // If there are no loaded data, return
 
-	int iOnly = 0;
+	GLint iOnly = 0;
 	iOnly |= aData == NULL;
 	if(!iOnly)iOnly |= aData->iAnim == -1;
 	if(iOnly) // Just render model base using vetex arrays
@@ -305,16 +305,16 @@ void CMSModel::renderModel(CAnimData* aData)
 	}
 	else
 	{
-		int iKF = aData->iKF; // Actual keyframe
-		int iAnim = aData->iAnim;
-		int iKF2 = (iKF + 1) % aAnims[iAnim].bNumKF; // Next keyframe
+		GLint iKF = aData->iKF; // Actual keyframe
+		GLint iAnim = aData->iAnim;
+		GLint iKF2 = (iKF + 1) % aAnims[iAnim].bNumKF; // Next keyframe
 		
 		if(!aData->bPaused)aData->fSTime = (float)GetTickCount();
-		float fScale = (aData->fSTime - aData->fBTime) / aAnims[iAnim].fTime[iKF2];
+		GLfloat fScale = (aData->fSTime - aData->fBTime) / aAnims[iAnim].fTime[iKF2];
 		FOR(i, wNGroups)
 		{
-			float fBlend = aAnims[iAnim].fBlend[iKF][i];
-			float fDif = aAnims[iAnim].fBlend[iKF2][i] - aAnims[iAnim].fBlend[iKF][i];
+			GLfloat fBlend = aAnims[iAnim].fBlend[iKF][i];
+			GLfloat fDif = aAnims[iAnim].fBlend[iKF2][i] - aAnims[iAnim].fBlend[iKF][i];
 			if(!(aAnims[iAnim].bKFData[iKF2] & 1))fBlend += fDif * fScale;
 			fBlend *= fgBlend;
 			if(fBlend <= 1.0f){glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);}
@@ -333,9 +333,9 @@ void CMSModel::renderModel(CAnimData* aData)
 				glNormal3f(vNorm.x, vNorm.y, vNorm.z);
 				FOR(k, 3)
 				{
-					CVector3 vPoint = vVerts1[j*3 + k];
+					CVector3 vPoGLint = vVerts1[j*3 + k];
 					CVector2 vCoord = vCoords1[j*3 + k];
-					if(vVerts2 != NULL && !(aAnims[iAnim].bKFData[iKF2] & 1))vPoint += (vVerts2[j*3 + k] - vVerts1[j*3 + k]) * fScale;
+					if(vVerts2 != NULL && !(aAnims[iAnim].bKFData[iKF2] & 1))vPoGLint += (vVerts2[j*3 + k] - vVerts1[j*3 + k]) * fScale;
 					if(vCoords2 != NULL && !(aAnims[iAnim].bKFData[iKF2] & 1))vCoord += (vCoords2[j*3 + k] - vCoords1[j*3 + k]) * fScale;
 					
 					glTexCoord2f(vCoord.x, vCoord.y);
@@ -347,12 +347,12 @@ void CMSModel::renderModel(CAnimData* aData)
 		}
 		if(!aData->bPaused)
 		{
-			float fDiff = aData->fSTime - aData->fBTime;
+			GLfloat fDiff = aData->fSTime - aData->fBTime;
 			if(fDiff > aAnims[iAnim].fTime[iKF2])
 			{
 				aData->fBTime = aData->fSTime - (fDiff - aAnims[iAnim].fTime[iKF2]);
 				aData->iKF = (iKF + 1) % aAnims[iAnim].bNumKF;
-				int iLast = aAnims[iAnim].bData & 1 ? aAnims[iAnim].bNumKF - 1 : 0;
+				GLint iLast = aAnims[iAnim].bData & 1 ? aAnims[iAnim].bNumKF - 1 : 0;
 				if(aData->iKF == iLast)
 				{
 					FOR(i, aAnims[iAnim].bNumKF)aData->bCanRetKFP[i] = true;
@@ -371,9 +371,9 @@ void CMSModel::renderModel(CAnimData* aData)
 
 //====================
 
-void CMSModel::startAnimation(char* strName, int iLoop, CAnimData *aData)
+GLvoid CMSModel::startAnimation(char* strName, GLint iLoop, CAnimData *aData)
 {
-	int iInd = -1;
+	GLint iInd = -1;
 	FOR(i, wNAnims)if(strName == aAnims[i].strName){iInd = i; break;}
 	if(iInd != -1)
 	{
@@ -391,11 +391,11 @@ void CMSModel::startAnimation(char* strName, int iLoop, CAnimData *aData)
 
 //====================
 
-void CMSModel::setGlobalBlend(float sfgBlend){fgBlend = sfgBlend;}
+GLvoid CMSModel::setGlobalBlend(GLfloat sfgBlend){fgBlend = sfgBlend;}
 
 //====================
 
-bool CAnimData::kfPassed(int iKFrame)
+GLboolean CAnimData::kfPassed(GLint iKFrame)
 {
 	if(bCanRetKFP[iKFrame]){bCanRetKFP[iKFrame] = false; return true;}
 	return false;
@@ -403,7 +403,7 @@ bool CAnimData::kfPassed(int iKFrame)
 
 //====================
 
-void CAnimData::pauseAnim()
+GLvoid CAnimData::pauseAnim()
 {
 	if(bPaused)return;
 	bPaused = true;
@@ -412,7 +412,7 @@ void CAnimData::pauseAnim()
 
 //====================
 
-void CAnimData::continueAnim()
+GLvoid CAnimData::continueAnim()
 {
 	if(!bPaused)return;
 	bPaused = false;

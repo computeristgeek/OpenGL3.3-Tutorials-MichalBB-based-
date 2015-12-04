@@ -2,8 +2,8 @@
 
 #include "vertexBufferObject.h"
 
-int GenerateTorus(CVertexBufferObject &vboDest, float fRadius, float fTubeRadius, int iSubDivAround, int iSubDivTube);
-int GenerateCylinder(CVertexBufferObject &vboDest, float fRadius, float fHeight, int iSubDivAround, float fMapU = 1.0f, float fMapV = 1.0f);
-void CreateStaticSceneObjects(UINT* uiVAO, CVertexBufferObject& vboDest);
+GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+GLint GenerateCylinder(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU = 1.0f, GLfloat fMapV = 1.0f);
+GLvoid CreateStaticSceneObjects(UINT* uiVAO, CVertexBufferObject& vboDest);
 
-extern int iSphereFaces;
+extern GLint iSphereFaces;

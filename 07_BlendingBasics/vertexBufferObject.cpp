@@ -17,7 +17,7 @@ Result:	Creates vertex buffer object.
 
 /*---------------------------------------------*/
 
-void CVertexBufferObject::createVBO(int a_iSize)
+GLvoid CVertexBufferObject::createVBO(GLint a_iSize)
 {
 	glGenBuffers(1, &uiBuffer);
 	data.reserve(a_iSize);
@@ -34,7 +34,7 @@ Result:	Releases VBO and frees all memory.
 
 /*---------------------------------------------*/
 
-void CVertexBufferObject::releaseVBO()
+GLvoid CVertexBufferObject::releaseVBO()
 {
 	glDeleteBuffers(1, &uiBuffer);
 	bDataUploaded = false;
@@ -45,14 +45,14 @@ void CVertexBufferObject::releaseVBO()
 
 Name:		mapBufferToMemory
 
-Params:	iUsageHint - GL_READ_ONLY, GL_WRITE_ONLY...
+Params:	iUsageHGLint - GL_READ_ONLY, GL_WRITE_ONLY...
 
 Result:	Maps whole buffer data to memory and
 			returns pointer to data.
 
 /*---------------------------------------------*/
 
-void* CVertexBufferObject::mapBufferToMemory(int iUsageHint)
+void* CVertexBufferObject::mapBufferToMemory(GLint iUsageHint)
 {
 	if(!bDataUploaded)return NULL;
 	void* ptrRes = glMapBuffer(iBufferType, iUsageHint);
@@ -63,7 +63,7 @@ void* CVertexBufferObject::mapBufferToMemory(int iUsageHint)
 
 Name:		mapSubBufferToMemory
 
-Params:	iUsageHint - GL_READ_ONLY, GL_WRITE_ONLY...
+Params:	iUsageHGLint - GL_READ_ONLY, GL_WRITE_ONLY...
 			uiOffset - data offset (from where should
 							data be mapped).
 			uiLength - length of data
@@ -72,7 +72,7 @@ Result:	Maps specified part of buffer to memory.
 
 /*---------------------------------------------*/
 
-void* CVertexBufferObject::mapSubBufferToMemory(int iUsageHint, UINT uiOffset, UINT uiLength)
+void* CVertexBufferObject::mapSubBufferToMemory(GLint iUsageHint, UINT uiOffset, UINT uiLength)
 {
 	if(!bDataUploaded)return NULL;
 	void* ptrRes = glMapBufferRange(iBufferType, uiOffset, uiLength, iUsageHint);
@@ -89,7 +89,7 @@ Result:	Unmaps previously mapped buffer.
 
 /*---------------------------------------------*/
 
-void CVertexBufferObject::unmapBuffer()
+GLvoid CVertexBufferObject::unmapBuffer()
 {
 	glUnmapBuffer(iBufferType);
 }
@@ -104,7 +104,7 @@ Result:	Binds this VBO.
 
 /*---------------------------------------------*/
 
-void CVertexBufferObject::bindVBO(int a_iBufferType)
+GLvoid CVertexBufferObject::bindVBO(GLint a_iBufferType)
 {
 	iBufferType = a_iBufferType;
 	glBindBuffer(iBufferType, uiBuffer);
@@ -114,13 +114,13 @@ void CVertexBufferObject::bindVBO(int a_iBufferType)
 
 Name:		uploadDataToGPU
 
-Params:	iUsageHint - GL_STATIC_DRAW, GL_DYNAMIC_DRAW...
+Params:	iUsageHGLint - GL_STATIC_DRAW, GL_DYNAMIC_DRAW...
 
 Result:	Sends data to GPU.
 
 /*---------------------------------------------*/
 
-void CVertexBufferObject::uploadDataToGPU(int iDrawingHint)
+GLvoid CVertexBufferObject::uploadDataToGPU(GLint iDrawingHint)
 {
 	glBufferData(iBufferType, data.size(), &data[0], iDrawingHint);
 	bDataUploaded = true;
@@ -138,7 +138,7 @@ Result:	Adds arbitrary data to VBO.
 
 /*---------------------------------------------*/
 
-void CVertexBufferObject::addData(void* ptrData, UINT uiDataSize)
+GLvoid CVertexBufferObject::addData(void* ptrData, UINT uiDataSize)
 {
 	data.insert(data.end(), (BYTE*)ptrData, (BYTE*)ptrData+uiDataSize);
 }

@@ -2,7 +2,7 @@
 #include "Weapons.h"
 #include "resource.h"
 
-void ChangeToFullScreen()
+GLvoid ChangeToFullScreen()
 {
 	DEVMODE dmSettings;									// Device Mode variable
 
@@ -21,7 +21,7 @@ void ChangeToFullScreen()
 	dmSettings.dmFields     = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 
-	int result = ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN);	
+	GLint result = ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN);	
 
 	if(result != DISP_CHANGE_SUCCESSFUL)
 	{
@@ -32,7 +32,7 @@ void ChangeToFullScreen()
 }
 
 
-HWND CreateMyWindow(LPSTR strWindowName, int width, int height, DWORD dwStyle, bool bFullScreen, HINSTANCE hInstance)
+HWND CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
 {
 	HWND hWnd;
 	WNDCLASS wndclass;
@@ -83,10 +83,10 @@ HWND CreateMyWindow(LPSTR strWindowName, int width, int height, DWORD dwStyle, b
 }
 
 
-bool bSetupPixelFormat(HDC hdc) 
+GLboolean bSetupPixelFormat(HDC hdc) 
 { 
     PIXELFORMATDESCRIPTOR pfd; 
-    int pixelformat; 
+    GLint pixelformat; 
  
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);			// Set the size of the structure
     pfd.nVersion = 1;									// Always set this to 1
@@ -117,7 +117,7 @@ bool bSetupPixelFormat(HDC hdc)
 }
 
 
-void SizeOpenGLScreen(int width, int height)			// Initialize The GL Window
+GLvoid SizeOpenGLScreen(GLint width, GLint height)			// Initialize The GL Window
 {
 	if (height==0)										// Prevent A Divide By Zero error
 	{
@@ -139,13 +139,13 @@ void SizeOpenGLScreen(int width, int height)			// Initialize The GL Window
 														//  The closest distance to the camera before it clips, 
 				  // FOV		// Ratio				//  The farthest distance before it stops drawing)
 	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height, 1.0f, 400.0f);
-GLvoid BuildFont(GLvoid);
+GLGLvoid BuildFont(GLvoid);
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
 }
 
 
-void InitializeOpenGL(int width, int height) 
+GLvoid InitializeOpenGL(GLint width, GLint height) 
 {  
     g_hDC = GetDC(g_hWnd);								// This sets our global HDC
 														// We don't free this hdc until the end of our program
@@ -163,7 +163,7 @@ PrepareAmmo();
 PrepareWeapons();
 }
 
-void DeInit()
+GLvoid DeInit()
 {
 	if (g_hRC)											
 	{
@@ -187,7 +187,7 @@ KillFont();
 }
 
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, int ishow)
+GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow)
 {	
 	HWND hWnd;
 

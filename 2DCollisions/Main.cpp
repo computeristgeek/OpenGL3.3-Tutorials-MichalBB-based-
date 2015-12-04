@@ -2,20 +2,20 @@
 #include <math.h>
 #include "Weapons.h"
 
-int ammop;
+GLint ammop;
 
-bool hrot;float x,y,xinc,yinc;
-bool  g_bFullScreen = TRUE;								
+GLboolean hrot;GLfloat x,y,xinc,yinc;
+GLboolean  g_bFullScreen = TRUE;								
 HWND  g_hWnd;											
 RECT  g_rRect;											// This holds the window dimensions
 HDC   g_hDC;											// General HDC - (handle to device context)
 HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
 HINSTANCE g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
-float rotation;
-const float piover180 = 0.0174532925f;
+GLfloat rotation;
+const GLfloat piover180 = 0.0174532925f;
 UINT g_Texture[MAX_TEXTURES];	
 
-void Init(HWND hWnd)
+GLvoid Init(HWND hWnd)
 {
 	g_hWnd = hWnd;										
 	GetClientRect(g_hWnd, &g_rRect);					
@@ -52,8 +52,8 @@ WPARAM MainLoop()
 	return(msg.wParam);									// Return from the program
 }
 
-int tex=3;
-void RenderScene() 
+GLint tex=3;
+GLvoid RenderScene() 
 {
 xinc=(float)sin(rotation*piover180) * 0.05f;
 yinc=(float)cos(rotation*piover180) * 0.05f;
@@ -103,8 +103,8 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
         break; 
  
-	case WM_PAINT:										// If we need to repaint the scene
-		BeginPaint(hWnd, &ps);							// Init the paint struct		
+	case WM_PAINT:										// If we need to repaGLint the scene
+		BeginPaint(hWnd, &ps);							// Init the paGLint struct		
 		EndPaint(hWnd, &ps);							// EndPaint, Clean up
 		break;
 

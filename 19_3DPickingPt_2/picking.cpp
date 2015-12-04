@@ -15,11 +15,11 @@ Result:  Returns i-th RGB color.
 
 /*---------------------------------------------*/
 
-glm::vec4 GetColorByIndex(int index)
+glm::vec4 GetColorByIndex(GLint index)
 {
-	int r = index&0xFF;
-	int g = (index>>8)&0xFF;
-	int b = (index>>16)&0xFF;
+	GLint r = index&0xFF;
+	GLint g = (index>>8)&0xFF;
+	GLint b = (index>>16)&0xFF;
 
 	return glm::vec4(float(r)/255.0f, float(g)/255.0f, float(b)/255.0f, 1.0f);
 }
@@ -35,7 +35,7 @@ Result:  Kind of inverse to previous function,
 
 /*---------------------------------------------*/
 
-int GetIndexByColor(int r, int g, int b)
+GLint GetIndexByColor(GLint r, GLint g, GLint b)
 {
 	return (r)|(g<<8)|(b<<16);
 }
@@ -50,7 +50,7 @@ Result:  Returns i-th RGB color.
 
 /*---------------------------------------------*/
 
-int GetPickedColorIndexUnderMouse()
+GLint GetPickedColorIndexUnderMouse()
 {
 	POINT mp; GetCursorPos(&mp);
 	ScreenToClient(appMain.hWnd, &mp);
@@ -58,7 +58,7 @@ int GetPickedColorIndexUnderMouse()
 	mp.y = rect.bottom-mp.y;
 	BYTE bArray[4];
 	glReadPixels(mp.x, mp.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, bArray);
-	int iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]) - 1;
+	GLint iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]) - 1;
 
 	return iResult;
 }
@@ -76,7 +76,7 @@ Result:  Retrieves 3D ray under cursor from near
 
 /*---------------------------------------------*/
 
-void Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2)
+GLvoid Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2)
 {
 	POINT mp; GetCursorPos(&mp);
 	ScreenToClient(appMain.hWnd, &mp);
@@ -102,31 +102,31 @@ Result:  Checks if a ray given by two points
 
 /*---------------------------------------------*/
 
-bool RaySphereCollision(glm::vec3 vSphereCenter, float fSphereRadius, glm::vec3 vA, glm::vec3 vB)
+GLboolean RaySphereCollision(glm::vec3 vSphereCenter, GLfloat fSphereRadius, glm::vec3 vA, glm::vec3 vB)
 {
-	// Create the vector from end point vA to center of sphere
+	// Create the vector from end poGLint vA to center of sphere
 	glm::vec3 vDirToSphere = vSphereCenter - vA;
 
-	// Create a normalized direction vector from end point vA to end point vB
+	// Create a normalized direction vector from end poGLint vA to end poGLint vB
 	glm::vec3 vLineDir = glm::normalize(vB-vA);
 
 	// Find length of line segment
-	float fLineLength = glm::distance(vA, vB);
+	GLfloat fLineLength = glm::distance(vA, vB);
 
 	// Using the dot product, we project the vDirToSphere onto the vector vLineDir
-	float t = glm::dot(vDirToSphere, vLineDir);
+	GLfloat t = glm::dot(vDirToSphere, vLineDir);
 
 	glm::vec3 vClosestPoint;
-	// If our projected distance from vA is less than or equal to 0, the closest point is vA
+	// If our projected distance from vA is less than or equal to 0, the closest poGLint is vA
 	if (t <= 0.0f)
-		vClosestPoint = vA;
-	// If our projected distance from vA is greater thatn line length, closest point is vB
+		vClosestPoGLint = vA;
+	// If our projected distance from vA is greater thatn line length, closest poGLint is vB
 	else if (t >= fLineLength)
-		vClosestPoint = vB;
-	// Otherwise calculate the point on the line using t and return it
+		vClosestPoGLint = vB;
+	// Otherwise calculate the poGLint on the line using t and return it
 	else
-		vClosestPoint = vA+vLineDir*t;
+		vClosestPoGLint = vA+vLineDir*t;
 
-	// Now just check if closest point is within radius of sphere
+	// Now just check if closest poGLint is within radius of sphere
 	return glm::distance(vSphereCenter, vClosestPoint) <= fSphereRadius;
 }

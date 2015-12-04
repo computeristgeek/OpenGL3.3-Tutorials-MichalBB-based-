@@ -12,18 +12,18 @@ Purpose:	Wraps OpenGL shader loading
 class CShader
 {
 public:
-	bool loadShader(string sFile, int a_iType);
-	void deleteShader();
+	GLboolean loadShader(string sFile, GLint a_iType);
+	GLvoid deleteShader();
 
-	bool isLoaded();
+	GLboolean isLoaded();
 	UINT getShaderID();
 
 	CShader();
 
 private:
 	UINT uiShader; // ID of shader
-	int iType; // GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
-	bool bLoaded; // Whether shader was loaded and compiled
+	GLint iType; // GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
+	GLboolean bLoaded; // Whether shader was loaded and compiled
 };
 
 /********************************
@@ -38,13 +38,13 @@ Purpose:	Wraps OpenGL shader program
 class CShaderProgram
 {
 public:
-	void createProgram();
-	void deleteProgram();
+	GLvoid createProgram();
+	GLvoid deleteProgram();
 
-	bool addShaderToProgram(CShader* shShader);
-	bool linkProgram();
+	GLboolean addShaderToProgram(CShader* shShader);
+	GLboolean linkProgram();
 
-	void useProgram();
+	GLvoid useProgram();
 
 	UINT getProgramID();
 
@@ -52,5 +52,5 @@ public:
 
 private:
 	UINT uiProgram; // ID of program
-	bool bLinked; // Whether program was linked and is ready to use
+	GLboolean bLinked; // Whether program was linked and is ready to use
 };

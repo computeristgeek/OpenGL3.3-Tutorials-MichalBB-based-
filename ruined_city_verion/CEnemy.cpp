@@ -19,7 +19,7 @@ vector<CSpider> sSpiders;
 
 //====================
 
-void loadEnemies(int iNModels)
+GLvoid loadEnemies(GLint iNModels)
 {
 	char strCur[512]; GetCurrentDirectory(512, strCur);
 	char strOld[512]; strcpy(strOld, strCur);
@@ -28,7 +28,7 @@ void loadEnemies(int iNModels)
 	mEnemies = new CMSModel[iNModels];
 	FOR(i, iNModels)mEnemies[i].loadModelData(strNames[i]);
 	FILE* fp = fopen("Enemies.txt", "rt");
-	char strLine[255]; int iNum;
+	char strLine[255]; GLint iNum;
 	sscanf(readline(fp, strLine), "TOWERS %d", &iNum);
 	CTower tNew;
 	sscanf(readline(fp, strLine), "COLBOX %d", &tNew.iNumCB);
@@ -69,15 +69,15 @@ void loadEnemies(int iNModels)
 		swNew.vNests = new CVector3[swNew.iNests];
 		swNew.iNAll = new int[swNew.iNests];
 		CVector3 vDirA = swNew.vPoints[1] - swNew.vPoints[0], vDirB = swNew.vPoints[2] - swNew.vPoints[1];
-		float fLenA = vecMagnitude(vDirA), fLenB = vecMagnitude(vDirB);
+		GLfloat fLenA = vecMagnitude(vDirA), fLenB = vecMagnitude(vDirB);
 		vecNormalize(vDirA); vecNormalize(vDirB);
 		FOR(j, swNew.iNests)
 		{
 			sscanf(readline(fp, strLine), "%d", &swNew.iNSpiders[j]);
 			swNew.iNAll[j] = swNew.iNSpiders[j];
 			swNew.iAll += swNew.iNSpiders[j];
-			float fX = fLenA * (float)(rand() % 100) * 0.01f;
-			float fY = fLenB * (float)(rand() % 100) * 0.01f;
+			GLfloat fX = fLenA * (float)(rand() % 100) * 0.01f;
+			GLfloat fY = fLenB * (float)(rand() % 100) * 0.01f;
 			swNew.vNests[j] = swNew.vPoints[0] + vDirA * fX + vDirB * fY;
 		}
 		swWebs.push_back(swNew);
@@ -88,7 +88,7 @@ void loadEnemies(int iNModels)
 
 //====================
 
-void renderEnemies()
+GLvoid renderEnemies()
 {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -114,14 +114,14 @@ void renderEnemies()
 		{
 			if(i != j && !sSpiders[i].bDying && !sSpiders[j].bDying)
 			{
-				float fDist = vecDist(sSpiders[i].vPos, sSpiders[j].vPos);
+				GLfloat fDist = vecDist(sSpiders[i].vPos, sSpiders[j].vPos);
 				if(fDist < 5.0f)
 				{
 					CVector3 vDir = sSpiders[i].vLastPos - sSpiders[i].vPos;
 					if(vecMagnitude(vDir) != 0.0f)
 					{
 						vecNormalize(vDir);
-						float fMove = 5.05f - fDist;
+						GLfloat fMove = 5.05f - fDist;
 						sSpiders[i].vPos += vDir * fMove;
 					}
 				}
@@ -141,7 +141,7 @@ void renderEnemies()
 
 //====================
 
-void renderBlendedEnemyStuff()
+GLvoid renderBlendedEnemyStuff()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -154,7 +154,7 @@ void renderBlendedEnemyStuff()
 
 //====================
 
-int collisionLineEnemies(CVector3 vA, CVector3 vB)
+GLint collisionLineEnemies(CVector3 vA, CVector3 vB)
 {
 	FOR(i, ESZ(tTowers))
 	FOR(j, tTowers[i].iNumCB)
@@ -166,7 +166,7 @@ int collisionLineEnemies(CVector3 vA, CVector3 vB)
 	FOR(i, ESZ(sSpiders))
 	{
 		CVector3 vPos = sSpiders[i].vPos; if(!sSpiders[i].bDying)vPos.y += 1.0f;
-		float fRadius = sSpiders[i].iType == 2 ? 1.5f : 2.5f;
+		GLfloat fRadius = sSpiders[i].iType == 2 ? 1.5f : 2.5f;
 		if(collisionSphereLine(vPos, fRadius, vA, vB) && sSpiders[i].fLife >= -25.0f)
 		{
 			iLIE = i; iEnType = 1;
@@ -178,7 +178,7 @@ int collisionLineEnemies(CVector3 vA, CVector3 vB)
 
 //====================
 
-void takeEnemiesLife(float fDamage)
+GLvoid takeEnemiesLife(GLfloat fDamage)
 {
 	if(iEnType == 0)tTowers[iLIE].fLife -= fDamage;
 	else if(iEnType == 1)

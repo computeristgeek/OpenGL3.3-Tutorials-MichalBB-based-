@@ -11,7 +11,7 @@
 //====================
 
 LRESULT CALLBACK dlgStartup(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
-extern int iStartRes;
+extern GLint iStartRes;
 extern CApplication::DispMode dm;
 
 extern CApplication glAp;
@@ -19,4 +19,4 @@ extern CFreeType ft;
 
 //====================
 
-void glInit(), glScene(), freeEverything();
+GLvoid glInit(), glScene(), freeEverything();

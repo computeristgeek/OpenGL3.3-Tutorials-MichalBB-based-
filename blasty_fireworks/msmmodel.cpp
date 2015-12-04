@@ -4,7 +4,7 @@
 
 //====================
 
-void CMSMModel::loadModel(char* strFile)
+GLvoid CMSMModel::loadModel(char* strFile)
 {
 	FILE* fp = fopen(strFile, "rb");
 	if(!fp)return;
@@ -32,12 +32,12 @@ void CMSMModel::loadModel(char* strFile)
 			vecNormalize(gGroups[i].vNorms[j]);
 		}
 	}
-	int tIndices[150];
+	GLint tIndices[150];
 	changeDir(fileDir(strFile));
 	FOR(i, mHeader.nTextures)
 	{
 		char* strName = readline(fp);
-		int iFound = -1; FOR(j, ESZ(tTextures))if(tTextures[j].first == strName){iFound = j; break;}
+		GLint iFound = -1; FOR(j, ESZ(tTextures))if(tTextures[j].first == strName){iFound = j; break;}
 		tIndices[i] = iFound == -1 ? ESZ(tTextures) : iFound;
 		if(iFound == -1)
 		{
@@ -51,7 +51,7 @@ void CMSMModel::loadModel(char* strFile)
 		readline(fp); // Ignore material name
 		char cTex; fread(&cTex, sizeof(char), 1, fp);
 		mMats[i].iTexture = cTex != -1 ? tIndices[cTex] : -1;
-		BYTE bArray[4]; float fArray[4];
+		BYTE bArray[4]; GLfloat fArray[4];
 		fread(bArray, 4, sizeof(BYTE), fp);
 		FOR(j, 4)fArray[j] = (float)bArray[j]/255.0f; FOR(j, 4)mMats[i].fAmbient[j] = fArray[j];
 		fread(bArray, 4, sizeof(BYTE), fp);
@@ -67,7 +67,7 @@ void CMSMModel::loadModel(char* strFile)
 
 //====================
 
-void CMSMModel::renderModel()
+GLvoid CMSMModel::renderModel()
 {
 	glEnable(GL_CULL_FACE); glCullFace(GL_BACK);
 	FOR(i, mHeader.nGroups)

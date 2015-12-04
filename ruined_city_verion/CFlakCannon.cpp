@@ -13,7 +13,7 @@ GLubyte ubColor[2][2] =
 
 //====================
 
-void CFlakCannon::renderWeapon()
+GLvoid CFlakCannon::renderWeapon()
 {
 	glTranslatef(0, 0, 0.2f);
 	mWeapon.renderModel(&adWeapon);
@@ -21,7 +21,7 @@ void CFlakCannon::renderWeapon()
 
 //====================
 
-void CFlakCannon::renderAmmo()
+GLvoid CFlakCannon::renderAmmo()
 {
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -29,18 +29,18 @@ void CFlakCannon::renderAmmo()
 	glBegin(GL_LINES);
 	FOR(i, ESZ(fShells))
 	{
-		int j = 1 - fShells[i].iCurNode % 2;
+		GLint j = 1 - fShells[i].iCurNode % 2;
 		glColor4ub(ubColor[j][0], ubColor[j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
 		glVertex3f(fShells[i].vPos.x, fShells[i].vPos.y, fShells[i].vPos.z);
 
 		CVector3 vPos2 = fShells[i].vPos + fShells[i].vDir[fShells[i].iCurNode] * FLAKLENGTH;
-		float fDist = vecDist(fShells[i].vPos, fShells[i].vNodes[fShells[i].iCurNode]);
+		GLfloat fDist = vecDist(fShells[i].vPos, fShells[i].vNodes[fShells[i].iCurNode]);
 		if(fDist < FLAKLENGTH)vPos2 = fShells[i].vNodes[fShells[i].iCurNode];
 		glColor4ub(ubColor[1 - j][0], ubColor[1 - j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
 		glVertex3f(vPos2.x, vPos2.y, vPos2.z);
 		if(fDist < FLAKLENGTH && fShells[i].iCurNode + 1 != fShells[i].iAllNodes)
 		{
-			float fLen = FLAKLENGTH - fDist;
+			GLfloat fLen = FLAKLENGTH - fDist;
 			j = fShells[i].iCurNode % 2;
 			glColor4ub(ubColor[j][0], ubColor[j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
 			glVertex3f(vPos2.x, vPos2.y, vPos2.z);
@@ -59,7 +59,7 @@ void CFlakCannon::renderAmmo()
 		}
 		fShells[i].fLife -= glAp.sof(1.0f);
 
-		int iCollide = collisionLineEnemies(fShells[i].vPos, fShells[i].vPos + fShells[i].vDir[fShells[i].iCurNode] * FLAKLENGTH);
+		GLint iCollide = collisionLineEnemies(fShells[i].vPos, fShells[i].vPos + fShells[i].vDir[fShells[i].iCurNode] * FLAKLENGTH);
 		if(fShells[i].iCurNode == fShells[i].iAllNodes || fShells[i].fLife < 0.0f || iCollide)
 		{
 			fShells.erase(fShells.begin() + i);
@@ -73,7 +73,7 @@ void CFlakCannon::renderAmmo()
 	glBindTexture(GL_TEXTURE_2D, uiPartTex);
 	glColor3ub(255, 255, 0);
 	glBegin(GL_QUADS);
-	float fSize = 0.5f;
+	GLfloat fSize = 0.5f;
 	pair<CVector3, CVector3> vDirs = getNormQuad(cCam.vView - cCam.vEye);
 	FOR(i, ESZ(fShells))
 	{
@@ -100,7 +100,7 @@ void CFlakCannon::renderAmmo()
 
 //====================
 
-void CFlakCannon::shoot()
+GLvoid CFlakCannon::shoot()
 {
 	if(adWeapon.iAnim == -1 && iAmmo > 0)
 	{
@@ -114,7 +114,7 @@ void CFlakCannon::shoot()
 			{
 				CFlak fShell; fShell.iAllNodes = 0;
 				CVector3 vCurPos = cCam.vEye2 + vCDirs.first * (float)(i), vCurDir = vDir;
-				float fRange = -0.02f + (float)(rand() % 40) / 1000.0f;
+				GLfloat fRange = -0.02f + (float)(rand() % 40) / 1000.0f;
 				vCurDir += vCDirs.first * fRange;
 				fRange = -0.02f + (float)(rand() % 40) / 1000.0f;
 				vCurDir += vCDirs.second * fRange;
@@ -127,8 +127,8 @@ void CFlakCannon::shoot()
 					fShell.vDir[k] = vCurDir;
 					fShell.iAllNodes++;
 					if(iLIF == -1)break;
-					float fPFODist = -vecDot(lv1.vNorms[iLIF], lv1.vFaces[iLIF*3]);
-					float fPDist = vecDot(lv1.vNorms[iLIF], vCurPos) + fPFODist;
+					GLfloat fPFODist = -vecDot(lv1.vNorms[iLIF], lv1.vFaces[iLIF*3]);
+					GLfloat fPDist = vecDot(lv1.vNorms[iLIF], vCurPos) + fPFODist;
 					CVector3 vNorm = lv1.vNorms[iLIF];
 					vCurDir = vNorm * 2.0f * vecDot(vCurDir * -1.0f, vNorm) + vCurDir;
 					CVector3 vNodeFinal = vNode;
@@ -149,4 +149,4 @@ void CFlakCannon::shoot()
 
 //====================
 
-void CFlakCannon::renderBlended(){}
+GLvoid CFlakCannon::renderBlended(){}

@@ -32,14 +32,14 @@ public:
 class CAnimData
 {
 public:
-	int iKF, iAnim;
-	float fBTime, fSTime; // Time saved when pausing
-	int iLoop, iLoops; // Loops already passed
+	GLint iKF, iAnim;
+	GLfloat fBTime, fSTime; // Time saved when pausing
+	GLint iLoop, iLoops; // Loops already passed
 	bool* bCanRetKFP; // If it is able to return that some keyframe is passed
-	bool bPaused, bPauseAtEnd;
+	GLboolean bPaused, bPauseAtEnd;
 
-	bool kfPassed(int iKFrame);
-	void pauseAnim(), continueAnim();
+	GLboolean kfPassed(GLint iKFrame);
+	GLvoid pauseAnim(), continueAnim();
 
 	CAnimData(){iAnim = -1;}
 };
@@ -48,18 +48,18 @@ class CMSModel
 {
 public:
 
-	bool bLoaded; // First of all, check if the model has been loaded properly
+	GLboolean bLoaded; // First of all, check if the model has been loaded properly
 
 	WORD wNGroups, wNAnims;
 	CGroup* gGroups;
 	CAnimation* aAnims;
-	float fgBlend;
+	GLfloat fgBlend;
 
-	void startAnimation(char* strName, int iLoop, CAnimData *aData);
+	GLvoid startAnimation(char* strName, GLint iLoop, CAnimData *aData);
 	
-	void loadModelData(char* strFile);
-	void renderModel(CAnimData* aData);
-	void setGlobalBlend(float sfgBlend);
+	GLvoid loadModelData(char* strFile);
+	GLvoid renderModel(CAnimData* aData);
+	GLvoid setGlobalBlend(GLfloat sfgBlend);
 
 	CMSModel::CMSModel(){bLoaded = false; fgBlend = 1.0f;}
 };

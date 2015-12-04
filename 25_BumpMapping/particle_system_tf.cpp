@@ -19,7 +19,7 @@ Result:	Initializes all buffers and data on GPU
 
 /*---------------------------------------------*/
 
-bool CParticleSystemTransformFeedback::InitalizeParticleSystem()
+GLboolean CParticleSystemTransformFeedback::InitalizeParticleSystem()
 {
 	if(bInitialized)return false;
 
@@ -102,13 +102,13 @@ Result:	Performs particle updating on GPU.
 
 /*---------------------------------------------*/
 
-float grandf(float fMin, float fAdd)
+GLfloat grandf(GLfloat fMin, GLfloat fAdd)
 {
-	float fRandom = float(rand()%(RAND_MAX+1))/float(RAND_MAX);
+	GLfloat fRandom = float(rand()%(RAND_MAX+1))/float(RAND_MAX);
 	return fMin+fAdd*fRandom;
 }
 
-void CParticleSystemTransformFeedback::UpdateParticles(float fTimePassed)
+GLvoid CParticleSystemTransformFeedback::UpdateParticles(GLfloat fTimePassed)
 {
 	if(!bInitialized)return;
 
@@ -172,7 +172,7 @@ Result:	Performs particle rendering on GPU.
 
 /*---------------------------------------------*/
 
-void CParticleSystemTransformFeedback::RenderParticles()
+GLvoid CParticleSystemTransformFeedback::RenderParticles()
 {
 	if(!bInitialized)return;
 
@@ -210,7 +210,7 @@ Result:	Sets the projection matrix and view matrix,
 
 /*---------------------------------------------*/
 
-void CParticleSystemTransformFeedback::SetMatrices(glm::mat4* a_matProjection, glm::vec3 vEye, glm::vec3 vView, glm::vec3 vUpVector)
+GLvoid CParticleSystemTransformFeedback::SetMatrices(glm::mat4* a_matProjection, glm::vec3 vEye, glm::vec3 vView, glm::vec3 vUpVector)
 {
 	matProjection = *a_matProjection;
 	matView = glm::lookAt(vEye, vView, vUpVector);
@@ -234,7 +234,7 @@ Result:	Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CParticleSystemTransformFeedback::SetGeneratorProperties(glm::vec3 a_vGenPosition, glm::vec3 a_vGenVelocityMin, glm::vec3 a_vGenVelocityMax, glm::vec3 a_vGenGravityVector, glm::vec3 a_vGenColor, float a_fGenLifeMin, float a_fGenLifeMax, float a_fGenSize, float fEvery, int a_iNumToGenerate)
+GLvoid CParticleSystemTransformFeedback::SetGeneratorProperties(glm::vec3 a_vGenPosition, glm::vec3 a_vGenVelocityMin, glm::vec3 a_vGenVelocityMax, glm::vec3 a_vGenGravityVector, glm::vec3 a_vGenColor, GLfloat a_fGenLifeMin, GLfloat a_fGenLifeMax, GLfloat a_fGenSize, GLfloat fEvery, GLint a_iNumToGenerate)
 {
 	vGenPosition = a_vGenPosition;
 	vGenVelocityMin = a_vGenVelocityMin;
@@ -253,12 +253,12 @@ void CParticleSystemTransformFeedback::SetGeneratorProperties(glm::vec3 a_vGenPo
 	iNumToGenerate = a_iNumToGenerate;
 }
 
-void CParticleSystemTransformFeedback::SetGeneratorPosition(glm::vec3 a_vGenPosition)
+GLvoid CParticleSystemTransformFeedback::SetGeneratorPosition(glm::vec3 a_vGenPosition)
 {
 	vGenPosition = a_vGenPosition;
 }
 
-void CParticleSystemTransformFeedback::SetNumberToGenerate(int a_iNumToGenerate)
+GLvoid CParticleSystemTransformFeedback::SetNumberToGenerate(GLint a_iNumToGenerate)
 {
 	iNumToGenerate = a_iNumToGenerate;
 }
@@ -273,7 +273,7 @@ Result:	Retrieves current number of particles.
 
 /*---------------------------------------------*/
 
-int CParticleSystemTransformFeedback::GetNumParticles()
+GLint CParticleSystemTransformFeedback::GetNumParticles()
 {
 	return iNumParticles;
 }
@@ -288,7 +288,7 @@ Result:	Releases particle system and all its data.
 
 /*---------------------------------------------*/
 
-bool CParticleSystemTransformFeedback::ReleaseParticleSystem()
+GLboolean CParticleSystemTransformFeedback::ReleaseParticleSystem()
 {
 	if(!bInitialized)return false;
 

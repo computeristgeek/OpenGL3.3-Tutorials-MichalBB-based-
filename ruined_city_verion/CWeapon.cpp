@@ -2,20 +2,20 @@
 
 CWeapon* wWeapons[ALLWEAPONS];
 CLightingGun gLGun;
-float fPrintName = 2.0f;
+GLfloat fPrintName = 2.0f;
 
-int iLIF = -1; // Last intersected face
-int iLIE = -1, iEnType; // Last intersected enemy, enemy type
-int iCurWeapon = 0, iNextWeapon = 0;
-bool bChanging = false;
-float fFar = 0.0f;
+GLint iLIF = -1; // Last intersected face
+GLint iLIE = -1, iEnType; // Last intersected enemy, enemy type
+GLint iCurWeapon = 0, iNextWeapon = 0;
+GLboolean bChanging = false;
+GLfloat fFar = 0.0f;
 
 CVector3 getIntersectionEnemy(CVector3 vFrom, CVector3 vTo, CVector3 vBest)
 {
 	CVector3 vDir = vTo - vFrom;
 	vecNormalize(vDir);
 	CVector3 vNext = vFrom + vDir * 10000.0f;
-	float fLowest = vecDist(vFrom, vBest);
+	GLfloat fLowest = vecDist(vFrom, vBest);
 	iLIE = -1;
 	FOR(i, ESZ(tTowers))
 	{
@@ -23,7 +23,7 @@ CVector3 getIntersectionEnemy(CVector3 vFrom, CVector3 vTo, CVector3 vBest)
 		{
 			if(collisionLinePoly(vFrom, vNext, NULL, tTowers[i].vColBox[j], tTowers[i].iNumPoints[j]))
 			{
-				float fDist = vecDist(getLastIntersection(), vFrom);
+				GLfloat fDist = vecDist(getLastIntersection(), vFrom);
 				if(fDist < fLowest)
 				{
 					fLowest = fDist;
@@ -39,11 +39,11 @@ CVector3 getIntersectionEnemy(CVector3 vFrom, CVector3 vTo, CVector3 vBest)
 		if(sSpiders[i].fLife < -25.0f)continue;
 		CVector3 vPos = sSpiders[i].vPos; if(!sSpiders[i].bDying)vPos.y += 1.0f;
 		CVector3 vClosest = closestPointOnLine(vFrom, vNext, vPos);
-		float fDist = vecDist(vClosest, vPos);
+		GLfloat fDist = vecDist(vClosest, vPos);
 		if(fDist < 1.5f)
 		{
-			float fLen = 1.5f - fDist;
-			CVector3 vPoint = vClosest - vDir * fLen;
+			GLfloat fLen = 1.5f - fDist;
+			CVector3 vPoGLint = vClosest - vDir * fLen;
 			fDist = vecDist(vPoint, vFrom);
 			if(fDist < fLowest)
 			{
@@ -63,14 +63,14 @@ CVector3 getIntersection(CVector3 vFrom, CVector3 vTo)
 	vecNormalize(vDir);
 	CVector3 vNext = vFrom + vDir * 10000.0f;
 	CVector3 vBest = vNext;
-	float fLowest = 10001.0f;
+	GLfloat fLowest = 10001.0f;
 	iLIF = -1;
 	FOR(j, lv1.iAll)
 	{
 		CVector3 vPoly[] = {lv1.vFaces[j*3], lv1.vFaces[j*3 + 1], lv1.vFaces[j*3 + 2]};
 		if(collisionLinePoly(vFrom, vNext, &lv1.vNorms[j], vPoly, 3))
 		{
-			float fDist = vecDist(getLastIntersection(), vFrom);
+			GLfloat fDist = vecDist(getLastIntersection(), vFrom);
 			if(fDist < fLowest)
 			{
 				fLowest = fDist;
@@ -82,16 +82,16 @@ CVector3 getIntersection(CVector3 vFrom, CVector3 vTo)
 	return vBest;
 }
 
-void CLightingGun::renderWeapon()
+GLvoid CLightingGun::renderWeapon()
 {
 	
 }
 
-void CLightingGun::renderAmmo(){}
+GLvoid CLightingGun::renderAmmo(){}
 
-void CLightingGun::shoot(){}
+GLvoid CLightingGun::shoot(){}
 
-void loadWeapons()
+GLvoid loadWeapons()
 {
 	char strDir[512], strCopy[512]; GetCurrentDirectory(512, strDir);
 	strcpy(strCopy, strDir);
@@ -153,10 +153,10 @@ void loadWeapons()
 	textureBMP(&uiSWTex, "Textures\\web.bmp", false, true, LINEAR);
 }
 
-void processWeapons()
+GLvoid processWeapons()
 {
 	glPushMatrix();
-	float fMoveX = sin(cCam.fBobAn) * 0.05f,
+	GLfloat fMoveX = sin(cCam.fBobAn) * 0.05f,
 		fMoveY = abs(cos(cCam.fBobAn) * 0.05f);
 	glTranslatef(cCam.vEye.x, cCam.vEye.y + 3, cCam.vEye.z);
 	
@@ -188,7 +188,7 @@ void processWeapons()
 	wWeapons[i]->renderAmmo();
 }
 
-void renderWeaponsOrtho()
+GLvoid renderWeaponsOrtho()
 {
 	ortho2DBegin(glAp.scrX, glAp.scrY);
 	glDisable(GL_TEXTURE_2D);
@@ -212,11 +212,11 @@ void renderWeaponsOrtho()
 	ortho2DEnd();
 }
 
-void renderBox(CVector3 vPos)
+GLvoid renderBox(CVector3 vPos)
 {
 	glPushMatrix();
 	
-	static float angle = 0; angle += glAp.sof(90.0f) / (float)(ESZ(gRipper.rdDiscs) + 1);
+	static GLfloat angle = 0; angle += glAp.sof(90.0f) / (float)(ESZ(gRipper.rdDiscs) + 1);
 	glTranslatef(vPos.x, vPos.y, vPos.z);
 	glRotatef(angle, 1, 0, 0);
 	glRotatef(angle, 0, 1, 0);

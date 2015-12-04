@@ -11,11 +11,11 @@ UINT fonts[2];
 
 ///////////////////////////////////// CREATETEXTURE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 //
-//						This function creates texture int UINT storage.
+//						This function creates texture GLint UINT storage.
 //
 ///////////////////////////////////// CREATETEXTURE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void CreateTexture(UINT *storage, LPSTR strFileName)
+GLvoid CreateTexture(UINT *storage, LPSTR strFileName)
 {
 	if(!strFileName)									// Return from the function if no file name was passed in
 		return;
@@ -46,12 +46,12 @@ void CreateTexture(UINT *storage, LPSTR strFileName)
 //
 ///////////////////////////////////// CREATETEXTURE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void BuildFont()								// Build Our Font Display List
+GLvoid BuildFont()								// Build Our Font Display List
 {
 	float	cx;											// Holds Our X Character Coord
 	float	cy;											// Holds Our Y Character Coord
 
-	for(int loop=0; loop<256; loop++)						// Loop Through All 256 Lists
+	for(GLint loop=0; loop<256; loop++)						// Loop Through All 256 Lists
 	{
 		font[loop]=glGenLists(1);
 		cx=float(loop%16)/16.0f;						// X Position Of Current Character
@@ -82,7 +82,7 @@ void BuildFont()								// Build Our Font Display List
 //
 ///////////////////////////////////////// START2D \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Start2D()
+GLvoid Start2D()
 {
 	glDisable(GL_DEPTH_TEST);							// Disables Depth Testing
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
@@ -100,7 +100,7 @@ void Start2D()
 //
 ////////////////////////////////////////// END2D \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void End2D()
+GLvoid End2D()
 {
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glPopMatrix();										// Restore The Old Projection Matrix
@@ -109,9 +109,9 @@ void End2D()
 	glEnable(GL_DEPTH_TEST);
 }
 
-void PrintText(CVector2 textpos,float size,Rgb color, int type,UINT flags, const char*fmt,...)
+GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,UINT flags, const char*fmt,...)
 {
-	int character=0; // This is list id
+	GLint character=0; // This is list id
 	char final[255]={0}; // Final text to display
 
 	va_list arg;
@@ -121,7 +121,7 @@ void PrintText(CVector2 textpos,float size,Rgb color, int type,UINT flags, const
 
 	if(flags==CENTER)
 	{
-		float width=strlen(final)*8*size;
+		GLfloat width=strlen(final)*8*size;
 		textpos.x=(int)(800-width)/2;
 	}
 
@@ -133,7 +133,7 @@ void PrintText(CVector2 textpos,float size,Rgb color, int type,UINT flags, const
 	glBindTexture(GL_TEXTURE_2D, fonts[1]); // Select font mask texture
 	glPushMatrix(); // Push the matrix
 	glColor3f(1,1,1); // Set the color to white
-	for(int s=0;s<strlen(final);s++)
+	for(GLint s=0;s<strlen(final);s++)
 	{ 
 		character=final[s]-32+type*128; // Find a list
 		glCallList(font[character]); // Display it

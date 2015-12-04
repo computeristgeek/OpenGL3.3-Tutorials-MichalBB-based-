@@ -5,20 +5,20 @@ CShockRifle gShockRifle;
 
 //====================
 
-void CShockRifle::renderWeapon()
+GLvoid CShockRifle::renderWeapon()
 {
 	mWeapon.renderModel(&adWeapon);
 }
 
 //====================
 
-void CShockRifle::renderAmmo()
+GLvoid CShockRifle::renderAmmo()
 {
 }
 
 //====================
 
-void CShockRifle::shoot()
+GLvoid CShockRifle::shoot()
 {
 	if(fTime == 0.0f && iAmmo > 0)
 	{
@@ -47,9 +47,9 @@ void CShockRifle::shoot()
 			pair<CVector3, CVector3> vDirs = getNormQuad(vNorm);
 			iNew.vDirA = vDirs.first;
 			iNew.vDirB = vDirs.second;
-			float fPFODist = -vecDot(vNorm, lv1.vFaces[iLIF*3]);
-			float fPDist = vecDot(vNorm, cCam.vEye) + fPFODist;
-			float fSign = fPDist > 0.0f ? 0.1f : -0.1f;
+			GLfloat fPFODist = -vecDot(vNorm, lv1.vFaces[iLIF*3]);
+			GLfloat fPDist = vecDot(vNorm, cCam.vEye) + fPFODist;
+			GLfloat fSign = fPDist > 0.0f ? 0.1f : -0.1f;
 			iNew.vPos = vBest + vNorm * fSign;
 		}
 		iImpact.push_back(iNew);
@@ -73,7 +73,7 @@ void CShockRifle::shoot()
 
 //====================
 
-void CShockRifle::renderBlended()
+GLvoid CShockRifle::renderBlended()
 {
 	if(fTime > 0.0f)fTime -= glAp.sof(1.0f);
 	if(fTime < 0.0f)fTime = 0.0f;

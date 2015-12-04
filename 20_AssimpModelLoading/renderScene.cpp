@@ -44,7 +44,7 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -61,7 +61,7 @@ void InitScene(LPVOID lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -88,7 +88,7 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -129,7 +129,7 @@ void RenderScene(LPVOID lpParam)
 
 	FOR(i, 6)
 	{
-		float xPosHouse = -80.0f+i*30.0f;
+		GLfloat xPosHouse = -80.0f+i*30.0f;
 		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(xPosHouse, 0, 0));
 		mModel = glm::scale(mModel, glm::vec3(3, 3, 3));
 
@@ -143,7 +143,7 @@ void RenderScene(LPVOID lpParam)
 
 	FOR(i, 7)
 	{
-		float xPosHouse = -75.0f+i*30.0f;
+		GLfloat xPosHouse = -75.0f+i*30.0f;
 		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(xPosHouse, 0, 0));
 		mModel = glm::scale(mModel, glm::vec3(1.8f, 1.8f, 1.8f));
 
@@ -153,13 +153,13 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -183,7 +183,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

@@ -12,20 +12,20 @@ Purpose:	Wraps OpenGL shader loading
 class CShader
 {
 public:
-	bool LoadShader(string sFile, int a_iType);
-	void DeleteShader();
+	GLboolean LoadShader(string sFile, GLint a_iType);
+	GLvoid DeleteShader();
 
-	bool GetLinesFromFile(string sFile, bool bIncludePart, vector<string>* vResult);
+	GLboolean GetLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult);
 
-	bool IsLoaded();
+	GLboolean IsLoaded();
 	UINT GetShaderID();
 
 	CShader();
 
 private:
 	UINT uiShader; // ID of shader
-	int iType; // GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
-	bool bLoaded; // Whether shader was loaded and compiled
+	GLint iType; // GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
+	GLboolean bLoaded; // Whether shader was loaded and compiled
 };
 
 /********************************
@@ -40,48 +40,48 @@ Purpose:	Wraps OpenGL shader program
 class CShaderProgram
 {
 public:
-	void CreateProgram();
-	void DeleteProgram();
+	GLvoid CreateProgram();
+	GLvoid DeleteProgram();
 
-	bool AddShaderToProgram(CShader* shShader);
-	bool LinkProgram();
+	GLboolean AddShaderToProgram(CShader* shShader);
+	GLboolean LinkProgram();
 
-	void UseProgram();
+	GLvoid UseProgram();
 
 	UINT GetProgramID();
 
 	// Setting vectors
-	void SetUniform(string sName, glm::vec2* vVectors, int iCount = 1);
-	void SetUniform(string sName, const glm::vec2 vVector);
-	void SetUniform(string sName, glm::vec3* vVectors, int iCount = 1);
-	void SetUniform(string sName, const glm::vec3 vVector);
-	void SetUniform(string sName, glm::vec4* vVectors, int iCount = 1);
-	void SetUniform(string sName, const glm::vec4 vVector);
+	GLvoid SetUniform(string sName, glm::vec2* vVectors, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const glm::vec2 vVector);
+	GLvoid SetUniform(string sName, glm::vec3* vVectors, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const glm::vec3 vVector);
+	GLvoid SetUniform(string sName, glm::vec4* vVectors, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const glm::vec4 vVector);
 
 	// Setting floats
-	void SetUniform(string sName, float* fValues, int iCount = 1);
-	void SetUniform(string sName, const float fValue);
+	GLvoid SetUniform(string sName, float* fValues, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const GLfloat fValue);
 
 	// Setting 3x3 matrices
-	void SetUniform(string sName, glm::mat3* mMatrices, int iCount = 1);
-	void SetUniform(string sName, const glm::mat3 mMatrix);
+	GLvoid SetUniform(string sName, glm::mat3* mMatrices, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const glm::mat3 mMatrix);
 
 	// Setting 4x4 matrices
-	void SetUniform(string sName, glm::mat4* mMatrices, int iCount = 1);
-	void SetUniform(string sName, const glm::mat4 mMatrix);
+	GLvoid SetUniform(string sName, glm::mat4* mMatrices, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const glm::mat4 mMatrix);
 
 	// Setting integers
-	void SetUniform(string sName, int* iValues, int iCount = 1);
-	void SetUniform(string sName, const int iValue);
+	GLvoid SetUniform(string sName, int* iValues, GLint iCount = 1);
+	GLvoid SetUniform(string sName, const GLint iValue);
 
 	CShaderProgram();
 
 private:
 	UINT uiProgram; // ID of program
-	bool bLinked; // Whether program was linked and is ready to use
+	GLboolean bLinked; // Whether program was linked and is ready to use
 };
 
-bool PrepareShaderPrograms();
+GLboolean PrepareShaderPrograms();
 
 #define NUMSHADERS 12
 

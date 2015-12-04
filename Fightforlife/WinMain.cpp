@@ -13,10 +13,10 @@ HINSTANCE g_Inst; // Global application instance variable
 HDC g_DC;
 HGLRC g_RC;
 
-bool kp[256];   // Is key pressed?
-bool quitapp=false;
+GLboolean kp[256];   // Is key pressed?
+GLboolean quitapp=false;
 
-int FPS5=12; // Variable used for speed-optimize game
+GLint FPS5=12; // Variable used for speed-optimize game
 
 //////////////////////////////////////// KEYS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 //
@@ -24,7 +24,7 @@ int FPS5=12; // Variable used for speed-optimize game
 //
 //////////////////////////////////////// KEYS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-bool keys(int keyid)
+GLboolean keys(GLint keyid)
 {
 	if(GetKeyState(keyid) & 0x80) return true;
 	else return false;
@@ -36,7 +36,7 @@ bool keys(int keyid)
 //
 //////////////////////////////////////// ONEKEY \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-bool onekey(int keyid)
+GLboolean onekey(GLint keyid)
 {
 	if(keys(keyid) && !kp[keyid]){kp[keyid]=true; return true;}
 	if(!keys(keyid)){kp[keyid]=false; return false;}
@@ -49,7 +49,7 @@ bool onekey(int keyid)
 //
 ////////////////////////////// CHANGE TO FULLSCREEN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void ChangeToFullScreen()
+GLvoid ChangeToFullScreen()
 {
 	DEVMODE dmSettings;									// Device Mode variable
 
@@ -70,7 +70,7 @@ void ChangeToFullScreen()
 	// This function actually changes the screen to full screen
 	// CDS_FULLSCREEN Gets Rid Of Start Bar.
 	// We always want to get a result from this function to check if we failed
-	int result = ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN);	
+	GLint result = ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN);	
 
 	// Check if we didn't recieved a good return message From the function
 	if(result != DISP_CHANGE_SUCCESSFUL)
@@ -81,9 +81,9 @@ void ChangeToFullScreen()
 	}
 }
 
-// f- function that returns float depending on computer's speed
+// f- function that returns GLfloat depending on computer's speed
 
-float f(float inc)
+GLfloat f(GLfloat inc)
 {
 	return (float)(inc*12)/FPS5;
 }
@@ -94,11 +94,11 @@ float f(float inc)
 //
 ///////////////////////////////////// UPDATEFPS10 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void UpdateFPS5()
+GLvoid UpdateFPS5()
 {
-	static float last=GetTickCount();;
-	float current=GetTickCount();
-	static float fps;
+	static GLfloat last=GetTickCount();;
+	GLfloat current=GetTickCount();
+	static GLfloat fps;
 
 	fps++;
 
@@ -117,7 +117,7 @@ void UpdateFPS5()
 //
 ////////////////////////////////// QUIT APPLICATION \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void QuitApplication()
+GLvoid QuitApplication()
 {
 	quitapp=true;
 	if (g_RC)											
@@ -141,7 +141,7 @@ void QuitApplication()
 //
 ///////////////////////////////// REGISTER MY CLASS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void RegisterMyClass(const HINSTANCE &hInst)
+GLvoid RegisterMyClass(const HINSTANCE &hInst)
 {
 	WNDCLASSEX wcex; // This is our window class variable
 
@@ -170,7 +170,7 @@ void RegisterMyClass(const HINSTANCE &hInst)
 //
 ///////////////////////////////////// CREATE MY WINDOW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-bool CreateMyWindow(const HINSTANCE& hInst, LPSTR title) 
+GLboolean CreateMyWindow(const HINSTANCE& hInst, LPSTR title) 
 {
 	DWORD dwStyle= WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;	
 
@@ -228,7 +228,7 @@ WPARAM MainLoop()
 //
 ///////////////////////////////////////// WIN MAIN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-int WINAPI WinMain(HINSTANCE mainInst,HINSTANCE prevInst,LPSTR command,int show)
+GLint WINAPI WinMain(HINSTANCE mainInst,HINSTANCE prevInst,LPSTR command,GLint show)
 {								
 	RegisterMyClass(mainInst);						// Register class with Windows OS	
 	if(!CreateMyWindow(mainInst,"Collisions in 3D world"))return false; // Create window and if something wasn't succesful, return false and quit app

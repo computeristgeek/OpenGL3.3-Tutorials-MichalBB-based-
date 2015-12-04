@@ -6,26 +6,26 @@
 #include "Model.h"
 #include "MilkshapeModel.h"
 
-bool keys[5];
+GLboolean keys[5];
 
 
 								
 UINT g_Texture[MAX_TEXTURES];
-bool one=TRUE;
-bool  g_bFullScreen = true;	
-float timer=0.0f;							// Set full screen as default
-float inc=0.0f;
+GLboolean one=TRUE;
+GLboolean  g_bFullScreen = true;	
+GLfloat timer=0.0f;							// Set full screen as default
+GLfloat inc=0.0f;
 HWND  g_hWnd;											// This is the handle for the window
 RECT  g_rRect;											// This holds the window dimensions
 HDC   g_hDC;											// General HDC - (handle to device context)
 HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
 HINSTANCE g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
-bool menu=true;
-int lasercount,rocketcount,plasmacount,enemyammo;
-float rotate;
-int win=0;
+GLboolean menu=true;
+GLint lasercount,rocketcount,plasmacount,enemyammo;
+GLfloat rotate;
+GLint win=0;
  
-void Init(HWND hWnd)
+GLvoid Init(HWND hWnd)
 {
 	g_hWnd = hWnd;										// Assign the window handle to a global window handle
 	GetClientRect(g_hWnd, &g_rRect);					// Assign the windows rectangle to a global RECT
@@ -44,7 +44,7 @@ glClearColor(0.5f,0.5f,0.5f,0);
 }
 
 
-float camerax,cameraz;
+GLfloat camerax,cameraz;
 
 
 
@@ -79,17 +79,17 @@ LoadTextures();
 
 	return(msg.wParam);									// Return from the program
 }
-float z;
+GLfloat z;
 
-int myfrag,compfrag,fragsall=1;
+GLint myfrag,compfrag,fragsall=1;
 
 char compfrags[100];
 char myfrags[100];
 char frags[100];
-bool addone=true;
-bool subone=true;
+GLboolean addone=true;
+GLboolean subone=true;
 
-void ReInit(){
+GLvoid ReInit(){
 g_Camera.PositionCamera(0, 1.75f, 6,   0, 1.75f, 0,   0, 1, 0);
 Enemy.x=-45;
 Enemy.z=-38;
@@ -107,7 +107,7 @@ PlasmaThrower.taken=false;
 weapon=Lasergun;
 }
 
-void Menu(){
+GLvoid Menu(){
 			glColor3f(0,1,1);
 		glPrint(20,370,"Winter Wars 2",0,4,4,4);
 		glColor3f(0.55f,1,0.5f);
@@ -165,7 +165,7 @@ if(GetKeyState(' ') & 0x80){
 }
 
 
-void RenderScene() 
+GLvoid RenderScene() 
 {
 gcvt(fragsall,3,frags);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -239,8 +239,8 @@ LRESULT CALLBACK WinProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         break; 
  
-	case WM_PAINT:										// If we need to repaint the scene
-		BeginPaint(hWnd, &ps);							// Init the paint struct		
+	case WM_PAINT:										// If we need to repaGLint the scene
+		BeginPaint(hWnd, &ps);							// Init the paGLint struct		
 		EndPaint(hWnd, &ps);							// EndPaint, Clean up
 		break;
 

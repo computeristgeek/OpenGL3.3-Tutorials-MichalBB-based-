@@ -3,9 +3,9 @@
 #include <freetype/ftglyph.h>
 
 #include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-#include <gl\glaux.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glaux.h>
 
 #include <cmath>
 #include <cfloat>
@@ -20,7 +20,7 @@
 
 using namespace std;
 
-#define FOR(i, q)for(int i = 0; i < q; i++)
+#define FOR(i, q)for(GLint i = 0; i < q; i++)
 #define ESZ(elem)(int)elem.size()
 
 #define PI 3.1415926f
@@ -34,25 +34,25 @@ class CVector2
 public:
 	union
 	{
-		struct {float x, y;}; // Data used for position on axises
-		float v[2];
+		struct {GLfloat x, y;}; // Data used for position on axises
+		GLfloat v[2];
 	};
 
 	//-----------------
 
 	CVector2();
-	CVector2(float X, float Y);
+	CVector2(GLfloat X, GLfloat Y);
 
 	//-----------------
 
 	CVector2 operator+(CVector2 vAdd);
 	CVector2 operator-(CVector2 vSub);
-	CVector2 operator*(float fValue);
-	CVector2 operator/(float fValue);
-	void operator+=(CVector2 vAdd);
-	void operator-=(CVector2 vSub);
-	void operator*=(float fValue);
-	void operator/=(float fValue);
+	CVector2 operator*(GLfloat fValue);
+	CVector2 operator/(GLfloat fValue);
+	GLvoid operator+=(CVector2 vAdd);
+	GLvoid operator-=(CVector2 vSub);
+	GLvoid operator*=(GLfloat fValue);
+	GLvoid operator/=(GLfloat fValue);
 };
 
 //''''' CVECTOR3 '''''
@@ -62,25 +62,25 @@ class CVector3
 public:
 	union
 	{
-		struct {float x, y, z;}; // Data used for position on axises
-		float v[3];
+		struct {GLfloat x, y, z;}; // Data used for position on axises
+		GLfloat v[3];
 	};
 
 	//-----------------
 	
 	CVector3();
-	CVector3(float X, float Y, float Z);
+	CVector3(GLfloat X, GLfloat Y, GLfloat Z);
 
 	//-----------------
 
 	CVector3 operator+(CVector3 vAdd);
 	CVector3 operator-(CVector3 vSub);
-	CVector3 operator*(float fValue);
-	CVector3 operator/(float fValue);
-	void operator+=(CVector3 vAdd);
-	void operator-=(CVector3 vSub);
-	void operator*=(float fValue);
-	void operator/=(float fValue);
+	CVector3 operator*(GLfloat fValue);
+	CVector3 operator/(GLfloat fValue);
+	GLvoid operator+=(CVector3 vAdd);
+	GLvoid operator-=(CVector3 vSub);
+	GLvoid operator*=(GLfloat fValue);
+	GLvoid operator/=(GLfloat fValue);
 };
 
 class CApplication
@@ -100,48 +100,48 @@ public:
 
 	struct DispMode
 	{
-		int iScrX, iScrY, iBpp, iFS;
+		GLint iScrX, iScrY, iBpp, iFS;
 		DispMode(){iScrX = iScrY = iBpp = iFS = 0;}
 	};
 	DispMode dm;
 
-	int iActive; // To check if app is active
+	GLint iActive; // To check if app is active
 	DWORD frameTime, lastTime;
-	float frameInterval;
-	int FPS; // How many frames per second are there
-	void resetTimer();
-	void updateFPS();
-	float sof(float value);
+	GLfloat frameInterval;
+	GLint FPS; // How many frames per second are there
+	GLvoid resetTimer();
+	GLvoid updateFPS();
+	GLfloat sof(GLfloat value);
 
 	//-----------------
 
-	void (*init)(); // Pointers to main functions
-	void (*glScene)();
-	void (*freeData)();
+	GLvoid (*init)(); // Pointers to main functions
+	GLvoid (*glScene)();
+	GLvoid (*freeData)();
 
 	//-----------------
 
-	int initializeApp(char* strName, WNDPROC prFunc);
-	void setBaseFunc(void (*INIT)(), void (*GLSCENE)(), void (*FREEDATA)());
-	void appBody();
-	void shutdown();
+	GLint initializeApp(char* strName, WNDPROC prFunc);
+	GLvoid setBaseFunc(GLvoid (*INIT)(), GLvoid (*GLSCENE)(), GLvoid (*FREEDATA)());
+	GLvoid appBody();
+	GLvoid shutdown();
 
 	//-----------------
 
-	void registerAppClass(HINSTANCE appInstance);
-	int createGLWindow(int width, int height, int bpp, int iFS);
-	int destroyGLWindow();
-	void setGLViewport(int iX, int iY, int iWidth, int iHeight, float sfNear, float sfFar, float sfVAngle);
-	void changeDisplaying(int scrWidth, int scrHeight, int bpp, int iFS);
-	void switchFS();
-	float fNear, fFar, fVAngle; // View angle
+	GLvoid registerAppClass(HINSTANCE appInstance);
+	GLint createGLWindow(GLint width, GLint height, GLint bpp, GLint iFS);
+	GLint destroyGLWindow();
+	GLvoid setGLViewport(GLint iX, GLint iY, GLint iWidth, GLint iHeight, GLfloat sfNear, GLfloat sfFar, GLfloat sfVAngle);
+	GLvoid changeDisplaying(GLint scrWidth, GLint scrHeight, GLint bpp, GLint iFS);
+	GLvoid switchFS();
+	GLfloat fNear, fFar, fVAngle; // View angle
 
 	//-----------------
 
 	WNDPROC msgFunc;
 
-	int key(int iKey);
-	int onekey(int iKey);
+	GLint key(GLint iKey);
+	GLint onekey(GLint iKey);
 	char kp[256];
 
 	//-----------------
@@ -157,10 +157,10 @@ public:
 
 struct CFData
 {
-	int pxsize;
-	int x, y;
+	GLint pxsize;
+	GLint x, y;
 	CFData(){}
-	CFData(int PXSIZE, int X, int Y)
+	CFData(GLint PXSIZE, GLint X, GLint Y)
 	{
 		x = X; y = Y; pxsize = PXSIZE;
 	}
@@ -169,19 +169,19 @@ struct CFData
 class CFreeType
 {
 public:
-	void createChar(WORD ch);
-	void createFont(char* fntName, int h);
-	void print(CFData fData, char* strText, ...);
-	void wprint(CFData fData, wstring strText);
-	void CFreeType::printwords(vector<wstring> words, CVector2 tl, CVector2 br, int pxsize, bool center);
-	int getxsize(wstring strText, int pxsize);
-	int getcenterx(int size, int x1, int x2);
+	GLvoid createChar(WORD ch);
+	GLvoid createFont(char* fntName, GLint h);
+	GLvoid print(CFData fData, char* strText, ...);
+	GLvoid wprint(CFData fData, wstring strText);
+	GLvoid CFreeType::printwords(vector<wstring> words, CVector2 tl, CVector2 br, GLint pxsize, GLboolean center);
+	GLint getxsize(wstring strText, GLint pxsize);
+	GLint getcenterx(GLint size, GLint x1, GLint x2);
 private:
 	FT_Face face;
-	GLuint chars[383];
+	GLuGLint chars[383];
 	short chsize[383];
-	GLuint list_base;
-	float height;
+	GLuGLint list_base;
+	GLfloat height;
 };
 
 }
@@ -198,16 +198,16 @@ typedef mgbsoft::CFreeType CFreeType;
 #define INTERSECTS 1
 #define FRONT 2
 
-float vecMagnitude(CVector3 vVector);
-void vecNormalize(CVector3 &vVector);
+GLfloat vecMagnitude(CVector3 vVector);
+GLvoid vecNormalize(CVector3 &vVector);
 CVector3 vecCross(CVector3 vVector1, CVector3 vVector2);
-float vecDist(CVector3 vPoint1, CVector3 vPoint2);
-float vecDot(CVector3 vVector1, CVector3 vVector2);
+GLfloat vecDist(CVector3 vPoint1, CVector3 vPoint2);
+GLfloat vecDot(CVector3 vVector1, CVector3 vVector2);
 double vecAngle(CVector3 vVector1, CVector3 vVector2);
 
-bool collisionLinePoly(CVector3 vA, CVector3 vB, CVector3* vNormal, CVector3 vPoly[], int iNumVerts);
-bool collisionSphereLine(CVector3 vCenter, float fRad, CVector3 vA, CVector3 vB);
-bool collisionSpherePoly(CVector3 vPoly[], int iNumVerts, CVector3 *vNormal, CVector3 vCenter,  float fRad, float &fDFCenter);
+GLboolean collisionLinePoly(CVector3 vA, CVector3 vB, CVector3* vNormal, CVector3 vPoly[], GLint iNumVerts);
+GLboolean collisionSphereLine(CVector3 vCenter, GLfloat fRad, CVector3 vA, CVector3 vB);
+GLboolean collisionSpherePoly(CVector3 vPoly[], GLint iNumVerts, CVector3 *vNormal, CVector3 vCenter,  GLfloat fRad, GLfloat &fDFCenter);
 
 CVector3 getLastIntersection();
 CVector3 closestPointOnLine(CVector3 vA, CVector3 vB, CVector3 vPoint);
@@ -218,9 +218,9 @@ CVector3 closestPointOnLine(CVector3 vA, CVector3 vB, CVector3 vPoint);
 #define LINEAR 1
 #define MIPMAP 2
 
-void textureBMP(UINT *uiStor, char* strFileName, bool bClamp, bool bTrans, UINT uiFilter);
-void ortho2DBegin(int w, int h);
-void ortho2DEnd();
+GLvoid textureBMP(UINT *uiStor, char* strFileName, GLboolean bClamp, GLboolean bTrans, UINT uiFilter);
+GLvoid ortho2DBegin(GLint w, GLint h);
+GLvoid ortho2DEnd();
 
 // Font utility
 

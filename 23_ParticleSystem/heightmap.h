@@ -17,20 +17,20 @@ Purpose:	Wraps FreeType heightmap loading and rendering, also allowing
 class CMultiLayeredHeightmap
 {
 public:
-	static bool LoadTerrainShaderProgram();
-	static void ReleaseTerrainShaderProgram();
+	static GLboolean LoadTerrainShaderProgram();
+	static GLvoid ReleaseTerrainShaderProgram();
 
-	bool LoadHeightMapFromImage(string sImagePath);
-	void ReleaseHeightmap();
+	GLboolean LoadHeightMapFromImage(string sImagePath);
+	GLvoid ReleaseHeightmap();
 
-	void RenderHeightmap();
-	void RenderHeightmapForNormals();
+	GLvoid RenderHeightmap();
+	GLvoid RenderHeightmapForNormals();
 
-	void SetRenderSize(float fQuadSize, float fHeight);
-	void SetRenderSize(float fRenderX, float fHeight, float fRenderZ);
+	GLvoid SetRenderSize(GLfloat fQuadSize, GLfloat fHeight);
+	GLvoid SetRenderSize(GLfloat fRenderX, GLfloat fHeight, GLfloat fRenderZ);
 
-	int GetNumHeightmapRows();
-	int GetNumHeightmapCols();
+	GLint GetNumHeightmapRows();
+	GLint GetNumHeightmapCols();
 
 	glm::mat4 GetScaleMatrix();
 
@@ -41,10 +41,10 @@ public:
 private:
 	UINT uiVAO;
 
-	bool bLoaded;
-	bool bShaderProgramLoaded;
-	int iRows;
-	int iCols;
+	GLboolean bLoaded;
+	GLboolean bShaderProgramLoaded;
+	GLint iRows;
+	GLint iCols;
 
 	glm::vec3 vRenderScale;
 

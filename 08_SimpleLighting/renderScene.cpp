@@ -39,9 +39,9 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-int iTorusFaces1, iTorusFaces2;
+GLint iTorusFaces1, iTorusFaces2;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -125,10 +125,10 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
-float fSunAngle = 45.0f;
+GLfloat fGlobalAngle;
+GLfloat fSunAngle = 45.0f;
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -141,7 +141,7 @@ void renderScene(LPVOID lpParam)
 
 	// Set light properties
 
-	float fSine = sin(fSunAngle*3.1415/180.0);
+	GLfloat fSine = sin(fSunAngle*3.1415/180.0);
 	glm::vec3 vSunPos(cos(fSunAngle*3.1415/180.0)*70, sin(fSunAngle*3.1415/180.0)*70, 0.0);
 
 	// We'll change color of skies depending on sun's position
@@ -170,7 +170,7 @@ void renderScene(LPVOID lpParam)
 
 	FOR(i, 5)
 	{
-		float fSign = -1.0f+float(i%2)*2.0f; // This just returns -1.0f or 1.0f (try to examine this)
+		GLfloat fSign = -1.0f+float(i%2)*2.0f; // This just returns -1.0f or 1.0f (try to examine this)
 		glm::vec3 vPos = glm::vec3(fSign*15.0f, 0.0f, 50.0f-float(i)*25.0f);
 		mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 		mModelToCamera = glm::scale(mModelToCamera, glm::vec3(8.0f, 8.0f, 8.0f));
@@ -186,7 +186,7 @@ void renderScene(LPVOID lpParam)
 
 	FOR(i, 5)
 	{
-		float fSign = 1.0f-float(i%2)*2.0f; // This just returns -1.0f or 1.0f (try to examine this)
+		GLfloat fSign = 1.0f-float(i%2)*2.0f; // This just returns -1.0f or 1.0f (try to examine this)
 		glm::vec3 vPos = glm::vec3(fSign*15.0f, 0.0f, 50.0f-float(i)*25.0f);
 		mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 		mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle+i*30.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -229,7 +229,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	FOR(i, 4)tTextures[i].releaseTexture();
 

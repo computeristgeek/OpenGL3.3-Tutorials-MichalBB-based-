@@ -51,9 +51,9 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -156,7 +156,7 @@ void initScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.0f, 0.26f, 0.48f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
@@ -176,7 +176,7 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
+GLfloat fGlobalAngle;
 
 #define FOG_EQUATION_LINEAR	0
 #define FOG_EQUATION_EXP		1
@@ -184,16 +184,16 @@ float fGlobalAngle;
 
 namespace FogParameters
 {
-	float fDensity = 0.04f;
-	float fStart = 10.0f;
-	float fEnd = 75.0f;
+	GLfloat fDensity = 0.04f;
+	GLfloat fStart = 10.0f;
+	GLfloat fEnd = 75.0f;
 	glm::vec4 vFogColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-	int iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
+	GLint iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
 };
 
 glm::vec3 vLightPos = glm::vec3(0.0f, 10.0f, 20.0f);
 
-void renderColoredCube()
+GLvoid renderColoredCube()
 {
 	glm::vec3 vColors[] = 
 	{
@@ -211,7 +211,7 @@ void renderColoredCube()
 	}
 }
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -246,7 +246,7 @@ void renderScene(LPVOID lpParam)
 	spPointLights.setUniform("ptLight.vColor", glm::vec3(0.0f, 0.0f, 1.0f));
 	spPointLights.setUniform("ptLight.vPosition", vLightPos);
 	spPointLights.setUniform("ptLight.fAmbient", 0.15f);
-	static float fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
+	static GLfloat fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
 	if(Keys::key('P'))fConst += appMain.sof(0.2f);
 	if(Keys::key('O'))fConst -= appMain.sof(0.2f);
 	if(Keys::key('L'))fLineaer += appMain.sof(0.01f);
@@ -282,7 +282,7 @@ void renderScene(LPVOID lpParam)
 
 	SFOR(nb, 1, 9)
 	{
-		int iCnt = nb > 5 ? 10-nb : nb;
+		GLint iCnt = nb > 5 ? 10-nb : nb;
 		FOR(i, iCnt)
 		{
 			glm::vec3 vPos = glm::vec3(-25.0f+nb*8.02f, 4.0f+i*8.02f, 0.0f);
@@ -299,7 +299,7 @@ void renderScene(LPVOID lpParam)
 
 	tTextures[2].bindTexture();
 	
-	// Now it's gonna float in the air
+	// Now it's gonna GLfloat in the air
 	glm::vec3 vPos = glm::vec3(0.0f, 50.0, 0.0f);
 	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
 	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -337,13 +337,13 @@ void renderScene(LPVOID lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	// Print something over scene
+	// PrGLint something over scene
 
 	spFont2D.useProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.setUniform("matrices.projectionMatrix", oglControl->getOrthoMatrix());
 
-	int w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
+	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
 	
 	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
@@ -366,7 +366,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

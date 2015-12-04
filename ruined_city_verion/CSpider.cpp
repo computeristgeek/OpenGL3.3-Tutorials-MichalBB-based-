@@ -1,14 +1,14 @@
 #include "mainheader.h"
 
-void CSpider::render()
+GLvoid CSpider::render()
 {
 	vLastPos = vPos;
 	fGrav -= glAp.sof(0.5f);
 	FOR(j, ESZ(lv1.iStand))
 	{
-		int i = lv1.iStand[j];
+		GLint i = lv1.iStand[j];
 		CVector3 vPoly[] = {lv1.vFaces[i*3], lv1.vFaces[i*3 + 1], lv1.vFaces[i*3 + 2]};
-		float fDFCenter = 0.0f;
+		GLfloat fDFCenter = 0.0f;
 		if(collisionSpherePoly(vPoly, 3, &lv1.vNorms[i], vPos, 3.0f, fDFCenter))
 		{
 			CVector3 vOffset = lv1.vNorms[i];
@@ -21,9 +21,9 @@ void CSpider::render()
 	vPos.y += fGrav;
 	FOR(j, ESZ(lv1.iNotStand))
 	{
-		int i = lv1.iNotStand[j];
+		GLint i = lv1.iNotStand[j];
 		CVector3 vPoly[] = {lv1.vFaces[i*3], lv1.vFaces[i*3 + 1], lv1.vFaces[i*3 + 2]};
-		float fDFCenter = 0.0f;
+		GLfloat fDFCenter = 0.0f;
 		if(collisionSpherePoly(vPoly, 3, &lv1.vNorms[i], vPos, 3.0f, fDFCenter))
 		{
 			CVector3 vOffset = lv1.vNorms[i];
@@ -34,8 +34,8 @@ void CSpider::render()
 	}
 	CVector3 vDir = cCam.vEye - vPos; vDir.y = 0.0f;
 	vecNormalize(vDir);
-	float fDist = vecDist(vPos, cCam.vEye);
-	float fAngle2 = (float)vecAngle(CVector3(0, 0, -1), vDir) * 180 / PI;
+	GLfloat fDist = vecDist(vPos, cCam.vEye);
+	GLfloat fAngle2 = (float)vecAngle(CVector3(0, 0, -1), vDir) * 180 / PI;
 	if(fLife > 0.0f)
 	{
 		if(fDist < 8.0f)
@@ -84,13 +84,13 @@ void CSpider::render()
 		else fFade -= glAp.sof(0.25f);
 		glTranslatef(0, -fDieAngleX / 90.0f, 0);
 	}
-	float fScale = iType == 2 ? 2.0f : 2.5f;
+	GLfloat fScale = iType == 2 ? 2.0f : 2.5f;
 	glScalef(fScale, fScale, fScale);
 	mEnemies[iType].setGlobalBlend(fFade);
 	mEnemies[iType].renderModel(&aData);
 }
 
-void CSpider::renderBlood()
+GLvoid CSpider::renderBlood()
 {
 	glLineWidth(2.0f);
 	glBegin(GL_LINES);
@@ -114,9 +114,9 @@ void CSpider::renderBlood()
 	glLineWidth(1.0f);
 }
 
-void CSpider::addBlood(CVector3 vPos, float fDamage)
+GLvoid CSpider::addBlood(CVector3 vPos, GLfloat fDamage)
 {
-	int iTimes = (int)fDamage;
+	GLint iTimes = (int)fDamage;
 	FOR(i, iTimes)
 	{
 		vBPos.push_back(vPos);

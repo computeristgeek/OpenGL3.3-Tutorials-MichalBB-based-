@@ -18,19 +18,19 @@ Result:	Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-float fPyramid[36]; // Pyramid data - 4 triangles of 3 vertices of 3 floats
-float fPyramidColor[36]; // Same for color
+GLfloat fPyramid[36]; // Pyramid data - 4 triangles of 3 vertices of 3 floats
+GLfloat fPyramidColor[36]; // Same for color
 
 UINT uiVBO[2]; // One VBO for vertices positions, one for colors
 UINT uiVAO[1]; // One VAO for pyramid
 
-bool bShowFPS = false;
-bool bVerticalSync = true;
+GLboolean bShowFPS = false;
+GLboolean bVerticalSync = true;
 
 CShader shVertex, shFragment;
 CShaderProgram spMain;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -115,10 +115,10 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fRotationAngle = 0.0f;
-const float PIover180 = 3.1415f/180.0f;
+GLfloat fRotationAngle = 0.0f;
+const GLfloat PIover180 = 3.1415f/180.0f;
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -126,8 +126,8 @@ void renderScene(LPVOID lpParam)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(uiVAO[0]);
 
-	int iModelViewLoc = glGetUniformLocation(spMain.getProgramID(), "modelViewMatrix");
-	int iProjectionLoc = glGetUniformLocation(spMain.getProgramID(), "projectionMatrix");
+	GLint iModelViewLoc = glGetUniformLocation(spMain.getProgramID(), "modelViewMatrix");
+	GLint iProjectionLoc = glGetUniformLocation(spMain.getProgramID(), "projectionMatrix");
 	glUniformMatrix4fv(iProjectionLoc, 1, GL_FALSE, glm::value_ptr(*oglControl->getProjectionMatrix()));
 
 	glm::mat4 mModelView = glm::lookAt(glm::vec3(0, 15, 40), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -159,7 +159,7 @@ void renderScene(LPVOID lpParam)
 
 	// And lastly - render scaling pyramid that rotates
 
-	float fScaleValue = 1.5f+float(sin(fRotationAngle*PIover180))*0.5f;
+	GLfloat fScaleValue = 1.5f+float(sin(fRotationAngle*PIover180))*0.5f;
 	mCurrent = glm::translate(mModelView, glm::vec3(0.0f, -10.0f, 0.0f));
 	mCurrent = glm::scale(mCurrent, glm::vec3(fScaleValue, fScaleValue, fScaleValue));
 	mCurrent = glm::rotate(mCurrent, fRotationAngle, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -201,7 +201,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	spMain.deleteProgram();
 

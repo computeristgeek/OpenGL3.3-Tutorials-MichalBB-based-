@@ -38,14 +38,14 @@ CAssimpModel amModels[1];
 
 CMultiLayeredHeightmap hmWorld;
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-bool bDisplayNormals = false; // Do not display normals by default
+GLboolean bDisplayNormals = false; // Do not display normals by default
 
 CParticleSystemTransformFeedback psMainParticleSystem;
 CMD2Model md2Models[4];
 animState_t animationStateMain;
-int iCurrentModel = 0;
+GLint iCurrentModel = 0;
 string sModelNames[] = 
 {
 	"Dr. Freak",
@@ -68,7 +68,7 @@ Result:  Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -103,7 +103,7 @@ void InitScene(LPVOID lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -164,10 +164,10 @@ Result:  Renders whole scene.
 /*---------------------------------------------*/
 
 glm::vec3 vModelPosition = glm::vec3(0, 20, 0);
-float fModelRotation;
+GLfloat fModelRotation;
 animType_t atCurrentAnimation = STAND;
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -198,7 +198,7 @@ void RenderScene(LPVOID lpParam)
 	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0));
 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
 	// This values set the darkness of whole scene, that's why such name of variable :D
-	static float fAngleOfDarkness = 45.0f;
+	static GLfloat fAngleOfDarkness = 45.0f;
 	// You can play with direction of light with '+' and '-' key
 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
@@ -308,13 +308,13 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -327,13 +327,13 @@ void RenderScene(LPVOID lpParam)
 
 	// Handle input
 
-	bool bRunning = false;
-	static bool bLastFrameRunning = false;
+	GLboolean bRunning = false;
+	static GLboolean bLastFrameRunning = false;
 
 	if(Keys::Key(VK_UP))
 	{
-		float fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
-		float fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
 
 		glm::vec3 vMoveVector(fSine, 0, fCosine);
 
@@ -344,8 +344,8 @@ void RenderScene(LPVOID lpParam)
 	}
 	if(Keys::Key(VK_DOWN))
 	{
-		float fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
-		float fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
 
 		glm::vec3 vMoveVector(fSine, 0, fCosine);
 
@@ -409,7 +409,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

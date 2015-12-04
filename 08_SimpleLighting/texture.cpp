@@ -22,7 +22,7 @@ Result:	Loads texture from a file, supports most
 
 /*---------------------------------------------*/
 
-bool CTexture::loadTexture2D(string a_sPath, bool bGenerateMipMaps)
+GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 {
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	FIBITMAP* dib(0);
@@ -54,8 +54,8 @@ bool CTexture::loadTexture2D(string a_sPath, bool bGenerateMipMaps)
 	glGenTextures(1, &uiTexture);
 	glBindTexture(GL_TEXTURE_2D, uiTexture);
 	
-	int iFormat = iBPP == 24 ? GL_BGR : iBPP == 8 ? GL_LUMINANCE : 0;
-	int iInternalFormat = iBPP == 24 ? GL_RGB : GL_DEPTH_COMPONENT; 
+	GLint iFormat = iBPP == 24 ? GL_BGR : iBPP == 8 ? GL_LUMINANCE : 0;
+	GLint iInternalFormat = iBPP == 24 ? GL_RGB : GL_DEPTH_COMPONENT; 
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, iWidth, iHeight, 0, iFormat, GL_UNSIGNED_BYTE, bDataPointer);
 
@@ -85,7 +85,7 @@ Result:	Sets magnification and minification
 
 /*---------------------------------------------*/
 
-void CTexture::setFiltering(int a_tfMagnification, int a_tfMinification)
+GLvoid CTexture::setFiltering(GLint a_tfMagnification, GLint a_tfMinification)
 {
 	// Set magnification filter
 	if(a_tfMagnification == TEXTURE_FILTER_MAG_NEAREST)
@@ -119,7 +119,7 @@ Result:	Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CTexture::bindTexture(int iTextureUnit)
+GLvoid CTexture::bindTexture(GLint iTextureUnit)
 {
 	glActiveTexture(GL_TEXTURE0+iTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, uiTexture);
@@ -136,18 +136,18 @@ Result:	Frees all memory used by texture.
 
 /*---------------------------------------------*/
 
-void CTexture::releaseTexture()
+GLvoid CTexture::releaseTexture()
 {
 	glDeleteSamplers(1, &uiSampler);
 	glDeleteTextures(1, &uiTexture);
 }
 
-int CTexture::getMinificationFilter()
+GLint CTexture::getMinificationFilter()
 {
 	return tfMinification;
 }
 
-int CTexture::getMagnificationFilter()
+GLint CTexture::getMagnificationFilter()
 {
 	return tfMagnification;
 }

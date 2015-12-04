@@ -24,7 +24,7 @@ char* strSndNames[] =
 
 FSOUND_SAMPLE** sndData;
 
-void loadSounds(int iNumSnd)
+GLvoid loadSounds(GLint iNumSnd)
 {
 	sndData = new FSOUND_SAMPLE*[iNumSnd];
 	FOR(i, iNumSnd)
@@ -34,7 +34,7 @@ void loadSounds(int iNumSnd)
 	}
 }
 
-void InitFMOD()
+GLvoid InitFMOD()
 {
     if (FSOUND_GetVersion() < FMOD_VERSION)
     {

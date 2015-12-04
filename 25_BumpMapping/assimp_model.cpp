@@ -57,7 +57,7 @@ inline glm::vec3 aiToGlm(aiVector3D v)
 	return glm::vec3(v.x, v.y, v.z);
 }
 
-bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* sNormalTexturePath)
+GLboolean CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* sNormalTexturePath)
 {
 	if(vboModelData.GetBufferID() == 0)
 	{
@@ -78,16 +78,16 @@ bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* 
 		return false;
 	}
 
-	const int iVertexTotalSize = sizeof(aiVector3D)*2+sizeof(aiVector2D);
+	const GLint iVertexTotalSize = sizeof(aiVector3D)*2+sizeof(aiVector2D);
 	
-	int iTotalVertices = 0;
+	GLint iTotalVertices = 0;
 
 	FOR(i, scene->mNumMeshes)
 	{
 		aiMesh* mesh = scene->mMeshes[i];
-		int iMeshFaces = mesh->mNumFaces;
+		GLint iMeshFaces = mesh->mNumFaces;
 		iMaterialIndices.push_back(mesh->mMaterialIndex);
-		int iSizeBefore = vboModelData.GetCurrentSize();
+		GLint iSizeBefore = vboModelData.GetCurrentSize();
 		iMeshStartIndices.push_back(iSizeBefore/iVertexTotalSize);
 		FOR(j, iMeshFaces)
 		{
@@ -115,7 +115,7 @@ bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* 
 				glm::vec3 vTexCoordDif1 = uv1 - uv0;
 				glm::vec3 vTexCoordDif2 = uv2 - uv0;
 
-				float r = 1.0f / (vTexCoordDif1.x * vTexCoordDif2.y - vTexCoordDif1.y * vTexCoordDif2.x);
+				GLfloat r = 1.0f / (vTexCoordDif1.x * vTexCoordDif2.y - vTexCoordDif1.y * vTexCoordDif2.x);
 				tangent = glm::normalize((vPosDif1 * vTexCoordDif2.y  - vPosDif2 * vTexCoordDif1.y)*r);
 				bitangent = glm::normalize((vPosDif2 * vTexCoordDif1.x  - vPosDif1 * vTexCoordDif2.x)*r);
 			}
@@ -135,7 +135,7 @@ bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* 
 				}
 			}
 		}
-		int iMeshVertices = mesh->mNumVertices;
+		GLint iMeshVertices = mesh->mNumVertices;
 		iTotalVertices += iMeshVertices;
 		iMeshSizes.push_back((vboModelData.GetCurrentSize()-iSizeBefore)/iVertexTotalSize);
 	}
@@ -146,15 +146,15 @@ bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* 
 	FOR(i, iNumMaterials)
 	{
 		const aiMaterial* material = scene->mMaterials[i];
-		int a = 5;
-		int texIndex = 0;
+		GLint a = 5;
+		GLint texIndex = 0;
 		aiString path;  // filename
 
 		string sDir = GetDirectoryPath(sFilePath);
 		string sFullPath;
 		if(sTexturePath == NULL)
 		{
-			bool ok = material->GetTexture(aiTextureType_DIFFUSE, texIndex, &path) == AI_SUCCESS;
+			GLboolean ok = material->GetTexture(aiTextureType_DIFFUSE, texIndex, &path) == AI_SUCCESS;
 			if(!ok)ok = material->GetTexture(aiTextureType_AMBIENT, texIndex, &path) == AI_SUCCESS;
 			if(!ok)ok = material->GetTexture(aiTextureType_UNKNOWN, texIndex, &path) == AI_SUCCESS;
 			if(!ok)ok = material->GetTexture(aiTextureType_EMISSIVE, texIndex, &path) == AI_SUCCESS;
@@ -171,7 +171,7 @@ bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* 
 			sFullPath = sDir+sTextureName;
 		}
 		else sFullPath = sDir + string(sTexturePath);
-		int iTexFound = -1;
+		GLint iTexFound = -1;
 		FOR(j, ESZ(tTextures))if(sFullPath == tTextures[j].GetPath())
 		{
 			iTexFound = j;
@@ -198,7 +198,7 @@ bool CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* 
 
 	FOR(i, ESZ(iMeshSizes))
 	{
-		int iOldIndex = iMaterialIndices[i];
+		GLint iOldIndex = iMaterialIndices[i];
 		iMaterialIndices[i] = materialRemap[iOldIndex];
 	}
 
@@ -218,7 +218,7 @@ Result: Uploads all loaded model data in one global
 
 /*---------------------------------------------*/
 
-void CAssimpModel::FinalizeVBO()
+GLvoid CAssimpModel::FinalizeVBO()
 {
 	glGenVertexArrays(1, &uiVAO);
 	glBindVertexArray(uiVAO);
@@ -255,7 +255,7 @@ Result: Binds VAO of models with their VBO.
 
 /*---------------------------------------------*/
 
-void CAssimpModel::BindModelsVAO()
+GLvoid CAssimpModel::BindModelsVAO()
 {
 	glBindVertexArray(uiVAO);
 }
@@ -270,13 +270,13 @@ Result: Guess what it does ^^.
 
 /*---------------------------------------------*/
 
-void CAssimpModel::RenderModel(GLenum RenderMode)
+GLvoid CAssimpModel::RenderModel(GLenum RenderMode)
 {
 	if(!bLoaded)return;
-	int iNumMeshes = ESZ(iMeshSizes);
+	GLint iNumMeshes = ESZ(iMeshSizes);
 	FOR(i, iNumMeshes)
 	{
-		int iMatIndex = iMaterialIndices[i];
+		GLint iMatIndex = iMaterialIndices[i];
 		tTextures[iMatIndex].BindTexture(0);
 		if(bHasBumpMap)
 			tNormalMap.BindTexture(1);

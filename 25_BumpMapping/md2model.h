@@ -1,6 +1,6 @@
 #pragma once
 
-typedef float vec3_t[3];
+typedef GLfloat vec3_t[3];
 
 // number of precalculated normals
 #define NUMVERTEXNORMALS		162
@@ -20,26 +20,26 @@ typedef float vec3_t[3];
 // md2 header
 typedef struct
 {
-	int     ident;              // magic number. must be equal to "IDP2"
-	int     version;            // md2 version. must be equal to 8
+	GLint     ident;              // magic number. must be equal to "IDP2"
+	GLint     version;            // md2 version. must be equal to 8
 
-	int     skinwidth;          // width of the texture
-	int     skinheight;         // height of the texture
-	int     framesize;          // size of one frame in bytes
+	GLint     skinwidth;          // width of the texture
+	GLint     skinheight;         // height of the texture
+	GLint     framesize;          // size of one frame in bytes
 
-	int     num_skins;          // number of textures
-	int     num_xyz;            // number of vertices
-	int     num_st;             // number of texture coordinates
-	int     num_tris;           // number of triangles
-	int     num_glcmds;         // number of opengl commands
-	int     num_frames;         // total number of frames
+	GLint     num_skins;          // number of textures
+	GLint     num_xyz;            // number of vertices
+	GLint     num_st;             // number of texture coordinates
+	GLint     num_tris;           // number of triangles
+	GLint     num_glcmds;         // number of opengl commands
+	GLint     num_frames;         // total number of frames
 
-	int     ofs_skins;          // offset to skin names (64 bytes each)
-	int     ofs_st;             // offset to s-t texture coordinates
-	int     ofs_tris;           // offset to triangles
-	int     ofs_frames;         // offset to frame data
-	int     ofs_glcmds;         // offset to opengl commands
-	int     ofs_end;            // offset to end of file
+	GLint     ofs_skins;          // offset to skin names (64 bytes each)
+	GLint     ofs_st;             // offset to s-t texture coordinates
+	GLint     ofs_tris;           // offset to triangles
+	GLint     ofs_frames;         // offset to frame data
+	GLint     ofs_glcmds;         // offset to opengl commands
+	GLint     ofs_end;            // offset to end of file
 
 } md2_t;
 
@@ -54,8 +54,8 @@ typedef struct
 // md2 frame data (vertices are stored here)
 typedef struct
 {
-	float       scale[3];       // scale values
-	float       translate[3];   // translation vector
+	GLfloat       scale[3];       // scale values
+	GLfloat       translate[3];   // translation vector
 	char        name[16];       // frame name
 	vertex_t    verts[1];       // first vertex of this frame
 
@@ -134,14 +134,14 @@ Purpose:	Handles MD2 models - loading, rendering,
 class CMD2Model
 {
 public:
-	void LoadModel(char* sFilename);
+	GLvoid LoadModel(char* sFilename);
 
-	void RenderModel(animState_t* animState);
+	GLvoid RenderModel(animState_t* animState);
 
 	animState_t StartAnimation(animType_t type);
-	void UpdateAnimation(animState_t* animState, float fTimePassed);
-	void PauseAnimation();
-	void StopAnimation();
+	GLvoid UpdateAnimation(animState_t* animState, GLfloat fTimePassed);
+	GLvoid PauseAnimation();
+	GLvoid StopAnimation();
 
 	static anim_t	animlist[21];
 private:
@@ -152,7 +152,7 @@ private:
 	md2_t header;
 	
 	vector< vector<glm::vec3> > vVertices; // Vertices extracted for every frame
-	vector <vector< int > > vNormals; // Normal indices extracted for every frame
+	vector <vector< GLint > > vNormals; // Normal indices extracted for every frame
 	vector<int> glCommands; // Rendering OpenGL commands
 
 	vector<CVertexBufferObject> vboFrameVertices; // All frames (keyframes) of model

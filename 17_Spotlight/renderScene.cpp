@@ -59,7 +59,7 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -105,7 +105,7 @@ void InitScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -133,10 +133,10 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
-bool bWireFrame = false;
+GLfloat fGlobalAngle;
+GLboolean bWireFrame = false;
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -221,8 +221,8 @@ void RenderScene(LPVOID lpParam)
 	glm::mat4 mTranslated = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, -70));
 	FOR(i, 50)
 	{
-		float fAngle = i*20.0f;
-		float fSine = float(sin(fAngle*3.1415f/180.0f));
+		GLfloat fAngle = i*20.0f;
+		GLfloat fSine = float(sin(fAngle*3.1415f/180.0f));
 		mModelMatrix = glm::translate(mTranslated, glm::vec3(0, float(i)*4.0f, 0));
 		glm::mat4 mRotated = glm::rotate(mModelMatrix, fAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 		spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mRotated)));
@@ -256,7 +256,7 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
@@ -264,7 +264,7 @@ void RenderScene(LPVOID lpParam)
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -304,7 +304,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

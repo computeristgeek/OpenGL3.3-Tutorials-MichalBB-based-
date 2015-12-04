@@ -5,11 +5,11 @@
 #include "common_header.h"
 
 #include "openGLControl.h"
-#include <gl/wglew.h>
+#include <GL/wglew.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 
-bool COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
+GLboolean COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
 
 COpenGLControl::COpenGLControl()
 {
@@ -28,7 +28,7 @@ Result:	Creates fake window and OpenGL rendering
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::InitGLEW(HINSTANCE hInstance)
+GLboolean COpenGLControl::InitGLEW(HINSTANCE hInstance)
 {
 	if(bGlewInitialized)return true;
 
@@ -52,7 +52,7 @@ bool COpenGLControl::InitGLEW(HINSTANCE hInstance)
 	pfd.cDepthBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
  
-	int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+	GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
 	if (iPixelFormat == 0)return false;
 
 	if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -62,7 +62,7 @@ bool COpenGLControl::InitGLEW(HINSTANCE hInstance)
 	HGLRC hRCFake = wglCreateContext(hDC);
 	wglMakeCurrent(hDC, hRCFake);
 
-	bool bResult = true;
+	GLboolean bResult = true;
 
 	if(!bGlewInitialized)
 	{
@@ -100,14 +100,14 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVersion, int iMinorVersion, void (*a_ptrInitScene)(LPVOID), void (*a_ptrRenderScene)(LPVOID), void(*a_ptrReleaseScene)(LPVOID), LPVOID lpParam)
+GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(LPVOID), GLvoid (*a_ptrRenderScene)(LPVOID), void(*a_ptrReleaseScene)(LPVOID), LPVOID lpParam)
 {
 	if(!InitGLEW(hInstance))return false;
 
 	hWnd = a_hWnd;
 	hDC = GetDC(*hWnd);
 
-	bool bError = false;
+	GLboolean bError = false;
 	PIXELFORMATDESCRIPTOR pfd;
 
 	if(iMajorVersion <= 2)
@@ -121,7 +121,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 		pfd.cDepthBits = 32;
 		pfd.iLayerType = PFD_MAIN_PLANE;
  
-		int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+		GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
 		if (iPixelFormat == 0)return false;
 
 		if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -133,7 +133,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 	}
 	else if(WGLEW_ARB_create_context && WGLEW_ARB_pixel_format)
 	{
-		const int iPixelFormatAttribList[] =
+		const GLint iPixelFormatAttribList[] =
 		{
 			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
@@ -144,7 +144,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 			WGL_STENCIL_BITS_ARB, 8,
 			0 // End of attributes list
 		};
-		int iContextAttribs[] =
+		GLint iContextAttribs[] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, iMajorVersion,
 			WGL_CONTEXT_MINOR_VERSION_ARB, iMinorVersion,
@@ -152,7 +152,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 			0 // End of attributes list
 		};
 
-		int iPixelFormat, iNumFormats;
+		GLint iPixelFormat, iNumFormats;
 		wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &iPixelFormat, (UINT*)&iNumFormats);
 
 		// PFD seems to be only redundant parameter now
@@ -195,7 +195,7 @@ Result:	Resizes viewport to full window.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::ResizeOpenGLViewportFull()
+GLvoid COpenGLControl::ResizeOpenGLViewportFull()
 {
 	if(hWnd == NULL)return;
 	RECT rRect; GetClientRect(*hWnd, &rRect);
@@ -216,7 +216,7 @@ Result:	Calculates projection matrix and stores it.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::SetProjection3D(float fFOV, float fAspectRatio, float fNear, float fFar)
+GLvoid COpenGLControl::SetProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar)
 {
 	mProjection = glm::perspective(fFOV, fAspectRatio, fNear, fFar);
 }
@@ -232,7 +232,7 @@ Result:	Calculates ortho 2D projection matrix and stores it.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::SetOrtho2D(int width, int height)
+GLvoid COpenGLControl::SetOrtho2D(GLint width, GLint height)
 {
 	mOrtho = glm::ortho(0.0f, float(width), 0.0f, float(height));
 }
@@ -277,7 +277,7 @@ Result:	Registers simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::RegisterSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::RegisterSimpleOpenGLClass(HINSTANCE hInstance)
 {
 	if(bClassRegistered)return;
 	WNDCLASSEX wc;
@@ -309,7 +309,7 @@ Result:	Unregisters simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::UnregisterSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::UnregisterSimpleOpenGLClass(HINSTANCE hInstance)
 {
 	if(bClassRegistered)
 	{
@@ -355,7 +355,7 @@ Result:	Swaps back and front buffer.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::SwapBuffers()
+GLvoid COpenGLControl::SwapBuffers()
 {
 	::SwapBuffers(hDC);
 }
@@ -372,7 +372,7 @@ Result:	Makes current device and OpenGL rendering
 
 /*---------------------------------------------*/
 
-void COpenGLControl::MakeCurrent()
+GLvoid COpenGLControl::MakeCurrent()
 {
 	wglMakeCurrent(hDC, hRC);
 }
@@ -387,7 +387,7 @@ Result:	Calls previously set render function.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::Render(LPVOID lpParam)
+GLvoid COpenGLControl::Render(LPVOID lpParam)
 {
 	clock_t tCurrent = clock();
 	if( (tCurrent-tLastSecond) >= CLOCKS_PER_SEC)
@@ -411,7 +411,7 @@ Result:	Calls previously set release function
 
 /*---------------------------------------------*/
 
-void COpenGLControl::ReleaseOpenGLControl(LPVOID lpParam)
+GLvoid COpenGLControl::ReleaseOpenGLControl(LPVOID lpParam)
 {
 	if(ptrReleaseScene)ptrReleaseScene(lpParam);
 
@@ -432,7 +432,7 @@ Result:	Guess what it does :)
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::SetVerticalSynchronization(bool bEnabled)
+GLboolean COpenGLControl::SetVerticalSynchronization(GLboolean bEnabled)
 {
 	if(!wglSwapIntervalEXT)return false;
 
@@ -452,17 +452,17 @@ Result:	... They get something :D
 
 /*---------------------------------------------*/
 
-int COpenGLControl::GetFPS()
+GLint COpenGLControl::GetFPS()
 {
 	return iFPSCount;
 }
 
-int COpenGLControl::GetViewportWidth()
+GLint COpenGLControl::GetViewportWidth()
 {
 	return iViewportWidth;
 }
 
-int COpenGLControl::GetViewportHeight()
+GLint COpenGLControl::GetViewportHeight()
 {
 	return iViewportHeight;
 }

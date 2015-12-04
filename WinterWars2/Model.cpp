@@ -12,7 +12,7 @@
 */
 
 #include <windows.h>		// Header File For Windows
-#include <gl\gl.h>			// Header File For The OpenGL32 Library
+#include <GL/gl.h>			// Header File For The OpenGL32 Library
 
 #include "Model.h"
 #include "main.h"
@@ -31,7 +31,7 @@ Model::Model()
 
 Model::~Model()
 {
-	int i;
+	GLint i;
 	for ( i = 0; i < m_numMeshes; i++ )
 		delete[] m_pMeshes[i].m_pTriangleIndices;
 	for ( i = 0; i < m_numMaterials; i++ )
@@ -66,14 +66,14 @@ Model::~Model()
 	}
 }
 
-void Model::draw() 
+GLvoid Model::draw() 
 {
 	GLboolean texEnabled = glIsEnabled( GL_TEXTURE_2D );
 
 	// Draw by group
-	for ( int i = 0; i < m_numMeshes; i++ )
+	for ( GLint i = 0; i < m_numMeshes; i++ )
 	{
-		int materialIndex = m_pMeshes[i].m_materialIndex;
+		GLint materialIndex = m_pMeshes[i].m_materialIndex;
 		if ( materialIndex >= 0 )
 		{
 			glMaterialfv( GL_FRONT, GL_AMBIENT, m_pMaterials[materialIndex].m_ambient );
@@ -98,14 +98,14 @@ void Model::draw()
 
 		glBegin( GL_TRIANGLES );
 		{
-			for ( int j = 0; j < m_pMeshes[i].m_numTriangles; j++ )
+			for ( GLint j = 0; j < m_pMeshes[i].m_numTriangles; j++ )
 			{
-				int triangleIndex = m_pMeshes[i].m_pTriangleIndices[j];
+				GLint triangleIndex = m_pMeshes[i].m_pTriangleIndices[j];
 				const Triangle* pTri = &m_pTriangles[triangleIndex];
 
-				for ( int k = 0; k < 3; k++ )
+				for ( GLint k = 0; k < 3; k++ )
 				{
-					int index = pTri->m_vertexIndices[k];
+					GLint index = pTri->m_vertexIndices[k];
 
 					glNormal3fv( pTri->m_vertexNormals[k] );
 					glTexCoord2f( pTri->m_s[k], pTri->m_t[k] );
@@ -122,9 +122,9 @@ void Model::draw()
 		glDisable( GL_TEXTURE_2D );
 }
 
-void Model::reloadTextures(char*name)
+GLvoid Model::reloadTextures(char*name)
 {
-	for ( int i = 0; i < m_numMaterials; i++ )
+	for ( GLint i = 0; i < m_numMaterials; i++ )
 		if ( strlen( m_pMaterials[i].m_pTextureFilename ) > 0 )
 	
 			m_pMaterials[i].m_texture = LoadGLTexture(name);

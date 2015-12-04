@@ -14,10 +14,10 @@ Purpose: Class for using skybox.
 class CSkybox
 {
 public:
-	void loadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom);
-	void renderSkybox();
+	GLvoid loadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom);
+	GLvoid renderSkybox();
 
-	void releaseSkybox();
+	GLvoid releaseSkybox();
 private:
 	UINT uiVAO;
 	CVertexBufferObject vboRenderData;

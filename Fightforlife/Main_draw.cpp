@@ -23,10 +23,10 @@ vector<CVector2> bullets; // Create bullets' objects
 vector<CVector2> rockets; // Create rockets' objects
 vector<CVector2> bolts; // Create healths' objects
 
-int enleft=100; // Enemies left
-bool win=false;
+GLint enleft=100; // Enemies left
+GLboolean win=false;
 
-void Init()
+GLvoid Init()
 {
 	RECT rect; // Rectangle variable
 	GetClientRect(g_Wnd,&rect); // Get window rectangle
@@ -69,29 +69,29 @@ void Init()
 //
 ////////////////////////////////////// RENDER SCENE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void RenderScene() 
+GLvoid RenderScene() 
 {	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 	glLoadIdentity();									// Reset the matrix
 	gluLookAt(0,0,50,	0,0,0,	0,1,0); // Look
 	g_soldier.Draw(); // Render soldier
 
-	for(int s=0;s<machiners.size();s++)
+	for(GLint s=0;s<machiners.size();s++)
 	{
 		machiners[s].Draw(); // Render machine gunner
 		if(machiners[s].life<=0) // If his life is less than 0
 		{
-				int random2=rand()%11; // Create random object
+				GLint random2=rand()%11; // Create random object
 				if(random2<5)
 				bullets.push_back(machiners[s].mvPos);
 				else if(random2>4 && random2<8)
 				rockets.push_back(machiners[s].mvPos);
 				else bolts.push_back(machiners[s].mvPos);
 
-				int luck=rand()%3;
+				GLint luck=rand()%3;
 				if(luck==0)
 				{
-					int randobj2=rand()%2;
+					GLint randobj2=rand()%2;
 					if(randobj2)bolts.push_back(CVector2(machiners[s].mvPos.x+1,machiners[s].mvPos.y));
 					else rockets.push_back(CVector2(machiners[s].mvPos.x+1,machiners[s].mvPos.y));
 				}
@@ -205,7 +205,7 @@ void RenderScene()
 			FSOUND_PlaySound(FSOUND_FREE,sounds[4]);
 		}
 	}
-	// Print enemies left text
+	// PrGLint enemies left text
 	PrintText(CVector2(620,580),1,Rgb(1,1,1),0,NOTHING,"Enemies left: %d",enleft);
 	g_soldier.DisplayInfo(); // Display soldier's info
 	AddEnemy(); // Add enemies

@@ -1,18 +1,18 @@
 class CWeapon
 {
 public:
-	int iAmmo, iMaxAmmo;
+	GLint iAmmo, iMaxAmmo;
 	CAnimData adWeapon;
 	CMSModel mWeapon; string strFile;
-	bool bShooting;
+	GLboolean bShooting;
 
 	string strName;
 	BYTE bR, bG, bB;
 
-	virtual void renderWeapon() = 0;
-	virtual void shoot() = 0;
-	virtual void renderAmmo() = 0;
-	virtual void renderBlended() = 0;
+	virtual GLvoid renderWeapon() = 0;
+	virtual GLvoid shoot() = 0;
+	virtual GLvoid renderAmmo() = 0;
+	virtual GLvoid renderBlended() = 0;
 };
 
 class CRipper : public CWeapon
@@ -22,38 +22,38 @@ public:
 	{
 	public:
 		CVector3 vPos, vLastPos, vDir, vNext;
-		int iFIndex, iNumHits;
-		float fAngle, fTime;
-		float fAnY, fAnX;
+		GLint iFIndex, iNumHits;
+		GLfloat fAngle, fTime;
+		GLfloat fAnY, fAnX;
 	};
 	vector<CRipperDisc> rdDiscs;
 	CMSModel mRDisc;
-	bool bLoaded;
+	GLboolean bLoaded;
 
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
 class CBullet
 {
 	public:
 		CVector3 vPos, vDir, vEnd;
-		float fLife;
+		GLfloat fLife;
 };
 
 class CDoubleUzi : public CWeapon
 {
 public:
-	float fZ[2];
+	GLfloat fZ[2];
 	vector<CBullet> bBullets;
 	CAnimData adWeapon2;
-	int iAUzi; // Active uzi
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLint iAUzi; // Active uzi
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 	CDoubleUzi(){iAUzi = 0; fZ[0] = fZ[1] = 0.0f;}
 };
 
@@ -61,11 +61,11 @@ class CQuadMinigun : public CWeapon
 {
 public:
 	CMSModel mRotator, mCannon;
-	float fAngle[4], fSpeed[4], fTime[4], fMAngle, fMSpeed;
+	GLfloat fAngle[4], fSpeed[4], fTime[4], fMAngle, fMSpeed;
 	CAnimData adFire[4];
-	int iPhase, iChannel;
-	bool bLoaded, bOverheat;
-	float fOverheat;
+	GLint iPhase, iChannel;
+	GLboolean bLoaded, bOverheat;
+	GLfloat fOverheat;
 	CQuadMinigun()
 	{
 		FOR(i, 4)
@@ -81,18 +81,18 @@ public:
 		fOverheat = 0.0f;
 		iChannel = -1;
 	}
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
 class CCannonBall
 {
 public:
 	CVector3 vPos, vLastPos, vAcc;
-	bool bExploding;
-	float fExpSize, fLife, fDamage;
+	GLboolean bExploding;
+	GLfloat fExpSize, fLife, fDamage;
 	CCannonBall(){bExploding = false; fExpSize = 0.0f; fDamage = 400.0f; fLife = 5.0f;}
 };
 
@@ -100,15 +100,15 @@ class CCannon : public CWeapon
 {
 public:
 	vector<CCannonBall> bBalls;
-	float fShake, fBack, fTime;
-	bool bRecover, bShoot;
+	GLfloat fShake, fBack, fTime;
+	GLboolean bRecover, bShoot;
 
 	CCannon(){fShake = 0.0f; fBack = fTime = 0.0f; bRecover = bShoot = false;}
 
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
 class CFlakCannon : public CWeapon
@@ -117,17 +117,17 @@ public:
 	class CFlak
 	{
 	public:
-		float fLife;
+		GLfloat fLife;
 		CVector3 vPos;
-		int iCurNode, iAllNodes;
+		GLint iCurNode, iAllNodes;
 		CVector3 vNodes[5];
 		CVector3 vDir[5];
 	};
 	vector<CFlak> fShells;
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
 class CShockRifle : public CWeapon
@@ -137,50 +137,50 @@ public:
 	{
 	public:
 		CVector3 vPos, vDirA, vDirB, vStart;
-		float fSize;
+		GLfloat fSize;
 		char cOnlyBeam;
 	};
-	float fTime;
+	GLfloat fTime;
 	vector<CImpact> iImpact;
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
 class CPlasmaThrower : public CWeapon
 {
 public:
 
-	int iPhase;
-	float fUp;
+	GLint iPhase;
+	GLfloat fUp;
 	struct CPlasma
 	{
 		CVector3 vPos, vLastPos, vDir, vEnd, vUp, vRight;
-		float fAngle, fLife;
+		GLfloat fAngle, fLife;
 	};
 
 	vector<CPlasma> pPlasmas;
 	CPlasmaThrower(){fUp = 0.0f;}
 
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
 
 class CLightingGun : public CWeapon
 {
 public:
-	void renderWeapon();
-	void shoot();
-	void renderAmmo();
-	void renderBlended();
+	GLvoid renderWeapon();
+	GLvoid shoot();
+	GLvoid renderAmmo();
+	GLvoid renderBlended();
 };
 
-extern int iCurWeapon;
-extern int iLIF, iLIE, iEnType;
+extern GLint iCurWeapon;
+extern GLint iLIF, iLIE, iEnType;
 CVector3 getIntersection(CVector3 vFrom, CVector3 vTo);
 CVector3 getIntersectionEnemy(CVector3 vFrom, CVector3 vTo, CVector3 vBest);
 pair<CVector3, CVector3> getNormQuad(CVector3 vNorm);
@@ -193,11 +193,11 @@ extern CFlakCannon gFCannon;
 extern CShockRifle gShockRifle;
 extern CLightingGun gLGun;
 
-void loadWeapons();
-void processWeapons();
-void renderWeaponsOrtho();
+GLvoid loadWeapons();
+GLvoid processWeapons();
+GLvoid renderWeaponsOrtho();
 
-void renderBox(CVector3 vPos);
+GLvoid renderBox(CVector3 vPos);
 
 extern UINT uiExpTex, uiPartTex, uiSmokeTex;
 extern CPlasmaThrower gPlasmaGun;

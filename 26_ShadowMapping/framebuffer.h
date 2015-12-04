@@ -15,29 +15,29 @@ class CFramebuffer
 {
 public:
 
-	bool CreateFrameBufferForDepthShadow();
+	GLboolean CreateFrameBufferForDepthShadow();
 	
 
-	bool CreateFramebufferWithTexture(int a_iWidth, int a_iHeight);
+	GLboolean CreateFramebufferWithTexture(GLint a_iWidth, GLint a_iHeight);
 
-	bool AddDepthBuffer();
-	void BindFramebuffer(bool bSetFullViewport = true);
-	void BindFramebufferShadowMap();
+	GLboolean AddDepthBuffer();
+	GLvoid BindFramebuffer(GLboolean bSetFullViewport = true);
+	GLvoid BindFramebufferShadowMap();
 	
-	void SetFramebufferTextureFiltering(int a_tfMagnification, int a_tfMinification);
-	void BindFramebufferTexture(int iTextureUnit = 0, bool bRegenMipMaps = false);
+	GLvoid SetFramebufferTextureFiltering(GLint a_tfMagnification, GLint a_tfMinification);
+	GLvoid BindFramebufferTexture(GLint iTextureUnit = 0, GLboolean bRegenMipMaps = false);
 
-	glm::mat4 CalculateProjectionMatrix(float fFOV, float fNear, float fFar);
+	glm::mat4 CalculateProjectionMatrix(GLfloat fFOV, GLfloat fNear, GLfloat fFar);
 	glm::mat4 CalculateOrthoMatrix();
 
-	void DeleteFramebuffer();
+	GLvoid DeleteFramebuffer();
 
-	int GetWidth();
-	int GetHeight();
+	GLint GetWidth();
+	GLint GetHeight();
 
 	CFramebuffer();
 private:
-	int iWidth, iHeight;
+	GLint iWidth, iHeight;
 	UINT uiFramebuffer;
 	UINT uiDepthRenderbuffer;
 	CTexture tFramebufferTex;

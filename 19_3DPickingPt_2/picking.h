@@ -1,8 +1,8 @@
 #pragma once
 
-glm::vec4 GetColorByIndex(int index);
-int GetIndexByColor(int r, int g, int b);
-int GetPickedColorIndexUnderMouse();
+glm::vec4 GetColorByIndex(GLint index);
+GLint GetIndexByColor(GLint r, GLint g, GLint b);
+GLint GetPickedColorIndexUnderMouse();
 
-void Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2);
-bool RaySphereCollision(glm::vec3 vSphereCenter, float fSphereRadius, glm::vec3 vA, glm::vec3 vB);
+GLvoid Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2);
+GLboolean RaySphereCollision(glm::vec3 vSphereCenter, GLfloat fSphereRadius, glm::vec3 vA, glm::vec3 vB);

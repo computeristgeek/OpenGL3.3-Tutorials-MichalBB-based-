@@ -14,45 +14,45 @@ Purpose:	Provides convenient usage
 class COpenGLControl
 {
 public:
-	bool initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVersion, int iMinorVersion, void (*a_initScene)(LPVOID), void (*a_renderScene)(LPVOID), void(*a_releaseScene)(LPVOID), LPVOID lpParam);
+	GLboolean initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(LPVOID), GLvoid (*a_renderScene)(LPVOID), void(*a_releaseScene)(LPVOID), LPVOID lpParam);
 	
-	void resizeOpenGLViewportFull();
-	void setProjection3D(float fFOV, float fAspectRatio, float fNear, float fFar);
-	void setOrtho2D(int width, int height);
+	GLvoid resizeOpenGLViewportFull();
+	GLvoid setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
+	GLvoid setOrtho2D(GLint width, GLint height);
 
 	glm::mat4* getProjectionMatrix();
 	glm::mat4* getOrthoMatrix();
 
-	void render(LPVOID lpParam);
-	void releaseOpenGLControl(LPVOID lpParam);
+	GLvoid render(LPVOID lpParam);
+	GLvoid releaseOpenGLControl(LPVOID lpParam);
 
-	static void registerSimpleOpenGLClass(HINSTANCE hInstance);
-	static void unregisterSimpleOpenGLClass(HINSTANCE hInstance);
+	static GLvoid registerSimpleOpenGLClass(HINSTANCE hInstance);
+	static GLvoid unregisterSimpleOpenGLClass(HINSTANCE hInstance);
 
-	void makeCurrent();
-	void swapBuffers();
+	GLvoid makeCurrent();
+	GLvoid swapBuffers();
 
-	bool setVerticalSynchronization(bool bEnabled);
+	GLboolean setVerticalSynchronization(GLboolean bEnabled);
 
-	int getFPS();
+	GLint getFPS();
 
-	int getViewportWidth();
-	int getViewportHeight();
+	GLint getViewportWidth();
+	GLint getViewportHeight();
 
 	COpenGLControl();
 
 private:
-	bool initGLEW(HINSTANCE hInstance);
+	GLboolean initGLEW(HINSTANCE hInstance);
 
 	HDC hDC;
 	HWND* hWnd;
 	HGLRC hRC;
-	static bool bClassRegistered;
-	static bool bGlewInitialized;
-	int iMajorVersion, iMinorVersion;
+	static GLboolean bClassRegistered;
+	static GLboolean bGlewInitialized;
+	GLint iMajorVersion, iMinorVersion;
 
 	// Used for FPS calculation
-	int iFPSCount, iCurrentFPS;
+	GLint iFPSCount, iCurrentFPS;
 	clock_t tLastSecond;
 
 	// Matrix for perspective projection
@@ -61,9 +61,9 @@ private:
 	glm::mat4 mOrtho;
 
 	// Viewport parameters
-	int iViewportWidth, iViewportHeight;
+	GLint iViewportWidth, iViewportHeight;
 
-	void (*initScene)(LPVOID lpParam), (*renderScene)(LPVOID lpParam), (*releaseScene)(LPVOID lpParam);
+	GLvoid (*initScene)(LPVOID lpParam), (*renderScene)(LPVOID lpParam), (*releaseScene)(LPVOID lpParam);
 };
 
 LRESULT CALLBACK msgHandlerSimpleOpenGLClass(HWND, UINT, WPARAM, LPARAM);

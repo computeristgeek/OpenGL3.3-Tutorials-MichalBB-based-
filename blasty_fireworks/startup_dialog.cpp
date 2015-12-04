@@ -1,18 +1,18 @@
 #include "mainheader.h"
 
-int iScrX[] = {320, 400, 640, 768, 800, 854, 1024, 1152, 1280, 1400, 1440, 1600, 1680, 1920, 2048, 2560};
-int iScrY[] = {200, 240, 480, 576, 600, 720, 768, 854, 960, 1024, 1050, 1080, 1200, 1536, 1600, 2048};
-int iStartRes = 0;
+GLint iScrX[] = {320, 400, 640, 768, 800, 854, 1024, 1152, 1280, 1400, 1440, 1600, 1680, 1920, 2048, 2560};
+GLint iScrY[] = {200, 240, 480, 576, 600, 720, 768, 854, 960, 1024, 1050, 1080, 1200, 1536, 1600, 2048};
+GLint iStartRes = 0;
 CApplication::DispMode dm;
 
 //====================
 
-void getModes(HWND hDialog, int iResID)
+GLvoid getModes(HWND hDialog, GLint iResID)
 {
 	DEVMODE dmSet; EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmSet);
 	SendDlgItemMessage(hDialog, iResID, CB_RESETCONTENT, 0, 0);
 	SendDlgItemMessage(hDialog, iResID, CB_INSERTSTRING, 0, (LPARAM)"Choose one");
-	int iCur = 1;
+	GLint iCur = 1;
 	FOR(i, 16)FOR(j, 16)
 	{
 		dmSet.dmPelsWidth = iScrX[i];
@@ -53,7 +53,7 @@ LRESULT CALLBACK dlgStartup(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lPar
 		{
 			case ID_OK:
 			{
-				char strText[50]; int iCurSel = (int)SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETCURSEL, 0, 0);
+				char strText[50]; GLint iCurSel = (int)SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETCURSEL, 0, 0);
 				SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETLBTEXT, iCurSel, (LPARAM)strText);
 				if(!strcmp(strText, "Choose one"))
 				{

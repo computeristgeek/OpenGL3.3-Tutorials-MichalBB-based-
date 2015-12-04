@@ -6,7 +6,7 @@
 
 #include "Main.h"
 
-void Enemy::Draw(){}
+GLvoid Enemy::Draw(){}
 
 //////////////////////////////////// MACHINER::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 //
@@ -14,7 +14,7 @@ void Enemy::Draw(){}
 //
 //////////////////////////////////// MACHINER::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Machiner::Draw()
+GLvoid Machiner::Draw()
 {
 	glColor3f(1,1,1); // Set color to white
 	glPushMatrix(); // Push the matrix
@@ -38,7 +38,7 @@ void Machiner::Draw()
 		mvPos+=v(vInc);
 	}
 
-	for(int s=0;s<g_soldier.bullets.size();s++)
+	for(GLint s=0;s<g_soldier.bullets.size();s++)
 	{
 		// If collision happens, subtract life and delete bullet
 		if(CBCollide(CVector2(0.1f,0.1f),CVector2(2,2),g_soldier.bullets[s].mvPos,mvPos))
@@ -86,7 +86,7 @@ void Machiner::Draw()
 //
 ////////////////////////////////////// ROBOT::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Robot::Draw()
+GLvoid Robot::Draw()
 {
 	glColor3f(1,1,1); // Set color to white
 	glPushMatrix(); // Push the matrix
@@ -110,7 +110,7 @@ void Robot::Draw()
 		mvPos+=v(vInc);
 	}
 
-	for(int s=0;s<g_soldier.bullets.size();s++)
+	for(GLint s=0;s<g_soldier.bullets.size();s++)
 	{
 		// If collision happens, subtract life and delete bullet
 		if(CBCollide(CVector2(0.1f,0.1f),CVector2(2,2),g_soldier.bullets[s].mvPos,mvPos))
@@ -159,7 +159,7 @@ void Robot::Draw()
 //
 /////////////////////////////////////// CAN::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Can::Draw()
+GLvoid Can::Draw()
 {
 	glColor3f(1,1,1); // Set color to white
 	glPushMatrix(); // Push the matrix
@@ -183,7 +183,7 @@ void Can::Draw()
 		mvPos+=v(vInc);
 	}
 
-	for(int s=0;s<g_soldier.bullets.size();s++)
+	for(GLint s=0;s<g_soldier.bullets.size();s++)
 	{
 		// If collision happens, subtract life and delete bullet
 		if(CBCollide(CVector2(0.1f,0.1f),CVector2(2,2),g_soldier.bullets[s].mvPos,mvPos))
@@ -230,14 +230,14 @@ void Can::Draw()
 //
 //////////////////////////////////////// ADDENEMY \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void AddEnemy()
+GLvoid AddEnemy()
 {
-	static float timetoadd=1.2f,time; // Creaate static variables
-	static int enpushed;
+	static GLfloat timetoadd=1.2f,time; // Creaate static variables
+	static GLint enpushed;
 	time+=f(0.01f); // Increase time
 	if(time>timetoadd) // If time has come
 	{
-		int lucky=rand()%2; // To know where to put enemy
+		GLint lucky=rand()%2; // To know where to put enemy
 		CVector2 randpos; // Random position
 		if(lucky)
 		{
@@ -254,7 +254,7 @@ void AddEnemy()
 		if(enpushed<97) // If there are less than 97 enemies pushed
 		{
 			enpushed++; // Increase enpushed
-			int random=rand()%20; // Create random enemy
+			GLint random=rand()%20; // Create random enemy
 			if(random<11)
 			machiners.push_back(Machiner(randpos)); // Push machine gunner
 			else if(random>10 && random<17)robots.push_back(Robot(randpos)); // Push robot

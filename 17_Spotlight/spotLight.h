@@ -18,15 +18,15 @@ public:
 	glm::vec3 vPosition;
 	glm::vec3 vDirection;
 
-	int bOn;
-	float fConeAngle;
-	float fLinearAtt;
+	GLint bOn;
+	GLfloat fConeAngle;
+	GLfloat fLinearAtt;
 
-	void SetUniformData(CShaderProgram* spProgram, string sLightVarName);
+	GLvoid SetUniformData(CShaderProgram* spProgram, string sLightVarName);
 
 	CSpotLight();
-	CSpotLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, glm::vec3 a_vDirection, int a_bOn, float a_fConeAngle, float a_fLinearAtt);
+	CSpotLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, glm::vec3 a_vDirection, GLint a_bOn, GLfloat a_fConeAngle, GLfloat a_fLinearAtt);
 private:
 	// This shouldn't be changed from outside
-	float fConeCosine;
+	GLfloat fConeCosine;
 };

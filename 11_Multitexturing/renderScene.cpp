@@ -49,9 +49,9 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -131,7 +131,7 @@ void initScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.0f, 0.26f, 0.48f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
@@ -151,10 +151,10 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
-float fDryAmount = 0.75f;
+GLfloat fGlobalAngle;
+GLfloat fDryAmount = 0.75f;
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -216,11 +216,11 @@ void renderScene(LPVOID lpParam)
 	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
 
 	tTextures[2].bindTexture();
-	const int iNumFloors = 5;
+	const GLint iNumFloors = 5;
 	FOR(floor, iNumFloors)
 	{
-		int iCnt = iNumFloors-floor;
-		float fSize = iCnt*8.0f;
+		GLint iCnt = iNumFloors-floor;
+		GLfloat fSize = iCnt*8.0f;
 		FOR(z, iCnt)FOR(x, iCnt)
 		{
 			glm::vec3 vPos = glm::vec3(-fSize/2+4.0f+x*8.02f, -5.98f+floor*8.02f, -fSize/2+4.0f+z*8.02f);
@@ -261,7 +261,7 @@ void renderScene(LPVOID lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	// Print something over scene
+	// PrGLint something over scene
 
 	spFont2D.useProgram();
 	glDisable(GL_DEPTH_TEST);
@@ -269,7 +269,7 @@ void renderScene(LPVOID lpParam)
 	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	// Get maximal number of texture units;
-	int iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
+	GLint iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
 	char buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
 	ftFont.print(buf, 20, 50, 24);
 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
@@ -296,7 +296,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

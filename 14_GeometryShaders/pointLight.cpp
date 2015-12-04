@@ -14,7 +14,7 @@ CPointLight::CPointLight()
 	fExpAtt = 0.00008f;
 }
 
-CPointLight::CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, float a_fAmbient, float a_fConstantAtt, float a_fLinearAtt, float a_fExpAtt)
+CPointLight::CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, GLfloat a_fAmbient, GLfloat a_fConstantAtt, GLfloat a_fLinearAtt, GLfloat a_fExpAtt)
 {
 	vColor = a_vColor;
 	vPosition = a_vPosition;
@@ -31,13 +31,13 @@ CPointLight::CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, float a_fAmb
 Name:	setUniformData
 
 Params:	spProgram - shader program
-		sLightVarName - name of point light variable
+		sLightVarName - name of poGLint light variable
 
-Result:	Sets all point light data.
+Result:	Sets all poGLint light data.
 
 /*---------------------------------------------*/
 
-void CPointLight::setUniformData(CShaderProgram* spProgram, string sLightVarName)
+GLvoid CPointLight::setUniformData(CShaderProgram* spProgram, string sLightVarName)
 {
 	spProgram->setUniform(sLightVarName+".vColor", vColor);
 	spProgram->setUniform(sLightVarName+".vPosition", vPosition);

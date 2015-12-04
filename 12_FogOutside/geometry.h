@@ -13,26 +13,26 @@
 //
 // The following functions are defined here:
 //
-// void renderWireTeapot(GLdouble size);
-// void renderSolidTeapot(GLdouble size);
-// void renderWireCube(GLdouble size);
-// void renderSolidCube(GLdouble size);
-// void renderWireSphere(GLdouble radius, GLint slices, GLint stacks);
-// void renderSolidSphere(GLdouble radius, GLint slices, GLint stacks);
-// void renderWireCone(GLdouble base, GLdouble height, GLint slices, GLint stacks);
-// void renderSolidCone(GLdouble base, GLdouble height, GLint slices, GLint stacks);
-// void renderWireTorus(GLdouble innerRadius, GLdouble outerRadius, GLint sides, GLint rings);
-// void renderSolidTorus(GLdouble innerRadius, GLdouble outerRadius, GLint sides, GLint rings);
-// void renderWireDodecahedron(void);
-// void renderSolidDodecahedron(void);
-// void renderWireOctahedron(void);
-// void renderSolidOctahedron(void);
-// void renderWireTetrahedron(void);
-// void renderSolidTetrahedron(void);
-// void renderWireIcosahedron(void);
-// void renderSolidIcosahedron(void);
-// void renderWireSierpinskiSponge(int num_levels, GLdouble offset[3], GLdouble scale);
-// void renderSolidSierpinskiSponge(int num_levels, GLdouble offset[3], GLdouble scale);
+// GLvoid renderWireTeapot(GLdouble size);
+// GLvoid renderSolidTeapot(GLdouble size);
+// GLvoid renderWireCube(GLdouble size);
+// GLvoid renderSolidCube(GLdouble size);
+// GLvoid renderWireSphere(GLdouble radius, GLGLint slices, GLGLint stacks);
+// GLvoid renderSolidSphere(GLdouble radius, GLGLint slices, GLGLint stacks);
+// GLvoid renderWireCone(GLdouble base, GLdouble height, GLGLint slices, GLGLint stacks);
+// GLvoid renderSolidCone(GLdouble base, GLdouble height, GLGLint slices, GLGLint stacks);
+// GLvoid renderWireTorus(GLdouble innerRadius, GLdouble outerRadius, GLGLint sides, GLGLint rings);
+// GLvoid renderSolidTorus(GLdouble innerRadius, GLdouble outerRadius, GLGLint sides, GLGLint rings);
+// GLvoid renderWireDodecahedron(void);
+// GLvoid renderSolidDodecahedron(void);
+// GLvoid renderWireOctahedron(void);
+// GLvoid renderSolidOctahedron(void);
+// GLvoid renderWireTetrahedron(void);
+// GLvoid renderSolidTetrahedron(void);
+// GLvoid renderWireIcosahedron(void);
+// GLvoid renderSolidIcosahedron(void);
+// GLvoid renderWireSierpinskiSponge(GLint num_levels, GLdouble offset[3], GLdouble scale);
+// GLvoid renderSolidSierpinskiSponge(GLint num_levels, GLdouble offset[3], GLdouble scale);
 //-----------------------------------------------------------------------------
 
 #define M_PI 3.141592653589793
@@ -72,7 +72,7 @@
 /*
  * Draws a wireframed cube. Code contributed by Andreas Umbach <marvin@dataway.ch>
  */
-void renderWireCube( GLdouble dSize )
+GLvoid renderWireCube( GLdouble dSize )
 {
     double size = dSize * 0.5;
 
@@ -96,7 +96,7 @@ void renderWireCube( GLdouble dSize )
 /*
  * Draws a solid cube. Code contributed by Andreas Umbach <marvin@dataway.ch>
  */
-void renderSolidCube( GLdouble dSize )
+GLvoid renderSolidCube( GLdouble dSize )
 {
     double size = dSize * 0.5;
 
@@ -129,13 +129,13 @@ void renderSolidCube( GLdouble dSize )
  *    The sign of n can be flipped to get the reverse loop
  */
 
-static void circleTable(double **sint,double **cost,const int n)
+static GLvoid circleTable(double **sint,double **cost,const GLint n)
 {
-    int i;
+    GLint i;
 
     /* Table size, the sign of n flips the circle direction */
 
-    const int size = abs(n);
+    const GLint size = abs(n);
 
     /* Determine the angle between samples */
 
@@ -143,7 +143,7 @@ static void circleTable(double **sint,double **cost,const int n)
 
     /* Allocate memory for n samples, plus duplicate of first entry at the end */
 
-    *sint = (double *) calloc(sizeof(double), size+1);
+    *sGLint = (double *) calloc(sizeof(double), size+1);
     *cost = (double *) calloc(sizeof(double), size+1);
 
     /* Bail out if memory allocation fails, fgError never returns */
@@ -172,9 +172,9 @@ static void circleTable(double **sint,double **cost,const int n)
 /*
  * Draws a solid sphere
  */
-void renderSolidSphere(GLdouble radius, GLint slices, GLint stacks)
+GLvoid renderSolidSphere(GLdouble radius, GLGLint slices, GLGLint stacks)
 {
-    int i,j;
+    GLint i,j;
 
     /* Adjust z and radius as stacks are drawn. */
 
@@ -257,9 +257,9 @@ void renderSolidSphere(GLdouble radius, GLint slices, GLint stacks)
 /*
  * Draws a solid sphere
  */
-void renderWireSphere(GLdouble radius, GLint slices, GLint stacks)
+GLvoid renderWireSphere(GLdouble radius, GLGLint slices, GLGLint stacks)
 {
-    int i,j;
+    GLint i,j;
 
     /* Adjust z and radius as stacks and slices are drawn. */
 
@@ -324,9 +324,9 @@ void renderWireSphere(GLdouble radius, GLint slices, GLint stacks)
 /*
  * Draws a solid cone
  */
-void renderSolidCone( GLdouble base, GLdouble height, GLint slices, GLint stacks )
+GLvoid renderSolidCone( GLdouble base, GLdouble height, GLGLint slices, GLGLint stacks )
 {
-    int i,j;
+    GLint i,j;
 
     /* Step in z and radius as stacks are drawn. */
 
@@ -408,9 +408,9 @@ void renderSolidCone( GLdouble base, GLdouble height, GLint slices, GLint stacks
 /*
  * Draws a wire cone
  */
-void renderWireCone( GLdouble base, GLdouble height, GLint slices, GLint stacks)
+GLvoid renderWireCone( GLdouble base, GLdouble height, GLGLint slices, GLGLint stacks)
 {
-    int i,j;
+    GLint i,j;
 
     /* Step in z and radius as stacks are drawn. */
 
@@ -473,9 +473,9 @@ void renderWireCone( GLdouble base, GLdouble height, GLint slices, GLint stacks)
 /*
  * Draws a solid cylinder
  */
-void renderSolidCylinder(GLdouble radius, GLdouble height, GLint slices, GLint stacks)
+GLvoid renderSolidCylinder(GLdouble radius, GLdouble height, GLGLint slices, GLGLint stacks)
 {
-    int i,j;
+    GLint i,j;
 
     /* Step in z and radius as stacks are drawn. */
 
@@ -534,9 +534,9 @@ void renderSolidCylinder(GLdouble radius, GLdouble height, GLint slices, GLint s
 /*
  * Draws a wire cylinder
    */
-void renderWireCylinder(GLdouble radius, GLdouble height, GLint slices, GLint stacks)
+GLvoid renderWireCylinder(GLdouble radius, GLdouble height, GLGLint slices, GLGLint stacks)
 {
-    int i,j;
+    GLint i,j;
 
     /* Step in z and radius as stacks are drawn. */
 
@@ -590,11 +590,11 @@ void renderWireCylinder(GLdouble radius, GLdouble height, GLint slices, GLint st
 /*
  *
  */
-void renderWireTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSides, GLint nRings )
+GLvoid renderWireTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLGLint nSides, GLGLint nRings )
 {
   double  iradius = dInnerRadius, oradius = dOuterRadius, phi, psi, dpsi, dphi;
   double *vertex, *normal;
-  int    i, j;
+  GLint    i, j;
   double spsi, cpsi, sphi, cphi ;
 
   /*
@@ -617,7 +617,7 @@ void renderWireTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSides
 
     for( i=0; i<nSides; i++ )
     {
-      int offset = 3 * ( j * nSides + i ) ;
+      GLint offset = 3 * ( j * nSides + i ) ;
       cphi = cos ( phi ) ;
       sphi = sin ( phi ) ;
       *(vertex + offset + 0) = cpsi * ( oradius + cphi * iradius ) ;
@@ -638,7 +638,7 @@ void renderWireTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSides
 
     for( j=0; j<nRings; j++ )
     {
-      int offset = 3 * ( j * nSides + i ) ;
+      GLint offset = 3 * ( j * nSides + i ) ;
       glNormal3dv( normal + offset );
       glVertex3dv( vertex + offset );
     }
@@ -652,7 +652,7 @@ void renderWireTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSides
 
     for( i=0; i<nSides; i++ )
     {
-      int offset = 3 * ( j * nSides + i ) ;
+      GLint offset = 3 * ( j * nSides + i ) ;
       glNormal3dv( normal + offset );
       glVertex3dv( vertex + offset );
     }
@@ -668,15 +668,15 @@ void renderWireTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSides
 /*
  *
  */
-void renderSolidTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSides, GLint nRings )
+GLvoid renderSolidTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLGLint nSides, GLGLint nRings )
 {
   double  iradius = dInnerRadius, oradius = dOuterRadius, phi, psi, dpsi, dphi;
   double *vertex, *normal;
-  int    i, j;
+  GLint    i, j;
   double spsi, cpsi, sphi, cphi ;
 
   /*
-   * Increment the number of sides and rings to allow for one more point than surface
+   * Increment the number of sides and rings to allow for one more poGLint than surface
    */
   nSides ++ ;
   nRings ++ ;
@@ -701,7 +701,7 @@ void renderSolidTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSide
 
     for( i=0; i<nSides; i++ )
     {
-      int offset = 3 * ( j * nSides + i ) ;
+      GLint offset = 3 * ( j * nSides + i ) ;
       cphi = cos ( phi ) ;
       sphi = sin ( phi ) ;
       *(vertex + offset + 0) = cpsi * ( oradius + cphi * iradius ) ;
@@ -721,7 +721,7 @@ void renderSolidTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSide
   {
     for( j=0; j<nRings-1; j++ )
     {
-      int offset = 3 * ( j * nSides + i ) ;
+      GLint offset = 3 * ( j * nSides + i ) ;
       glNormal3dv( normal + offset );
       glVertex3dv( vertex + offset );
       glNormal3dv( normal + offset + 3 );
@@ -743,7 +743,7 @@ void renderSolidTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLint nSide
 /*
  *
  */
-void renderWireDodecahedron( void )
+GLvoid renderWireDodecahedron( GLvoid )
 {
   /* Magic Numbers:  It is possible to create a dodecahedron by attaching two pentagons to each face of
    * of a cube.  The coordinates of the points are:
@@ -793,7 +793,7 @@ void renderWireDodecahedron( void )
 /*
  *
  */
-void renderSolidDodecahedron( void )
+GLvoid renderSolidDodecahedron( GLvoid )
 {
   /* Magic Numbers:  It is possible to create a dodecahedron by attaching two pentagons to each face of
    * of a cube.  The coordinates of the points are:
@@ -843,7 +843,7 @@ void renderSolidDodecahedron( void )
 /*
  *
  */
-void renderWireOctahedron( void )
+GLvoid renderWireOctahedron( GLvoid )
 {
 #define RADIUS    1.0f
   glBegin( GL_LINE_LOOP );
@@ -862,7 +862,7 @@ void renderWireOctahedron( void )
 /*
  *
  */
-void renderSolidOctahedron( void )
+GLvoid renderSolidOctahedron( GLvoid )
 {
 #define RADIUS    1.0f
   glBegin( GL_TRIANGLES );
@@ -881,7 +881,7 @@ void renderSolidOctahedron( void )
 /*
  *
  */
-void renderWireTetrahedron( void )
+GLvoid renderWireTetrahedron( GLvoid )
 {
   /* Magic Numbers:  r0 = ( 1, 0, 0 )
    *                 r1 = ( -1/3, 2 sqrt(2) / 3, 0 )
@@ -890,7 +890,7 @@ void renderWireTetrahedron( void )
    * |r0| = |r1| = |r2| = |r3| = 1
    * Distance between any two points is 2 sqrt(6) / 3
    *
-   * Normals:  The unit normals are simply the negative of the coordinates of the point not on the surface.
+   * Normals:  The unit normals are simply the negative of the coordinates of the poGLint not on the surface.
    */
 
   double r0[3] = {             1.0,             0.0,             0.0 } ;
@@ -909,7 +909,7 @@ void renderWireTetrahedron( void )
 /*
  *
  */
-void renderSolidTetrahedron( void )
+GLvoid renderSolidTetrahedron( GLvoid )
 {
   /* Magic Numbers:  r0 = ( 1, 0, 0 )
    *                 r1 = ( -1/3, 2 sqrt(2) / 3, 0 )
@@ -918,7 +918,7 @@ void renderSolidTetrahedron( void )
    * |r0| = |r1| = |r2| = |r3| = 1
    * Distance between any two points is 2 sqrt(6) / 3
    *
-   * Normals:  The unit normals are simply the negative of the coordinates of the point not on the surface.
+   * Normals:  The unit normals are simply the negative of the coordinates of the poGLint not on the surface.
    */
 
   double r0[3] = {             1.0,             0.0,             0.0 } ;
@@ -941,14 +941,14 @@ double icos_r[12][3] = { { 1.0, 0.0, 0.0 },
   {  0.447213595500,  0.894427191000, 0.0 }, {  0.447213595500,  0.276393202252, 0.850650808354 }, {  0.447213595500, -0.723606797748, 0.525731112119 }, {  0.447213595500, -0.723606797748, -0.525731112119 }, {  0.447213595500,  0.276393202252, -0.850650808354 },
   { -0.447213595500, -0.894427191000, 0.0 }, { -0.447213595500, -0.276393202252, 0.850650808354 }, { -0.447213595500,  0.723606797748, 0.525731112119 }, { -0.447213595500,  0.723606797748, -0.525731112119 }, { -0.447213595500, -0.276393202252, -0.850650808354 },
   { -1.0, 0.0, 0.0 } } ;
-int icos_v [20][3] = { { 0, 1, 2 }, { 0, 2, 3 }, { 0, 3, 4 }, { 0, 4, 5 }, { 0, 5, 1 },
+GLint icos_v [20][3] = { { 0, 1, 2 }, { 0, 2, 3 }, { 0, 3, 4 }, { 0, 4, 5 }, { 0, 5, 1 },
                        { 1, 8, 2 }, { 2, 7, 3 }, { 3, 6, 4 }, { 4, 10, 5 }, { 5, 9, 1 },
                        { 1, 9, 8 }, { 2, 8, 7 }, { 3, 7, 6 }, { 4, 6, 10 }, { 5, 10, 9 },
                        { 11, 9, 10 }, { 11, 8, 9 }, { 11, 7, 8 }, { 11, 6, 7 }, { 11, 10, 6 } } ;
 
-void renderWireIcosahedron( void )
+GLvoid renderWireIcosahedron( GLvoid )
 {
-  int i ;
+  GLint i ;
   for ( i = 0; i < 20; i++ )
   {
     double normal[3] ;
@@ -967,9 +967,9 @@ void renderWireIcosahedron( void )
 /*
  *
  */
-void renderSolidIcosahedron( void )
+GLvoid renderSolidIcosahedron( GLvoid )
 {
-  int i ;
+  GLint i ;
 
   glBegin ( GL_TRIANGLES ) ;
   for ( i = 0; i < 20; i++ )
@@ -995,7 +995,7 @@ double rdod_r[14][3] = { { 0.0, 0.0, 1.0 },
   {  0.707106781187,  0.707106781187,  0.0 }, { -0.707106781187,  0.707106781187,  0.0 }, { -0.707106781187, -0.707106781187,  0.0 }, {  0.707106781187, -0.707106781187,  0.0 },
   {  0.707106781187,  0.000000000000, -0.5 }, {  0.000000000000,  0.707106781187, -0.5 }, { -0.707106781187,  0.000000000000, -0.5 }, {  0.000000000000, -0.707106781187, -0.5 },
   {  0.0, 0.0, -1.0 } } ;
-int rdod_v [12][4] = { { 0,  1,  5,  2 }, { 0,  2,  6,  3 }, { 0,  3,  7,  4 }, { 0,  4,  8, 1 },
+GLint rdod_v [12][4] = { { 0,  1,  5,  2 }, { 0,  2,  6,  3 }, { 0,  3,  7,  4 }, { 0,  4,  8, 1 },
                        { 5, 10,  6,  2 }, { 6, 11,  7,  3 }, { 7, 12,  8,  4 }, { 8,  9,  5, 1 },
                        { 5,  9, 13, 10 }, { 6, 10, 13, 11 }, { 7, 11, 13, 12 }, { 8, 12, 13, 9 } } ;
 double rdod_n[12][3] = {
@@ -1004,9 +1004,9 @@ double rdod_n[12][3] = {
   {  0.353553390594,  0.353553390594, -0.5 }, { -0.353553390594,  0.353553390594, -0.5 }, { -0.353553390594, -0.353553390594, -0.5 }, {  0.353553390594, -0.353553390594, -0.5 }
   } ;
 
-void renderWireRhombicDodecahedron( void )
+GLvoid renderWireRhombicDodecahedron( GLvoid )
 {
-  int i ;
+  GLint i ;
   for ( i = 0; i < 12; i++ )
   {
     glBegin ( GL_LINE_LOOP ) ;
@@ -1022,9 +1022,9 @@ void renderWireRhombicDodecahedron( void )
 /*
  *
  */
-void renderSolidRhombicDodecahedron( void )
+GLvoid renderSolidRhombicDodecahedron( GLvoid )
 {
-  int i ;
+  GLint i ;
 
   glBegin ( GL_QUADS ) ;
   for ( i = 0; i < 12; i++ )
@@ -1049,7 +1049,7 @@ static GLdouble tetrahedron_v[4][3] =  /* Vertices */
   {  0.0,  0.0,             0.672159013631 }
 } ;
 
-static GLint tetrahedron_i[4][3] =  /* Vertex indices */
+static GLGLint tetrahedron_i[4][3] =  /* Vertex indices */
 {
   { 0, 1, 2 }, { 0, 2, 3 }, { 0, 3, 1 }, { 1, 3, 2 }
 } ;
@@ -1062,9 +1062,9 @@ static GLdouble tetrahedron_n[4][3] =  /* Normals */
   {  0.816496580928,  0.471404520791,  0.333333333333 }
 } ;
 
-void renderWireSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble scale )
+GLvoid renderWireSierpinskiSponge ( GLint num_levels, GLdouble offset[3], GLdouble scale )
 {
-  int i, j ;
+  GLint i, j ;
 
   if ( num_levels == 0 )
   {
@@ -1086,7 +1086,7 @@ void renderWireSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble s
   }
   else
   {
-    GLdouble local_offset[3] ;  /* Use a local variable to avoid buildup of roundoff errors */
+    GLdouble local_offset[3] ;  /* Use a local variable to aGLvoid buildup of roundoff errors */
     num_levels -- ;
     scale /= 2.0 ;
     local_offset[0] = offset[0] + scale * tetrahedron_v[0][0] ;
@@ -1104,9 +1104,9 @@ void renderWireSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble s
   }
 }
 
-void renderSolidSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble scale )
+GLvoid renderSolidSierpinskiSponge ( GLint num_levels, GLdouble offset[3], GLdouble scale )
 {
-  int i, j ;
+  GLint i, j ;
 
   if ( num_levels == 0 )
   {
@@ -1128,7 +1128,7 @@ void renderSolidSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble 
   }
   else
   {
-    GLdouble local_offset[3] ;  /* Use a local variable to avoid buildup of roundoff errors */
+    GLdouble local_offset[3] ;  /* Use a local variable to aGLvoid buildup of roundoff errors */
     num_levels -- ;
     scale /= 2.0 ;
     local_offset[0] = offset[0] + scale * tetrahedron_v[0][0] ;
@@ -1234,7 +1234,7 @@ void renderSolidSierpinskiSponge ( int num_levels, GLdouble offset[3], GLdouble 
  * Rim, body, lid, and bottom data must be reflected in x and y;
  * handle and spout data across the y axis only.
  */
-static int patchdata[][16] =
+static GLint patchdata[][16] =
 {
     { 102, 103, 104, 105,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15 }, /* rim    */
     {  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27 }, /* body   */
@@ -1299,7 +1299,7 @@ static double tex[2][2][2] =
     { {0.0, 1.0}, {1.0, 1.0} }
 };
 
-static void teapot( GLint grid, GLdouble scale, GLenum type )
+static GLvoid teapot( GLGLint grid, GLdouble scale, GLenum type )
 {
     double p[4][4][3], q[4][4][3], r[4][4][3], s[4][4][3];
     long i, j, k, l;
@@ -1367,7 +1367,7 @@ static void teapot( GLint grid, GLdouble scale, GLenum type )
 /*
  * Renders a beautiful wired teapot...
  */
-void renderWireTeapot( GLdouble size )
+GLvoid renderWireTeapot( GLdouble size )
 {
     /*
      * We will use the general teapot rendering code
@@ -1378,7 +1378,7 @@ void renderWireTeapot( GLdouble size )
 /*
  * Renders a beautiful filled teapot...
  */
-void renderSolidTeapot( GLdouble size )
+GLvoid renderSolidTeapot( GLdouble size )
 {
     /*
      * We will use the general teapot rendering code

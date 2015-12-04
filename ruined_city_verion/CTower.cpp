@@ -1,6 +1,6 @@
 #include "mainheader.h"
 
-void CTower::render()
+GLvoid CTower::render()
 {
 	BYTE bColor = (BYTE)(255.0f - (255.0f * (fLife / 100.0f)));
 	if(bColor > 128 && fLife > 0.0f)
@@ -23,7 +23,7 @@ void CTower::render()
 			bPlaySnd = false;
 			FSOUND_PlaySound(FSOUND_FREE, sndData[12]);
 		}
-		float fAdd = glAp.sof(10.0f);
+		GLfloat fAdd = glAp.sof(10.0f);
 		vPos.y += fAdd;
 		FOR(i, iNumCB)FOR(j, iNumPoints[i])vColBox[i][j].y += fAdd;
 		fFade -= glAp.sof(1.0f);
@@ -34,7 +34,7 @@ void CTower::render()
 		
 		glColor3ub(255, 128, 0);
 		glBindTexture(GL_TEXTURE_2D, uiExpTex);
-		float fSize = (1.0f - fFade) * 25.0f;
+		GLfloat fSize = (1.0f - fFade) * 25.0f;
 		pair<CVector3, CVector3> vDirs = getNormQuad(cCam.vView - cCam.vEye);
 		CVector3 vPoints[4];
 		vPoints[0] = vDirs.first * fSize * (-1) + vDirs.second * fSize;
@@ -60,35 +60,35 @@ void CTower::render()
 	mEnemies[0].renderModel(NULL);
 	glTranslatef(0.0f, 3.5f, 0.0f);
 	CVector3 vDir = cCam.vEye - vPos; vDir.y = 0.0f;
-	float fAngle2 = (float)vecAngle(CVector3(0, 0, -1), vDir) * 180 / PI;
+	GLfloat fAngle2 = (float)vecAngle(CVector3(0, 0, -1), vDir) * 180 / PI;
 	if(cCam.vEye.x < vPos.x)fAngle2 = 360 - fAngle2;
 	
 	if(fabsf(fAngle - fAngle2) > 3.0f)bRotating = true;
 	if(bRotating)
 	{
-		float fCW = fAngle2 > fAngle ? fAngle2 - fAngle : 360.0f - fAngle + fAngle2;
-		float fCCW = fAngle2 < fAngle ? fAngle - fAngle2 : 360.0f - fAngle2 + fAngle;
-		float fDifA = fAngle - fAngle2;
+		GLfloat fCW = fAngle2 > fAngle ? fAngle2 - fAngle : 360.0f - fAngle + fAngle2;
+		GLfloat fCCW = fAngle2 < fAngle ? fAngle - fAngle2 : 360.0f - fAngle2 + fAngle;
+		GLfloat fDifA = fAngle - fAngle2;
 		if(fCW < fCCW)fAngle += glAp.sof(90.0f);
 		else fAngle -= glAp.sof(90.0f);
-		float fDifB = fAngle - fAngle2;
+		GLfloat fDifB = fAngle - fAngle2;
 		if(fAngle < 0.0f)fAngle += 360.0f;
 		if(fAngle > 360.0f)fAngle -= 360.0f;
 		if(fDifA * fDifB < 0.0f){fAngle = fAngle2; bRotating = false;}
 	}
 	else
 	{
-		float fDist = vecDist(cCam.vEye2, vPos);
+		GLfloat fDist = vecDist(cCam.vEye2, vPos);
 		if(fTime == 0.0f && fDist < 400.0f)
 		{
 			CVector3 vPos2 = vPos; vPos2.y += 5.5f;
 			CVector3 vDir = cCam.vEye2 - vPos2;
-			float s = vDir.y;
+			GLfloat s = vDir.y;
 			vDir.y = 0.0f;
-			float fDist = vecMagnitude(vDir);
-			float v = 200.0f;
-			float t = max(fDist / v, s / v);
-			float a = 14.0f * 7.0f;
+			GLfloat fDist = vecMagnitude(vDir);
+			GLfloat v = 200.0f;
+			GLfloat t = max(fDist / v, s / v);
+			GLfloat a = 14.0f * 7.0f;
 			CCannonBall bNew;
 			bNew.fLife = 10.0f;
 			bNew.vPos = vPos2;
@@ -114,10 +114,10 @@ void CTower::render()
 
 //====================
 
-void CTower::renderSmoke()
+GLvoid CTower::renderSmoke()
 {
 	glBegin(GL_QUADS);
-	float fSize = 2.0f;
+	GLfloat fSize = 2.0f;
 	FOR(i, ESZ(sSmoke))
 	{
 		glColor4ub(sSmoke[i].bColor, sSmoke[i].bColor, sSmoke[i].bColor, (BYTE)((sSmoke[i].fLife / 2.0f) * 255.0f));

@@ -14,30 +14,30 @@ Purpose:	Provides convenient usage
 class COpenGLControl
 {
 public:
-	bool InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVersion, int iMinorVersion, void (*a_InitScene)(LPVOID), void (*a_RenderScene)(LPVOID), void(*a_ReleaseScene)(LPVOID), LPVOID lpParam);
+	GLboolean InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(LPVOID), GLvoid (*a_RenderScene)(LPVOID), void(*a_ReleaseScene)(LPVOID), LPVOID lpParam);
 	
-	void ResizeOpenGLViewportFull();
+	GLvoid ResizeOpenGLViewportFull();
 
-	void Render(LPVOID lpParam);
-	void ReleaseOpenGLControl(LPVOID lpParam);
+	GLvoid Render(LPVOID lpParam);
+	GLvoid ReleaseOpenGLControl(LPVOID lpParam);
 
-	static void RegisterSimpleOpenGLClass(HINSTANCE hInstance);
-	static void UnregisterSimpleOpenGLClass(HINSTANCE hInstance);
+	static GLvoid RegisterSimpleOpenGLClass(HINSTANCE hInstance);
+	static GLvoid UnregisterSimpleOpenGLClass(HINSTANCE hInstance);
 
-	void MakeCurrent();
-	void SwapBuffersM();
+	GLvoid MakeCurrent();
+	GLvoid SwapBuffersM();
 
 private:
-	bool InitGLEW(HINSTANCE hInstance);
+	GLboolean InitGLEW(HINSTANCE hInstance);
 
 	HDC hDC;
 	HWND* hWnd;
 	HGLRC hRC;
-	static bool bClassRegistered;
-	static bool bGlewInitialized;
-	int iMajorVersion, iMinorVersion;
+	static GLboolean bClassRegistered;
+	static GLboolean bGlewInitialized;
+	GLint iMajorVersion, iMinorVersion;
 
-	void (*InitScene)(LPVOID lpParam), (*RenderScene)(LPVOID lpParam), (*ReleaseScene)(LPVOID lpParam);
+	GLvoid (*InitScene)(LPVOID lpParam), (*RenderScene)(LPVOID lpParam), (*ReleaseScene)(LPVOID lpParam);
 };
 
 LRESULT CALLBACK MsgHandlerSimpleOpenGLClass(HWND, UINT, WPARAM, LPARAM);

@@ -26,13 +26,13 @@ UINT uiVBOIndices; // And here indices for rendering heightmap
 
 UINT uiVAOHeightmap; // One VAO for heightmap
 
-bool bShowFPS = false;
-bool bVerticalSync = true;
+GLboolean bShowFPS = false;
+GLboolean bVerticalSync = true;
 
 CShader shVertex, shFragment;
 CShaderProgram spMain;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -47,7 +47,7 @@ void initScene(LPVOID lpParam)
 
 	glm::vec3 vHeightmapData[HM_SIZE_X*HM_SIZE_Y]; // Here the heightmap vertices will be stored temporarily
 
-	float fHeights[HM_SIZE_X*HM_SIZE_Y] =
+	GLfloat fHeights[HM_SIZE_X*HM_SIZE_Y] =
 	{
 		4.0f, 2.0f, 3.0f, 1.0f,
 		3.0f, 5.0f, 8.0f, 2.0f,
@@ -55,11 +55,11 @@ void initScene(LPVOID lpParam)
 		4.0f, 6.0f, 8.0f, 3.0f
 	};
 
-	float fSizeX = 40.0f, fSizeZ = 40.0f;
+	GLfloat fSizeX = 40.0f, fSizeZ = 40.0f;
 
 	FOR(i, HM_SIZE_X*HM_SIZE_Y)
 	{
-		float column = float(i%HM_SIZE_X), row = float(i/HM_SIZE_X);
+		GLfloat column = float(i%HM_SIZE_X), row = float(i/HM_SIZE_X);
 		vHeightmapData[i] = glm::vec3(
 			-fSizeX/2+fSizeX*column/float(HM_SIZE_X-1), // X Coordinate
 			fHeights[i],									// Y Coordinate (it's height)
@@ -73,7 +73,7 @@ void initScene(LPVOID lpParam)
 
 	glGenBuffers(1, &uiVBOIndices);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, uiVBOIndices);
-	int iIndices[] =
+	GLint iIndices[] =
 	{
 		0, 4, 1, 5, 2, 6, 3, 7, 16, // First row, then restart
 		4, 8, 5, 9, 6, 10, 7, 11, 16, // Second row, then restart
@@ -109,10 +109,10 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fRotationAngle = 0.0f;
-const float PIover180 = 3.1415f/180.0f;
+GLfloat fRotationAngle = 0.0f;
+const GLfloat PIover180 = 3.1415f/180.0f;
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -120,8 +120,8 @@ void renderScene(LPVOID lpParam)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(uiVAOHeightmap);
 
-	int iModelViewLoc = glGetUniformLocation(spMain.getProgramID(), "modelViewMatrix");
-	int iProjectionLoc = glGetUniformLocation(spMain.getProgramID(), "projectionMatrix");
+	GLint iModelViewLoc = glGetUniformLocation(spMain.getProgramID(), "modelViewMatrix");
+	GLint iProjectionLoc = glGetUniformLocation(spMain.getProgramID(), "projectionMatrix");
 	glUniformMatrix4fv(iProjectionLoc, 1, GL_FALSE, glm::value_ptr(*oglControl->getProjectionMatrix()));
 
 	glm::mat4 mModelView = glm::lookAt(glm::vec3(0, 60, 30), glm::vec3(0, 0, 0), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -149,7 +149,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	spMain.deleteProgram();
 

@@ -25,7 +25,7 @@ vector<string> split(string s, string t)
 	vector<string> res;
 	while(1)
 	{
-		int pos = s.find(t);
+		GLint pos = s.find(t);
 		if(pos == -1){res.push_back(s); break;}
 		res.push_back(s.substr(0, pos));
 		s = s.substr(pos+1, ESZ(s)-pos-1);
@@ -67,7 +67,7 @@ Result:  Loads obj model.
 
 /*---------------------------------------------*/
 
-bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
+GLboolean CObjModel::LoadModel(string sFileName, string sMtlFileName)
 {
 	FILE* fp = fopen(sFileName.c_str(), "rt");
 
@@ -89,7 +89,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 	{
 		// Error flag, that can be set when something is inconsistent throughout
 		// data parsing
-		bool bError = false;
+		GLboolean bError = false;
 
 		// If it's an empty line, then skip
 		if(strlen(line) <= 1)
@@ -106,7 +106,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 		else if(sType == "v")
 		{
 			glm::vec3 vNewVertex;
-			int dim = 0;
+			GLint dim = 0;
 			while(dim < 3 && ss >> vNewVertex[dim])dim++;
 			vVertices.push_back(vNewVertex);
 			// Update lower-left-front corner of BB
@@ -123,7 +123,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 		else if(sType == "vt")
 		{
 			glm::vec2 vNewCoord;
-			int dim = 0;
+			GLint dim = 0;
 			while(dim < 2 && ss >> vNewCoord[dim])dim++;
 			vTexCoords.push_back(vNewCoord);
 			iAttrBitField |= 2;
@@ -132,7 +132,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 		else if(sType == "vn")
 		{
 			glm::vec3 vNewNormal;
-			int dim = 0;
+			GLint dim = 0;
 			while(dim < 3 && ss >> vNewNormal[dim])dim++;
 			vNewNormal = glm::normalize(vNewNormal);
 			vNormals.push_back(vNewNormal);
@@ -147,7 +147,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 			while(ss >> sFaceData)
 			{
 				vector<string> data = split(sFaceData, "/");
-				int iVertIndex = -1, iTexCoordIndex = -1, iNormalIndex = -1;
+				GLint iVertIndex = -1, iTexCoordIndex = -1, iNormalIndex = -1;
 			
 				// If there were some vertices defined earlier
 				if(iAttrBitField&1)
@@ -223,7 +223,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 
 	glGenVertexArrays(1, &uiVAO); 
 	glBindVertexArray(uiVAO);
-	int iDataStride = 0;
+	GLint iDataStride = 0;
 	if(iAttrBitField&1)iDataStride += sizeof(glm::vec3);
 	if(iAttrBitField&2)iDataStride += sizeof(glm::vec2);
 	if(iAttrBitField&4)iDataStride += sizeof(glm::vec3);
@@ -238,7 +238,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 	if(iAttrBitField&2)
 	{
 		glEnableVertexAttribArray(1);
-		int iDataOffset = 0;
+		GLint iDataOffset = 0;
 		if(iAttrBitField&1)iDataOffset += sizeof(glm::vec3);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, iDataStride, (void*)iDataOffset);
 	}
@@ -246,7 +246,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 	if(iAttrBitField&4)
 	{
 		glEnableVertexAttribArray(2);
-		int iDataOffset = 0;
+		GLint iDataOffset = 0;
 		if(iAttrBitField&1)iDataOffset += sizeof(glm::vec3);
 		if(iAttrBitField&2)iDataOffset += sizeof(glm::vec2);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, iDataStride, (void*)iDataOffset);
@@ -271,7 +271,7 @@ bool CObjModel::LoadModel(string sFileName, string sMtlFileName)
 		vUpperRightBack
 	};
 
-	int iIndices[] = 
+	GLint iIndices[] = 
 	{
 		0, 1, 2, 3, 8, // Front wall
 		4, 5, 6, 7, 8, // Back wall
@@ -315,7 +315,7 @@ Result:  Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CObjModel::RenderModel()
+GLvoid CObjModel::RenderModel()
 {
 	if(!bLoaded)return;
 	glBindVertexArray(uiVAO);
@@ -333,7 +333,7 @@ Result:  Renders bounding box of a model.
 
 /*---------------------------------------------*/
 
-void CObjModel::RenderBoundingBox()
+GLvoid CObjModel::RenderBoundingBox()
 {
 	if(!bLoaded)return;
 	glBindVertexArray(uiBBVAO);
@@ -354,7 +354,7 @@ Result:  Loads material (currently only ambient
 
 /*---------------------------------------------*/
 
-bool CObjModel::LoadMaterial(string sFullMtlFileName)
+GLboolean CObjModel::LoadMaterial(string sFullMtlFileName)
 {
 	// For now, we'll just look for ambient texture, i.e. line that begins with map_Ka
 	FILE* fp = fopen(sFullMtlFileName.c_str(), "rt");
@@ -372,7 +372,7 @@ bool CObjModel::LoadMaterial(string sFullMtlFileName)
 		{
 			string sLine = line;
 			// Take the rest of line as texture name, remove newline character from end
-			int from = sLine.find("map_Ka")+6+1;
+			GLint from = sLine.find("map_Ka")+6+1;
 			string sTextureName = sLine.substr(from, ESZ(sLine)-from-1);
 			// Texture should be in the same directory as material
 			tAmbientTexture.LoadTexture2D(GetDirectoryPath(sFullMtlFileName)+sTextureName, true);
@@ -395,7 +395,7 @@ Result:  Frees all resources used by model.
 
 /*---------------------------------------------*/
 
-void CObjModel::DeleteModel()
+GLvoid CObjModel::DeleteModel()
 {
 	if(!bLoaded)return;
 	tAmbientTexture.DeleteTexture();
@@ -417,7 +417,7 @@ Result:  Returns model polygon count.
 
 /*---------------------------------------------*/
 
-int CObjModel::GetPolygonCount()
+GLint CObjModel::GetPolygonCount()
 {
 	return iNumFaces;
 }

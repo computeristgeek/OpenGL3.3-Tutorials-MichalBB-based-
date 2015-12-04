@@ -5,16 +5,16 @@ public:
 	CVector3* vNorms;
 	CVector3* vFlags;
 	CVector2* vCoords;
-	int iNumT; UINT* uiTxt;
-	int iNumF, iAll;
-	int *iFacesT;
+	GLint iNumT; UINT* uiTxt;
+	GLint iNumF, iAll;
+	GLint *iFacesT;
 
 	vector<int> iStand, iNotStand;
 
-	float *fFacc, *fFangle, *fFtime, *fAngles;
+	GLfloat *fFacc, *fFangle, *fFtime, *fAngles;
 
-	void loadWorld(char* strFile);
-	void renderWorld();
+	GLvoid loadWorld(char* strFile);
+	GLvoid renderWorld();
 };
 
 extern CWorld lv1;
@@ -25,39 +25,39 @@ public:
 	CVector3 vEye, vView, vEye2, vView2, vUp;
 	CVector3 vQuadA, vQuadB;
 	CVector3 vAcc;
-	float fHeight, fSense, fSpeed, fBobAn; // fSense from 1 to 100 (optimum is 50)
-	bool bStanding;
+	GLfloat fHeight, fSense, fSpeed, fBobAn; // fSense from 1 to 100 (optimum is 50)
+	GLboolean bStanding;
 
-	void moveByMouse();
-	void update();
-	void look();
+	GLvoid moveByMouse();
+	GLvoid update();
+	GLvoid look();
 
-	void setMoving(int siForw, int siBack, int siLeft, int siRight);
-	void resetMouse();
+	GLvoid setMoving(GLint siForw, GLint siBack, GLint siLeft, GLint siRight);
+	GLvoid resetMouse();
 
-	void checkCollision(CVector3 vMoveBy);
+	GLvoid checkCollision(CVector3 vMoveBy);
 
-	float getAngleX(), getAngleY();
+	GLfloat getAngleX(), getAngleY();
 
 	CFPSCamera(){};
-	CFPSCamera(CVector3 svEye, CVector3 svView, CVector3 svUp, float sfHeight, float sfSense, float sfSpeed);
+	CFPSCamera(CVector3 svEye, CVector3 svView, CVector3 svUp, GLfloat sfHeight, GLfloat sfSense, GLfloat sfSpeed);
 
 private:
 	POINT pMPCur;
-	int iForw, iBack, iLeft, iRight;
+	GLint iForw, iBack, iLeft, iRight;
 };
 
 extern CFPSCamera cCam;
 extern CFreeType ft;
 
 
-void loadSky();
-void renderSky(CVector3 vCenter);
-void InitFMOD();
+GLvoid loadSky();
+GLvoid renderSky(CVector3 vCenter);
+GLvoid InitFMOD();
 
 extern FSOUND_SAMPLE** sndData;
 char* readline(FILE* fp, char* buffer);
 
 
 
-extern float afps, nnum;
+extern GLfloat afps, nnum;

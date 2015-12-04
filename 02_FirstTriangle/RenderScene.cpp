@@ -13,12 +13,12 @@ Result:	Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-float fTriangle[9]; // Data to render triangle (3 vertices, each has 3 floats)
-float fQuad[12]; // Data to render quad using triangle strips (4 vertices, each has 3 floats)
+GLfloat fTriangle[9]; // Data to render triangle (3 vertices, each has 3 floats)
+GLfloat fQuad[12]; // Data to render quad using triangle strips (4 vertices, each has 3 floats)
 
 UINT uiVBO[2];
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
 
@@ -54,7 +54,7 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;

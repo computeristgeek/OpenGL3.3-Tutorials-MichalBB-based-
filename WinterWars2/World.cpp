@@ -1,6 +1,6 @@
 #include "main.h"
 #include "Weapons.h"
-void CreateTexture(UINT textureArray[], LPSTR strFileName, int textureID)
+GLvoid CreateTexture(UINT textureArray[], LPSTR strFileName, GLint textureID)
 {
 	AUX_RGBImageRec *pBitmap = NULL;
 	
@@ -40,7 +40,7 @@ void CreateTexture(UINT textureArray[], LPSTR strFileName, int textureID)
 
 
 
-void CreateWorld(){
+GLvoid CreateWorld(){
 	glBindTexture(GL_TEXTURE_2D, g_Texture[0]);
 		glBegin(GL_QUADS);
 
@@ -88,7 +88,7 @@ glEnd();
 	glEnd();
 }
 
-void Textures(){
+GLvoid Textures(){
 	
 CreateTexture(g_Texture,"Data/Textures/Snow.bmp",0);
 CreateTexture(g_Texture,"Data/SkyBox/Mountains.bmp",1);
@@ -100,7 +100,7 @@ CreateTexture(g_Texture,"Data/Textures/Laser.bmp",6);
 CreateTexture(g_Texture,"Data/Textures/Objects2.bmp",7);
 }
 
-void CrossHair(){
+GLvoid CrossHair(){
 	glBegin(GL_LINE_STRIP);
 glVertex2f(310,240);
 glVertex2f(320,250);
@@ -114,7 +114,7 @@ glEnd();
 }
 
 
-void LifeLines(){
+GLvoid LifeLines(){
 	glBegin(GL_LINE_STRIP);
 	glVertex2f(50,95);
 	glVertex2f(150,95);
@@ -135,7 +135,7 @@ void LifeLines(){
 	glVertex2f(200,15);
 	glEnd();
 }
-void Objects(){
+GLvoid Objects(){
 		glBindTexture(GL_TEXTURE_2D, g_Texture[4]);
 glBegin(GL_QUADS);
 //Armor
@@ -200,17 +200,17 @@ glEnd();
 
 
 }
-int life=101;
-int ammol=50;
-int ammorocket=20;
-int ammoplasma=20;
-int armora=-1;
+GLint life=101;
+GLint ammol=50;
+GLint ammorocket=20;
+GLint ammoplasma=20;
+GLint armora=-1;
 char ammoll[1];
 char armor[1];
 char text[1];
 char ammorocketer[1];
 char ammoplas[1];
-void Ortho(){
+GLvoid Ortho(){
 	
 	glDisable(GL_DEPTH_TEST);							// Enables Depth Testing
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
@@ -281,10 +281,10 @@ AUX_RGBImageRec *LoadBMP(const char *Filename)						// Loads A Bitmap Image
 	return NULL;													// If Load Failed Return NULL
 }
 
-GLuint LoadGLTexture( const char *filename )						// Load Bitmaps And Convert To Textures
+GLuGLint LoadGLTexture( const char *filename )						// Load Bitmaps And Convert To Textures
 {
 	AUX_RGBImageRec *pImage;										// Create Storage Space For The Texture
-	GLuint texture = 0;												// Texture ID
+	GLuGLint texture = 0;												// Texture ID
 
 	pImage = LoadBMP( filename );									// Loads The Bitmap Specified By filename
 

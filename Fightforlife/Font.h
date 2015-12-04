@@ -1,17 +1,17 @@
 class Rgb
 {
 public:
-	float red,green,blue;
+	GLfloat red,green,blue;
 	Rgb(){red=green=blue=0;}
-	Rgb(float RED, float GREEN, float BLUE){red=RED;green=GREEN;blue=BLUE;}
+	Rgb(GLfloat RED, GLfloat GREEN, GLfloat BLUE){red=RED;green=GREEN;blue=BLUE;}
 };
 
 #define CENTER 0
 #define NOTHING 1
 
-void BuildFont();
-void PrintText(CVector2 textpos,float size,Rgb color, int type,UINT flags, const char*fmt,...);
-void CreateTexture(UINT *storage, LPSTR strFileName);
+GLvoid BuildFont();
+GLvoid PrintText(CVector2 textpos,GLfloat size,Rgb color, GLint type,UINT flags, const char*fmt,...);
+GLvoid CreateTexture(UINT *storage, LPSTR strFileName);
 
-void BuildFont();
-void Start2D(),End2D();
+GLvoid BuildFont();
+GLvoid Start2D(),End2D();

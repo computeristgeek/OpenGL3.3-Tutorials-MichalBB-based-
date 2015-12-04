@@ -17,35 +17,35 @@ Result: Generates centered torus with specified
 
 /*---------------------------------------------*/
 
-int GenerateTorus(CVertexBufferObject &vboDest, float fRadius, float fTubeRadius, int iSubDivAround, int iSubDivTube)
+GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube)
 {
-	float fAddAngleAround = 360.0f/(float)iSubDivAround;
-	float fAddAngleTube = 360.0f/(float)iSubDivTube;
+	GLfloat fAddAngleAround = 360.0f/(float)iSubDivAround;
+	GLfloat fAddAngleTube = 360.0f/(float)iSubDivTube;
 
-	float fCurAngleAround = 0.0f;
-	int iStepsAround = 1;
-	const float PI = float(atan(1.0)*4.0);
+	GLfloat fCurAngleAround = 0.0f;
+	GLint iStepsAround = 1;
+	const GLfloat PI = float(atan(1.0)*4.0);
 
-	int iFacesAdded = 0;
+	GLint iFacesAdded = 0;
 
 	while(iStepsAround <= iSubDivAround)
 	{
-		float fSineAround = sin(fCurAngleAround/180.0f*PI);
-		float fCosineAround = cos(fCurAngleAround/180.0f*PI);
+		GLfloat fSineAround = sin(fCurAngleAround/180.0f*PI);
+		GLfloat fCosineAround = cos(fCurAngleAround/180.0f*PI);
 		glm::vec3 vDir1(fSineAround, fCosineAround, 0.0f);
-		float fNextAngleAround = fCurAngleAround+fAddAngleAround;
-		float fNextSineAround = sin(fNextAngleAround/180.0f*PI);
-		float fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
+		GLfloat fNextAngleAround = fCurAngleAround+fAddAngleAround;
+		GLfloat fNextSineAround = sin(fNextAngleAround/180.0f*PI);
+		GLfloat fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
 		glm::vec3 vDir2(fNextSineAround, fNextCosineAround, 0.0f);
-		float fCurAngleTube = 0.0f;
-		int iStepsTube = 1;
+		GLfloat fCurAngleTube = 0.0f;
+		GLint iStepsTube = 1;
 		while(iStepsTube <= iSubDivTube)
 		{
-			float fSineTube = sin(fCurAngleTube/180.0f*PI);
-			float fCosineTube = cos(fCurAngleTube/180.0f*PI);
-			float fNextAngleTube = fCurAngleTube+fAddAngleTube;
-			float fNextSineTube = sin(fNextAngleTube/180.0f*PI);
-			float fNextCosineTube = cos(fNextAngleTube/180.0f*PI);
+			GLfloat fSineTube = sin(fCurAngleTube/180.0f*PI);
+			GLfloat fCosineTube = cos(fCurAngleTube/180.0f*PI);
+			GLfloat fNextAngleTube = fCurAngleTube+fAddAngleTube;
+			GLfloat fNextSineTube = sin(fNextAngleTube/180.0f*PI);
+			GLfloat fNextCosineTube = cos(fNextAngleTube/180.0f*PI);
 			glm::vec3 vMid1 = vDir1*(fRadius-fTubeRadius/2), vMid2 = vDir2*(fRadius-fTubeRadius/2);
 			glm::vec3 vQuadPoints[] = 
 			{
@@ -71,11 +71,11 @@ int GenerateTorus(CVertexBufferObject &vboDest, float fRadius, float fTubeRadius
 				glm::vec2(fNextAngleAround/360.0f, fNextAngleTube/360.0f)
 			};
 
-			int iIndices[] = {0, 1, 2, 2, 3, 0};
+			GLint iIndices[] = {0, 1, 2, 2, 3, 0};
 
 			FOR(i, 6)
 			{
-				int index = iIndices[i];
+				GLint index = iIndices[i];
 				vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
 				vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
 				vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
@@ -104,24 +104,24 @@ Result: Generates centered opened cylinder and stores
 
 /*---------------------------------------------*/
 
-int GenerateCylinder(CVertexBufferObject &vboDest, float fRadius, float fHeight, int iSubDivAround, float fMapU, float fMapV)
+GLint GenerateCylinder(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU, GLfloat fMapV)
 {
-	float fAddAngleAround = 360.0f/(float)(iSubDivAround-1);
+	GLfloat fAddAngleAround = 360.0f/(float)(iSubDivAround-1);
 
-	float fCurAngleAround = 0.0f;
-	int iStepsAround = 1;
-	const float PI = float(atan(1.0)*4.0);
+	GLfloat fCurAngleAround = 0.0f;
+	GLint iStepsAround = 1;
+	const GLfloat PI = float(atan(1.0)*4.0);
 
-	int iFacesAdded = 0;
+	GLint iFacesAdded = 0;
 
 	while(iStepsAround <= iSubDivAround)
 	{
-		float fSineAround = sin(fCurAngleAround/180.0f*PI);
-		float fCosineAround = cos(fCurAngleAround/180.0f*PI);
+		GLfloat fSineAround = sin(fCurAngleAround/180.0f*PI);
+		GLfloat fCosineAround = cos(fCurAngleAround/180.0f*PI);
 		glm::vec3 vDir1(fCosineAround, 0.0f, fSineAround);
-		float fNextAngleAround = fCurAngleAround+fAddAngleAround;
-		float fNextSineAround = sin(fNextAngleAround/180.0f*PI);
-		float fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
+		GLfloat fNextAngleAround = fCurAngleAround+fAddAngleAround;
+		GLfloat fNextSineAround = sin(fNextAngleAround/180.0f*PI);
+		GLfloat fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
 		glm::vec3 vDir2(fNextCosineAround, 0.0f, fNextSineAround);
 
 		glm::vec3 vQuadPoints[] = 
@@ -149,11 +149,11 @@ int GenerateCylinder(CVertexBufferObject &vboDest, float fRadius, float fHeight,
 			vDir2
 		};
 
-		int iIndices[] = {0, 1, 2, 2, 3, 0};
+		GLint iIndices[] = {0, 1, 2, 2, 3, 0};
 
 		FOR(i, 6)
 		{
-			int index = iIndices[i];
+			GLint index = iIndices[i];
 			vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
 			vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
 			vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
@@ -225,7 +225,7 @@ glm::vec3 vStairNormals[] =
 	glm::vec3(1.0f, 0.0f, 0.0f)
 };
 
-int iCylinderFaces;
+GLint iCylinderFaces;
 
 /*-----------------------------------------------
 
@@ -237,7 +237,7 @@ Result: Adds all static objects to scene.
 
 /*---------------------------------------------*/
 
-void AddSceneObjects(CVertexBufferObject& vboDest)
+GLvoid AddSceneObjects(CVertexBufferObject& vboDest)
 {
 	// Add ground to VBO
 	FOR(i, 6)
@@ -252,7 +252,7 @@ void AddSceneObjects(CVertexBufferObject& vboDest)
 	// Add stair to VBO
 	FOR(i, 5) // i is stair's side, 5 sides are enough (all beside bottom side)
 	{
-		int iIndices[] = {0, 1, 2, 2, 3, 0};
+		GLint iIndices[] = {0, 1, 2, 2, 3, 0};
 		FOR(j, 6)
 		{
 			vboDest.AddData(&vStair[4*i+iIndices[j]], sizeof(glm::vec3));

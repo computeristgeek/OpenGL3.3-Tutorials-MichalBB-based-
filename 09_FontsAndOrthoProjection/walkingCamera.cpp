@@ -9,7 +9,7 @@ CWalkingCamera::CWalkingCamera() :vEye(0.0f, 0.0f, 0.0f), vView(0.0f, 0.0f, -1.0
 {
 }
 
-CWalkingCamera::CWalkingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, float a_fSpeed)
+CWalkingCamera::CWalkingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, GLfloat a_fSpeed)
 {
 	vEye = a_vEye;
 	vView = a_vView;
@@ -43,7 +43,7 @@ Result:	Rotates view along Y axis by specified
 
 /*---------------------------------------------*/
 
-void CWalkingCamera::rotateViewY(float fAngle)
+GLvoid CWalkingCamera::rotateViewY(GLfloat fAngle)
 {
 	glm::mat4 mRotation = glm::rotate(glm::mat4(1.0f), fAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::vec3 vDir = vView-vEye;
@@ -62,7 +62,7 @@ Result:	Moves in the view direction.
 
 /*---------------------------------------------*/
 
-void CWalkingCamera::move(float fBy)
+GLvoid CWalkingCamera::move(GLfloat fBy)
 {
 	glm::vec3 vDir = vView-vEye;
 	vDir *= fBy;
@@ -79,7 +79,7 @@ Result:	Handles keys and updates camera.
 
 /*---------------------------------------------*/
 
-void CWalkingCamera::update()
+GLvoid CWalkingCamera::update()
 {
 	if(Keys::key('W'))move(appMain.sof(fSpeed));
 	if(Keys::key('S'))move(appMain.sof(-fSpeed));

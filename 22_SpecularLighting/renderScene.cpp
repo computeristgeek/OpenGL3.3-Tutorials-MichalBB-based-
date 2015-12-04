@@ -36,9 +36,9 @@ CAssimpModel amModels[3];
 
 CMultiLayeredHeightmap hmWorld;
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-bool bDisplayNormals = true; // Do not display normals by default
+GLboolean bDisplayNormals = true; // Do not display normals by default
 
 /*-----------------------------------------------
 
@@ -51,7 +51,7 @@ Result:  Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -86,7 +86,7 @@ void InitScene(LPVOID lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -119,7 +119,7 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -139,7 +139,7 @@ void RenderScene(LPVOID lpParam)
 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
 
 	// This values will set the darkness of whole scene, that's why such name of variable :D
-	static float fAngleOfDarkness = 45.0f;
+	static GLfloat fAngleOfDarkness = 45.0f;
 	// You can play with direction of light with '+' and '-' key
 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
@@ -183,7 +183,7 @@ void RenderScene(LPVOID lpParam)
 
 	tTextures[5].BindTexture();
 	glBindVertexArray(uiVAOSceneObjects);
-	static float fGlobalAngle = 0.0f;
+	static GLfloat fGlobalAngle = 0.0f;
 
 	FOR(i, 2)
 	{
@@ -297,13 +297,13 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -338,7 +338,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

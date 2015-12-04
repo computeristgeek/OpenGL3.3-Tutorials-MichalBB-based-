@@ -1,6 +1,6 @@
 #include "mgbsoft.h"
 
-int iNumBuf;
+GLint iNumBuf;
 ALuint* sndBuf;
 vector<ALuint> sndSrc;
 ALCdevice* g_pDevice;
@@ -21,7 +21,7 @@ char* sndNames[] =
 
 //====================
 
-void initOpenAL(int numBuf)
+GLvoid initOpenAL(GLint numBuf)
 {
 	g_pDevice = alcOpenDevice(NULL);
 	if(g_pDevice == NULL)
@@ -37,7 +37,7 @@ void initOpenAL(int numBuf)
 
 //====================
 
-void loadSounds()
+GLvoid loadSounds()
 {
 	FOR(i, iNumBuf)
 	{
@@ -54,7 +54,7 @@ void loadSounds()
 
 //====================
 
-void releaseALData()
+GLvoid releaseALData()
 {
 	FOR(i, ESZ(sndSrc))alDeleteSources(1, &sndSrc[i]);
 
@@ -66,9 +66,9 @@ void releaseALData()
 
 //====================
 
-void addSource(ALuint bufID, CVector3 vPos, CVector3 vVel, bool bLoop, bool bRel, bool bPlay, float gain)
+GLvoid addSource(ALuGLint bufID, CVector3 vPos, CVector3 vVel, GLboolean bLoop, GLboolean bRel, GLboolean bPlay, GLfloat gain)
 {
-	ALuint srcNew;
+	ALuGLint srcNew;
 	alGenSources(1, &srcNew);
 
 	alSourcei(srcNew, AL_BUFFER, bufID);
@@ -85,7 +85,7 @@ void addSource(ALuint bufID, CVector3 vPos, CVector3 vVel, bool bLoop, bool bRel
 	sndSrc.push_back(srcNew);
 }
 
-void setSourceProperties(ALuint uiSrc, ALuint uiBuf, CVector3 vPos, int iLoop, int iRel, float fGain)
+GLvoid setSourceProperties(ALuGLint uiSrc, ALuGLint uiBuf, CVector3 vPos, GLint iLoop, GLint iRel, GLfloat fGain)
 {
 	alSourcei(uiSrc, AL_BUFFER, uiBuf);
 	alSourcef(uiSrc, AL_PITCH, 1.0f);

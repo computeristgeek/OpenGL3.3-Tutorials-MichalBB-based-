@@ -61,7 +61,7 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -134,7 +134,7 @@ void InitScene(LPVOID lpParam)
 	FOR(i, NUMSHADERS)
 	{
 		string sExt = sShaderFileNames[i].substr(ESZ(sShaderFileNames[i])-4, 4);
-		int iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
+		GLint iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
 		shShaders[i].LoadShader("data\\shaders\\"+sShaderFileNames[i], iShaderType);
 	}
 
@@ -185,7 +185,7 @@ void InitScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -214,10 +214,10 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
-bool bWireFrame = false;
+GLfloat fGlobalAngle;
+GLboolean bWireFrame = false;
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -255,7 +255,7 @@ void RenderScene(LPVOID lpParam)
 	tTextures[2].BindTexture();
 	glDrawArrays(GL_TRIANGLES, 36, 6);
 
-	// Print The Avengers in the center
+	// PrGLint The Avengers in the center
 
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
@@ -264,7 +264,7 @@ void RenderScene(LPVOID lpParam)
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	
-	int iTextWidth = ftFont.GetTextWidth("The Avengers", 40);
+	GLint iTextWidth = ftFont.GetTextWidth("The Avengers", 40);
 	ftFont.Print("The Avengers", (fboTelevision.GetWidth()-iTextWidth)/2, fboTelevision.GetHeight()-60, 40);
 
 	// Update Thor's position and rotation
@@ -346,7 +346,7 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
@@ -354,7 +354,7 @@ void RenderScene(LPVOID lpParam)
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -385,7 +385,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

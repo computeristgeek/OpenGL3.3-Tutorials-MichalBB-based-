@@ -8,16 +8,16 @@ public:
 	HWND hWnd; // Handle to application window
 	COpenGLControl oglControl; // OpenGL Control
 
-	void resetTimer();
-	void updateTimer();
-	float sof(float fVal);
+	GLvoid resetTimer();
+	GLvoid updateTimer();
+	GLfloat sof(GLfloat fVal);
 
-	bool initializeApp(string a_sAppName);
-	void registerAppClass(HINSTANCE hAppInstance);
-	bool createWindow(string sTitle);
+	GLboolean initializeApp(string a_sAppName);
+	GLvoid registerAppClass(HINSTANCE hAppInstance);
+	GLboolean createWindow(string sTitle);
 	
-	void appBody();
-	void shutdown();
+	GLvoid appBody();
+	GLvoid shutdown();
 
 	HINSTANCE getInstance();
 
@@ -28,18 +28,18 @@ private:
 	string sAppName;
 	HANDLE hMutex;
 
-	bool bAppActive; // To check if application is active (not minimized)
+	GLboolean bAppActive; // To check if application is active (not minimized)
 	clock_t tLastFrame;
-	float fFrameInterval;
+	GLfloat fFrameInterval;
 };
 
 namespace Keys
 {
-	int key(int iKey);
-	int onekey(int iKey);
+	GLint key(GLint iKey);
+	GLint onekey(GLint iKey);
 	extern char kp[256];
 }
 
 extern COpenGLWinApp appMain;
 
-void initScene(LPVOID), renderScene(LPVOID), releaseScene(LPVOID);
+GLvoid initScene(LPVOID), renderScene(LPVOID), releaseScene(LPVOID);

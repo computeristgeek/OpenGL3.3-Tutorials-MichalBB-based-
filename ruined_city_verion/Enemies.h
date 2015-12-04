@@ -2,12 +2,12 @@ class CEnemy
 {
 public:
 	CVector3 vPos;
-	float fLife, fFade;
+	GLfloat fLife, fFade;
 	
-	virtual void render() = 0;
+	virtual GLvoid render() = 0;
 
 	CVector3** vColBox;
-	int iNumCB;
+	GLint iNumCB;
 	int* iNumPoints;
 	CEnemy(){fFade = 1.0f;}
 };
@@ -15,12 +15,12 @@ public:
 class CTower : public CEnemy
 {
 public:
-	float fAngle, fTime, fTime2;
-	bool bRotating, bPlaySnd;
-	void render();
-	struct CSmoke{CVector3 vPos; BYTE bColor; float fLife;};
+	GLfloat fAngle, fTime, fTime2;
+	GLboolean bRotating, bPlaySnd;
+	GLvoid render();
+	struct CSmoke{CVector3 vPos; BYTE bColor; GLfloat fLife;};
 	vector<CSmoke> sSmoke;
-	void renderSmoke();
+	GLvoid renderSmoke();
 	CTower(){fAngle = 0.0f; bRotating = false; bPlaySnd = true; fTime = (float)(rand() % 31) * 0.1f; fTime2 = 0.0f;}
 };
 
@@ -28,14 +28,14 @@ class CSpider : public CEnemy
 {
 public:
 	CVector3 vLastPos;
-	float fTime, fDieAngleY, fDieAngleX, fGrav;
-	bool bAttack, bDying;
-	int iType;
+	GLfloat fTime, fDieAngleY, fDieAngleX, fGrav;
+	GLboolean bAttack, bDying;
+	GLint iType;
 	CAnimData aData;
-	void render();
+	GLvoid render();
 	vector<CVector3> vBPos, vBAcc;
-	void renderBlood();
-	void addBlood(CVector3 vPos, float fDamage);
+	GLvoid renderBlood();
+	GLvoid addBlood(CVector3 vPos, GLfloat fDamage);
 	CSpider(){fGrav = 0.0f; fTime = (float)(rand() % 16) * 0.1f; bAttack = false; fDieAngleX = 0.0f; bDying = false;}
 };
 
@@ -45,15 +45,15 @@ public:
 	struct CSpiderBall
 	{
 		CVector3 vPos, vAcc;
-		float fAngle;
-		float fTime;
+		GLfloat fAngle;
+		GLfloat fTime;
 	};
 	CVector3 vPoints[4];
 	CVector3* vNests;
 	vector<CSpiderBall> sbBalls;
-	float fTime;
-	int iNests, *iNSpiders, *iNAll, iAll, iType;
-	void render();
+	GLfloat fTime;
+	GLint iNests, *iNSpiders, *iNAll, iAll, iType;
+	GLvoid render();
 };
 
 extern CMSModel* mEnemies;
@@ -65,9 +65,9 @@ extern vector<CSpiderWeb> swWebs;
 extern UINT uiSWTex;
 extern CVector2 vCCoord[4]; // Classic coordinates
 
-void loadEnemies(int iNModels);
-void renderEnemies();
-void renderBlendedEnemyStuff();
+GLvoid loadEnemies(GLint iNModels);
+GLvoid renderEnemies();
+GLvoid renderBlendedEnemyStuff();
 
-int collisionLineEnemies(CVector3 vA, CVector3 vB);
-void takeEnemiesLife(float fDamage);
+GLint collisionLineEnemies(CVector3 vA, CVector3 vB);
+GLvoid takeEnemiesLife(GLfloat fDamage);

@@ -24,31 +24,31 @@ Purpose:	Wraps OpenGL texture
 class CTexture
 {
 public:
-	void createFromData(BYTE* bData, int a_iWidth, int a_iHeight, int a_iBPP, GLenum format, bool bGenerateMipMaps = false);
-	bool loadTexture2D(string a_sPath, bool bGenerateMipMaps = false);
-	void bindTexture(int iTextureUnit = 0);
+	GLvoid createFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
+	GLboolean loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
+	GLvoid bindTexture(GLint iTextureUnit = 0);
 
-	void setFiltering(int a_tfMagnification, int a_tfMinification);
+	GLvoid setFiltering(GLint a_tfMagnification, GLint a_tfMinification);
 
-	void setSamplerParameter(GLenum parameter, GLenum value);
+	GLvoid setSamplerParameter(GLenum parameter, GLenum value);
 
-	int getMinificationFilter();
-	int getMagnificationFilter();
+	GLint getMinificationFilter();
+	GLint getMagnificationFilter();
 
-	int getWidth();
-	int getHeight();
-	int getBPP();
+	GLint getWidth();
+	GLint getHeight();
+	GLint getBPP();
 
-	void releaseTexture();
+	GLvoid releaseTexture();
 
 	CTexture();
 private:
-	int iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
+	GLint iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
 	UINT uiTexture; // Texture name
 	UINT uiSampler; // Sampler name
-	bool bMipMapsGenerated;
+	GLboolean bMipMapsGenerated;
 
-	int tfMinification, tfMagnification;
+	GLint tfMinification, tfMagnification;
 
 	string sPath;
 };

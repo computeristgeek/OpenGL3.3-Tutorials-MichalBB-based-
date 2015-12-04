@@ -11,7 +11,7 @@ CVector2 vCCoord[4] = // Classic coordinates
 
 vector<CSpiderWeb> swWebs;
 
-void CSpiderWeb::render()
+GLvoid CSpiderWeb::render()
 {
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4ub(255, 255, 255, 255);
@@ -22,7 +22,7 @@ void CSpiderWeb::render()
 	glDisable(GL_BLEND);
 	FOR(i, iNests)
 	{
-		float fScale = 0.25f + ((float)iNSpiders[i] / iNAll[i] * 0.75f);
+		GLfloat fScale = 0.25f + ((float)iNSpiders[i] / iNAll[i] * 0.75f);
 		if(fScale == 0.25f)continue;
 		fScale *= 1.5f;
 		glPushMatrix();
@@ -48,7 +48,7 @@ void CSpiderWeb::render()
 		glPushMatrix();
 		glTranslatef(sbBalls[i].vPos.x, sbBalls[i].vPos.y, sbBalls[i].vPos.z);
 		CVector3 vDir = sbBalls[i].vAcc; vDir.y = 0.0f;
-		float fAngle = (float)vecAngle(CVector3(0, 0, -1), vDir) * 180 / PI;
+		GLfloat fAngle = (float)vecAngle(CVector3(0, 0, -1), vDir) * 180 / PI;
 		glRotatef(fAngle, 0, 1, 0);
 		glRotatef(sbBalls[i].fAngle, 1, 0, 0);
 		sbBalls[i].fAngle += glAp.sof(270.0f);
@@ -58,9 +58,9 @@ void CSpiderWeb::render()
 		sbBalls[i].vAcc.y -= glAp.sof(50.0f);
 		FOR(k, ESZ(lv1.iStand))
 		{
-			int j = lv1.iStand[k];
+			GLint j = lv1.iStand[k];
 			CVector3 vPoly[] = {lv1.vFaces[j*3], lv1.vFaces[j*3 + 1], lv1.vFaces[j*3 + 2]};
-			float fDFCenter = 0.0f;
+			GLfloat fDFCenter = 0.0f;
 			if(collisionSpherePoly(vPoly, 3, &lv1.vNorms[j], sbBalls[i].vPos, 1.5f, fDFCenter))
 			{
 				CVector3 vOffset = lv1.vNorms[j];
@@ -74,9 +74,9 @@ void CSpiderWeb::render()
 		}
 		FOR(k, ESZ(lv1.iNotStand))
 		{
-			int j = lv1.iNotStand[k];
+			GLint j = lv1.iNotStand[k];
 			CVector3 vPoly[] = {lv1.vFaces[j*3], lv1.vFaces[j*3 + 1], lv1.vFaces[j*3 + 2]};
-			float fDFCenter = 0.0f;
+			GLfloat fDFCenter = 0.0f;
 			if(collisionSpherePoly(vPoly, 3, &lv1.vNorms[j], sbBalls[i].vPos, 1.5f, fDFCenter))
 			{
 				CVector3 vOffset = lv1.vNorms[j];
@@ -92,7 +92,7 @@ void CSpiderWeb::render()
 	if(fTime > 1.5f && vecDist(vPoints[0], cCam.vEye) < 300.0f)
 	{
 		fTime = 0.0f;
-		int iNest = rand() % iNests;
+		GLint iNest = rand() % iNests;
 		if(iNSpiders[iNest] == 0)
 		{
 			iNest = 0;

@@ -62,7 +62,7 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -107,7 +107,7 @@ void InitScene(LPVOID lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -155,7 +155,7 @@ glm::vec3 vSpherePositions[] =
 	vObjectPositions[3]
 };
 
-float fSphereRadii[] = {11.0f, 9.2f, 10.0f, 40.0f};
+GLfloat fSphereRadii[] = {11.0f, 9.2f, 10.0f, 40.0f};
 
 /*-----------------------------------------------
 
@@ -169,7 +169,7 @@ Result:  Renders spheres surrounding our scene objects.
 
 /*---------------------------------------------*/
 
-void RenderBoundingSpheres(glm::mat4* mProj)
+GLvoid RenderBoundingSpheres(glm::mat4* mProj)
 {
 	glBindVertexArray(uiVAOs[0]);
 	spColor.UseProgram();
@@ -192,10 +192,10 @@ void RenderBoundingSpheres(glm::mat4* mProj)
 
 }
 
-float fGlobalAngle;
-bool bWireFrame = false;
-bool bShowBS = true;
-int iSelectedIndex = -1;
+GLfloat fGlobalAngle;
+GLboolean bWireFrame = false;
+GLboolean bShowBS = true;
+GLint iSelectedIndex = -1;
 
 string sObjectNames[] = 
 {
@@ -215,7 +215,7 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -344,7 +344,7 @@ void RenderScene(LPVOID lpParam)
 				break;
 			}
 		}
-		int a = 5;
+		GLint a = 5;
 	}
 
 	// Render bounding spheres
@@ -357,7 +357,7 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
@@ -365,7 +365,7 @@ void RenderScene(LPVOID lpParam)
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -399,7 +399,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

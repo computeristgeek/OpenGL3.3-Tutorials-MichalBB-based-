@@ -18,8 +18,8 @@ public:
 
 	struct CMaterial
 	{
-		int iTexture;
-		float fAmbient[4], fDiffuse[4], fSpecular[4], fEmmisive[4];
+		GLint iTexture;
+		GLfloat fAmbient[4], fDiffuse[4], fSpecular[4], fEmmisive[4];
 		BYTE bShininess;
 	};
 
@@ -27,6 +27,6 @@ public:
 	CGroup* gGroups;
 	CMaterial* mMats;
 
-	void loadModel(char* strFile);
-	void renderModel();
+	GLvoid loadModel(char* strFile);
+	GLvoid renderModel();
 };

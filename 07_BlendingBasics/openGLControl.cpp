@@ -5,11 +5,11 @@
 #include "common_header.h"
 
 #include "openGLControl.h"
-#include <gl/wglew.h>
+#include <GL/wglew.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 
-bool COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
+GLboolean COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
 
 COpenGLControl::COpenGLControl()
 {
@@ -28,7 +28,7 @@ Result:	Creates fake window and OpenGL rendering
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::initGLEW(HINSTANCE hInstance)
+GLboolean COpenGLControl::initGLEW(HINSTANCE hInstance)
 {
 	if(bGlewInitialized)return true;
 
@@ -52,7 +52,7 @@ bool COpenGLControl::initGLEW(HINSTANCE hInstance)
 	pfd.cDepthBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
  
-	int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+	GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
 	if (iPixelFormat == 0)return false;
 
 	if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -62,7 +62,7 @@ bool COpenGLControl::initGLEW(HINSTANCE hInstance)
 	HGLRC hRCFake = wglCreateContext(hDC);
 	wglMakeCurrent(hDC, hRCFake);
 
-	bool bResult = true;
+	GLboolean bResult = true;
 
 	if(!bGlewInitialized)
 	{
@@ -100,14 +100,14 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVersion, int iMinorVersion, void (*a_initScene)(LPVOID), void (*a_renderScene)(LPVOID), void(*a_releaseScene)(LPVOID), LPVOID lpParam)
+GLboolean COpenGLControl::initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(LPVOID), GLvoid (*a_renderScene)(LPVOID), void(*a_releaseScene)(LPVOID), LPVOID lpParam)
 {
 	if(!initGLEW(hInstance))return false;
 
 	hWnd = a_hWnd;
 	hDC = GetDC(*hWnd);
 
-	bool bError = false;
+	GLboolean bError = false;
 	PIXELFORMATDESCRIPTOR pfd;
 
 	if(iMajorVersion <= 2)
@@ -121,7 +121,7 @@ bool COpenGLControl::initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 		pfd.cDepthBits = 32;
 		pfd.iLayerType = PFD_MAIN_PLANE;
  
-		int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+		GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
 		if (iPixelFormat == 0)return false;
 
 		if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -133,7 +133,7 @@ bool COpenGLControl::initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 	}
 	else if(WGLEW_ARB_create_context && WGLEW_ARB_pixel_format)
 	{
-		const int iPixelFormatAttribList[] =
+		const GLint iPixelFormatAttribList[] =
 		{
 			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
@@ -144,7 +144,7 @@ bool COpenGLControl::initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 			WGL_STENCIL_BITS_ARB, 8,
 			0 // End of attributes list
 		};
-		int iContextAttribs[] =
+		GLint iContextAttribs[] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, iMajorVersion,
 			WGL_CONTEXT_MINOR_VERSION_ARB, iMinorVersion,
@@ -152,7 +152,7 @@ bool COpenGLControl::initOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 			0 // End of attributes list
 		};
 
-		int iPixelFormat, iNumFormats;
+		GLint iPixelFormat, iNumFormats;
 		wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &iPixelFormat, (UINT*)&iNumFormats);
 
 		// PFD seems to be only redundant parameter now
@@ -195,7 +195,7 @@ Result:	Resizes viewport to full window.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::resizeOpenGLViewportFull()
+GLvoid COpenGLControl::resizeOpenGLViewportFull()
 {
 	if(hWnd == NULL)return;
 	RECT rRect; GetClientRect(*hWnd, &rRect);
@@ -214,7 +214,7 @@ Result:	Calculates projection matrix.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::setProjection3D(float fFOV, float fAspectRatio, float fNear, float fFar)
+GLvoid COpenGLControl::setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar)
 {
 	mProjection = glm::perspective(fFOV, fAspectRatio, fNear, fFar);
 }
@@ -244,7 +244,7 @@ Result:	Registers simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::registerSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::registerSimpleOpenGLClass(HINSTANCE hInstance)
 {
 	if(bClassRegistered)return;
 	WNDCLASSEX wc;
@@ -276,7 +276,7 @@ Result:	Unregisters simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::unregisterSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::unregisterSimpleOpenGLClass(HINSTANCE hInstance)
 {
 	if(bClassRegistered)
 	{
@@ -322,7 +322,7 @@ Result:	Swaps back and front buffer.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::swapBuffers()
+GLvoid COpenGLControl::swapBuffers()
 {
 	SwapBuffers(hDC);
 }
@@ -339,7 +339,7 @@ Result:	Makes current device and OpenGL rendering
 
 /*---------------------------------------------*/
 
-void COpenGLControl::makeCurrent()
+GLvoid COpenGLControl::makeCurrent()
 {
 	wglMakeCurrent(hDC, hRC);
 }
@@ -354,7 +354,7 @@ Result:	Calls previously set render function.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::render(LPVOID lpParam)
+GLvoid COpenGLControl::render(LPVOID lpParam)
 {
 	clock_t tCurrent = clock();
 	if( (tCurrent-tLastSecond) >= CLOCKS_PER_SEC)
@@ -377,7 +377,7 @@ Result:	Returns FPS count in last second.
 
 /*---------------------------------------------*/
 
-int COpenGLControl::getFPS()
+GLint COpenGLControl::getFPS()
 {
 	return iFPSCount;
 }
@@ -393,7 +393,7 @@ Result:	Calls previously set release function
 
 /*---------------------------------------------*/
 
-void COpenGLControl::releaseOpenGLControl(LPVOID lpParam)
+GLvoid COpenGLControl::releaseOpenGLControl(LPVOID lpParam)
 {
 	if(releaseScene)releaseScene(lpParam);
 
@@ -414,7 +414,7 @@ Result:	Guess what it does :)
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::setVerticalSynchronization(bool bEnabled)
+GLboolean COpenGLControl::setVerticalSynchronization(GLboolean bEnabled)
 {
 	if(!wglSwapIntervalEXT)return false;
 	if(bEnabled)wglSwapIntervalEXT(1);

@@ -13,7 +13,7 @@ Result:	Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	// For now, we just clear color to light blue,
 	// to see if OpenGL context is working
@@ -30,7 +30,7 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;

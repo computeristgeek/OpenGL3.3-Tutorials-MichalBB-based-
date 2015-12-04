@@ -38,7 +38,7 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -121,7 +121,7 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
+GLfloat fGlobalAngle;
 
 glm::vec4 vBoxColors[] = 
 {
@@ -132,7 +132,7 @@ glm::vec4 vBoxColors[] =
 	glm::vec4(1.0f, 0.5f, 0.0f, 0.47f), // Orange
 };
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -145,9 +145,9 @@ void renderScene(LPVOID lpParam)
 	spTextured.useProgram();
 	glBindVertexArray(uiVAOs[0]);
 
-	int iModelViewLoc = glGetUniformLocation(spTextured.getProgramID(), "modelViewMatrix");
-	int iProjectionLoc = glGetUniformLocation(spTextured.getProgramID(), "projectionMatrix");
-	int iColorLoc = glGetUniformLocation(spTextured.getProgramID(), "color");
+	GLint iModelViewLoc = glGetUniformLocation(spTextured.getProgramID(), "modelViewMatrix");
+	GLint iProjectionLoc = glGetUniformLocation(spTextured.getProgramID(), "projectionMatrix");
+	GLint iColorLoc = glGetUniformLocation(spTextured.getProgramID(), "color");
 
 	glm::vec4 vWhiteColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glUniform4fv(iColorLoc, 1, glm::value_ptr(vWhiteColor)); // Set white for textures
@@ -169,7 +169,7 @@ void renderScene(LPVOID lpParam)
 
 	FOR(i, 5)
 	{
-		float fSign = -1.0f+float(i%2)*2.0f; // This just returns -1.0f or 1.0f (try to examine this)
+		GLfloat fSign = -1.0f+float(i%2)*2.0f; // This just returns -1.0f or 1.0f (try to examine this)
 		glm::vec3 vPos = glm::vec3(fSign*15.0f, 0.0f, 50.0f-float(i)*25.0f);
 		mCurrent = glm::translate(mModelView, vPos);
 		mCurrent = glm::scale(mCurrent, glm::vec3(8.0f, 8.0f, 8.0f));
@@ -197,7 +197,7 @@ void renderScene(LPVOID lpParam)
 
 	FOR(i, 5)
 	{
-		float fSign = 1.0f-float(i%2)*2.0f; // Same case as before -  -1.0f or 1.0f
+		GLfloat fSign = 1.0f-float(i%2)*2.0f; // Same case as before -  -1.0f or 1.0f
 		glm::vec3 vPos = glm::vec3(fSign*15.0f, 0.0f, 50.0f-float(i)*25.0f);
 		mCurrent = glm::translate(mModelView, vPos);
 		mCurrent = glm::scale(mCurrent, glm::vec3(8.0f, 8.0f, 8.0f));
@@ -225,7 +225,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	spTextured.deleteProgram();
 	spColored.deleteProgram();

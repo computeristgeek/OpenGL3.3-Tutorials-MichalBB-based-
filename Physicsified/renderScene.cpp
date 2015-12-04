@@ -66,7 +66,7 @@ vector<CCapsulePhysicsNode> rockets;
 BlazeParticleSystemEngine* psEngine;
 #pragma comment(lib, "blaze_part_sys_engine.lib")
 
-int iSubSims = 1;
+GLint iSubSims = 1;
 
 string sItemNames[] = 
 {
@@ -84,27 +84,27 @@ string sMaterials[] =
 	"Titanium"
 };
 
-int iCurrentItem = 0;
-int iCurrentMaterial = 0;
-float fBoxSize = 5.0f;
-float fRadius = 3.0f;
-float fHeight = 5.0f;
-int iNumNodes = 16;
+GLint iCurrentItem = 0;
+GLint iCurrentMaterial = 0;
+GLfloat fBoxSize = 5.0f;
+GLfloat fRadius = 3.0f;
+GLfloat fHeight = 5.0f;
+GLint iNumNodes = 16;
 
-float fMassMultiplier[] = {0.1f, 0.15f, 0.1f, 0.5f};
-float fRestitution[] = {0.1f, 0.05f, 0.1f, 0.04f};
-float fFriction[] = {0.95f, 0.96f, 0.7f, 0.98f};
+GLfloat fMassMultiplier[] = {0.1f, 0.15f, 0.1f, 0.5f};
+GLfloat fRestitution[] = {0.1f, 0.05f, 0.1f, 0.04f};
+GLfloat fFriction[] = {0.95f, 0.96f, 0.7f, 0.98f};
 
-float fForcePowers[] = {200, 40, 300, 2};
-int iRenderOrder[] = {0, 1, 3, 2};
+GLfloat fForcePowers[] = {200, 40, 300, 2};
+GLint iRenderOrder[] = {0, 1, 3, 2};
 
-static float fSimulationSpeed = 3.0f;
-float fImpulseSpeed = 0.1f;
-float fVelLimit = 0.1f;
+static GLfloat fSimulationSpeed = 3.0f;
+GLfloat fImpulseSpeed = 0.1f;
+GLfloat fVelLimit = 0.1f;
 
 vector<btRigidBody*> ptrs;
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 	oglControl->SetVerticalSynchronization(false);
@@ -139,7 +139,7 @@ void InitScene(LPVOID lpParam)
 
 
 	slFlashLight = CSpotLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 1, 15.0f, 0.017f);
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -155,7 +155,7 @@ void InitScene(LPVOID lpParam)
 
 	psEngine->setParticleTexture(tTextures[5].GetTextureID());
 
-	float fBoxSize = 5.0f;
+	GLfloat fBoxSize = 5.0f;
 	/*
 	FOR(uMat, 4)
 	{
@@ -175,9 +175,9 @@ void InitScene(LPVOID lpParam)
 		}
 	}*/
 
-	int iNumNodes = 20;
+	GLint iNumNodes = 20;
 
-	float fRopeNodeHeight = 1.0f;
+	GLfloat fRopeNodeHeight = 1.0f;
 	FOR(i, iNumNodes)
 	{
 		CCapsulePhysicsNode rope;
@@ -209,9 +209,9 @@ void InitScene(LPVOID lpParam)
 	_world->addConstraint(vstr, true);
 
 
-	float fChainNodeHeight = 2.0f;
-	float fChainNodeWidth = 1.0f;
-	float fChainThickness = 0.2f;
+	GLfloat fChainNodeHeight = 2.0f;
+	GLfloat fChainNodeWidth = 1.0f;
+	GLfloat fChainThickness = 0.2f;
 
 
 	FILE*fp = fopen("settings.ini", "rt");
@@ -226,15 +226,15 @@ void InitScene(LPVOID lpParam)
 
 	FOR(i, iNumNodes)
 	{
-		int j = i/2;
+		GLint j = i/2;
 
 		//if(i%2 == 0)continue;
-		float motac = 0.15f;
-		float chainWeight = 0.2f;
-		float fBaseX = 50.0f;
-		float fBaseY = 100.0f-float(i)*fChainNodeHeight*1.9f;
-		float M_PI = 3.1415f;
-		float fLow = -M_PI/64, fHigh = M_PI/64, fSoftness = 0.0f, fBiasFactor = 0.0f, fRelaxationFactor = 0.1f;
+		GLfloat motac = 0.15f;
+		GLfloat chainWeight = 0.2f;
+		GLfloat fBaseX = 50.0f;
+		GLfloat fBaseY = 100.0f-float(i)*fChainNodeHeight*1.9f;
+		GLfloat M_PI = 3.1415f;
+		GLfloat fLow = -M_PI/64, fHigh = M_PI/64, fSoftness = 0.0f, fBiasFactor = 0.0f, fRelaxationFactor = 0.1f;
 
 
 		if(i%2 == 0)
@@ -378,11 +378,11 @@ void InitScene(LPVOID lpParam)
 
 	glm::vec3 vPosition = glm::vec3(-41.56f, 2.74f, 23.47f);
 
-	float size = 15.0f;
-	float fCornerVertexA[] = {vPosition.x-size/2, vPosition.y, vPosition.z-size/2};
-	float fCornerVertexB[] = {vPosition.x+size/2, vPosition.y, vPosition.z+size/2};
-	float fVelocityMin[] = {-5.0f, 0.0f, -5.0f};
-	float fVelocityMax[] = {5.0f, 25.0f, 5.0f};
+	GLfloat size = 15.0f;
+	GLfloat fCornerVertexA[] = {vPosition.x-size/2, vPosition.y, vPosition.z-size/2};
+	GLfloat fCornerVertexB[] = {vPosition.x+size/2, vPosition.y, vPosition.z+size/2};
+	GLfloat fVelocityMin[] = {-5.0f, 0.0f, -5.0f};
+	GLfloat fVelocityMax[] = {5.0f, 25.0f, 5.0f};
 
 	psEngine->createBoxParticleGenerator(fCornerVertexA, fCornerVertexB, fVelocityMin, fVelocityMax, 0.05f, 0.05f, 30, 40, 1.5f, 2.0f, 2.0f);
 
@@ -401,13 +401,13 @@ Result:  Renders whole scene.
 vector<UINT> generators;
 vector<float> genTimes;
 
-void ApplyExplosion(glm::vec3 vPosition, float fForce, BYTE r, BYTE g, BYTE b)
+GLvoid ApplyExplosion(glm::vec3 vPosition, GLfloat fForce, BYTE r, BYTE g, BYTE b)
 {
-	float size = 20.0f;
-	float fCornerVertexA[] = {vPosition.x-size/2, vPosition.y, vPosition.z-size/2};
-	float fCornerVertexB[] = {vPosition.x+size/2, vPosition.y, vPosition.z+size/2};
-	float fVelocityMin[] = {-25.0f, -25.0f, -25.0f};
-	float fVelocityMax[] = {25.0f, 25.0f, 25.0f};
+	GLfloat size = 20.0f;
+	GLfloat fCornerVertexA[] = {vPosition.x-size/2, vPosition.y, vPosition.z-size/2};
+	GLfloat fCornerVertexB[] = {vPosition.x+size/2, vPosition.y, vPosition.z+size/2};
+	GLfloat fVelocityMin[] = {-25.0f, -25.0f, -25.0f};
+	GLfloat fVelocityMax[] = {25.0f, 25.0f, 25.0f};
 
 	UINT id = psEngine->createPointParticleGenerator((float*)glm::value_ptr(vPosition), fVelocityMin, fVelocityMax, 0.05f, 0.10f, 30, 40, 1.5f, 1.0f, 1);
 	psEngine->setGeneratorColor(id, r, g, b);
@@ -419,9 +419,9 @@ void ApplyExplosion(glm::vec3 vPosition, float fForce, BYTE r, BYTE g, BYTE b)
 		btTransform trans = nodes[i]._body->getWorldTransform();
 		glm::vec3 vNodePosition(trans.getOrigin().x(), trans.getOrigin().y(), trans.getOrigin().z());
 		glm::vec3 vDif = vNodePosition-vPosition;
-		float fLen = glm::length(vDif);
+		GLfloat fLen = glm::length(vDif);
 		vDif = glm::normalize(vDif);
-		float fAppliedForce = fForce/(pow(fLen, 0.05f)+1.0f);
+		GLfloat fAppliedForce = fForce/(pow(fLen, 0.05f)+1.0f);
 		nodes[i]._body->applyImpulse(btVector3(vDif.x*fAppliedForce, vDif.y*fAppliedForce, vDif.z*fAppliedForce), btVector3(vPosition.x, vPosition.y, vPosition.z));
 	}
 	FOR(i, ESZ(capnodes))
@@ -429,14 +429,14 @@ void ApplyExplosion(glm::vec3 vPosition, float fForce, BYTE r, BYTE g, BYTE b)
 		btTransform trans = capnodes[i]._body->getWorldTransform();
 		glm::vec3 vNodePosition(trans.getOrigin().x(), trans.getOrigin().y(), trans.getOrigin().z());
 		glm::vec3 vDif = vNodePosition-vPosition;
-		float fLen = glm::length(vDif);
+		GLfloat fLen = glm::length(vDif);
 		vDif = glm::normalize(vDif);
-		float fAppliedForce = fForce/(pow(fLen, 0.05f)+1.0f);
+		GLfloat fAppliedForce = fForce/(pow(fLen, 0.05f)+1.0f);
 		capnodes[i]._body->applyImpulse(btVector3(vDif.x*fAppliedForce, vDif.y*fAppliedForce, vDif.z*fAppliedForce), btVector3(vPosition.x, vPosition.y, vPosition.z));
 	}
 }
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -456,7 +456,7 @@ void RenderScene(LPVOID lpParam)
 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
 
 	// This values will set the darkness of whole scene, that's why such name of variable :D
-	static float fAngleOfDarkness = 45.0f;
+	static GLfloat fAngleOfDarkness = 45.0f;
 	// You can play with direction of light with '+' and '-' key
 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
@@ -489,7 +489,7 @@ void RenderScene(LPVOID lpParam)
 	spMain.SetUniform("ptLight.vColor", glm::vec3(0.0f, 0.0f, 1.0f));
 	spMain.SetUniform("ptLight.vPosition", cCamera.vEye);
 	spMain.SetUniform("ptLight.fAmbient", 0.15f);
-	static float fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
+	static GLfloat fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
 
 	if(Keys::Key('P'))fConst += appMain.sof(0.2f);
 	if(Keys::Key('O'))fConst -= appMain.sof(0.2f);
@@ -518,7 +518,7 @@ void RenderScene(LPVOID lpParam)
 
 	FOR(mat, 4)
 	{
-		int m = iRenderOrder[mat];
+		GLint m = iRenderOrder[mat];
 		tTextures[m+1].BindTexture();
 		if(m == 2)
 		{
@@ -534,11 +534,11 @@ void RenderScene(LPVOID lpParam)
 			glm::mat4 mModelFinal = glm::translate(glm::mat4(1.0), vPositionBox);
 
 			btMatrix3x3 rotMatrix = btMatrix3x3(trans2.getRotation());
-			float z,y,x;
+			GLfloat z,y,x;
 			rotMatrix.getEulerZYX(z,y,x);
 			btScalar m[16]; FOR(j, 16)m[j] = 0.0f;
 			rotMatrix.getOpenGLSubMatrix(m);
-			float aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
+			GLfloat aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
 			glm::mat4 bbb = glm::make_mat4(aaa);
 			mModelFinal = mModelFinal*bbb;
 
@@ -556,11 +556,11 @@ void RenderScene(LPVOID lpParam)
 			glm::mat4 mModelFinal = glm::translate(glm::mat4(1.0), vPositionBox);
 
 			btMatrix3x3 rotMatrix = btMatrix3x3(trans2.getRotation());
-			float z,y,x;
+			GLfloat z,y,x;
 			rotMatrix.getEulerZYX(z,y,x);
 			btScalar m[16]; FOR(j, 16)m[j] = 0.0f;
 			rotMatrix.getOpenGLSubMatrix(m);
-			float aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
+			GLfloat aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
 			glm::mat4 bbb = glm::make_mat4(aaa);
 			mModelFinal = mModelFinal*bbb;
 			mModelFinal = glm::scale(mModelFinal, glm::vec3(capnodes[i].fRadius, capnodes[i].fHeight*2.0f/3.0f, capnodes[i].fRadius));
@@ -577,11 +577,11 @@ void RenderScene(LPVOID lpParam)
 			glm::mat4 mModelFinal = glm::translate(glm::mat4(1.0), vPositionBox);
 
 			btMatrix3x3 rotMatrix = btMatrix3x3(trans2.getRotation());
-			float z,y,x;
+			GLfloat z,y,x;
 			rotMatrix.getEulerZYX(z,y,x);
 			btScalar m[16]; FOR(j, 16)m[j] = 0.0f;
 			rotMatrix.getOpenGLSubMatrix(m);
-			float aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
+			GLfloat aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
 			glm::mat4 bbb = glm::make_mat4(aaa);
 
 			mModelFinal = mModelFinal*bbb;
@@ -600,11 +600,11 @@ void RenderScene(LPVOID lpParam)
 			glm::mat4 mModelFinal = glm::translate(glm::mat4(1.0), vPositionBox);
 
 			btMatrix3x3 rotMatrix = btMatrix3x3(trans2.getRotation());
-			float z,y,x;
+			GLfloat z,y,x;
 			rotMatrix.getEulerZYX(z,y,x);
 			btScalar m[16]; FOR(j, 16)m[j] = 0.0f;
 			rotMatrix.getOpenGLSubMatrix(m);
-			float aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
+			GLfloat aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
 			glm::mat4 bbb = glm::make_mat4(aaa);
 
 			mModelFinal = mModelFinal*bbb;
@@ -623,11 +623,11 @@ void RenderScene(LPVOID lpParam)
 			glm::mat4 mModelFinal = glm::translate(glm::mat4(1.0), vPositionGrenade);
 
 			btMatrix3x3 rotMatrix = btMatrix3x3(trans2.getRotation());
-			float z,y,x;
+			GLfloat z,y,x;
 			rotMatrix.getEulerZYX(z,y,x);
 			btScalar m[16]; FOR(j, 16)m[j] = 0.0f;
 			rotMatrix.getOpenGLSubMatrix(m);
-			float aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
+			GLfloat aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
 			glm::mat4 bbb = glm::make_mat4(aaa);
 			mModelFinal = mModelFinal*bbb;
 			mModelFinal = glm::scale(mModelFinal, glm::vec3(grenades[i].fRadius, grenades[i].fHeight*2.0f/3.0f, grenades[i].fRadius));
@@ -655,11 +655,11 @@ void RenderScene(LPVOID lpParam)
 			glm::mat4 mModelFinal = glm::translate(glm::mat4(1.0), vPositionRocket);
 
 			btMatrix3x3 rotMatrix = btMatrix3x3(trans2.getRotation());
-			float z,y,x;
+			GLfloat z,y,x;
 			rotMatrix.getEulerZYX(z,y,x);
 			btScalar m[16]; FOR(j, 16)m[j] = 0.0f;
 			rotMatrix.getOpenGLSubMatrix(m);
-			float aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
+			GLfloat aaa[16]; FOR(j, 16)aaa[j] = m[j]; aaa[15] = 1.0f;
 			glm::mat4 bbb = glm::make_mat4(aaa);
 			mModelFinal = mModelFinal*bbb;
 			mModelFinal = glm::scale(mModelFinal, glm::vec3(rockets[i].fRadius, rockets[i].fHeight*2.0f/3.0f, rockets[i].fRadius));
@@ -676,7 +676,7 @@ void RenderScene(LPVOID lpParam)
 
 	psEngine->setProjectionMatrix(glm::value_ptr(*oglControl->GetProjectionMatrix()));
 	psEngine->setLookAt(cCamera.vEye.x, cCamera.vEye.y, cCamera.vEye.z, cCamera.vView.x, cCamera.vView.y, cCamera.vView.z, cCamera.vUp.x, cCamera.vUp.y, cCamera.vUp.z);
-	float fTimePassed = appMain.sof(1.0f);
+	GLfloat fTimePassed = appMain.sof(1.0f);
 	psEngine->updateParticles(fTimePassed);
 	psEngine->renderParticles();
 
@@ -694,13 +694,13 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -711,8 +711,8 @@ void RenderScene(LPVOID lpParam)
 	spFont2D.SetUniform("vColor", glm::vec4(0.8f, 0.8f, 0.8f, 1.0f));
 	ftFont.PrintFormatted(20, h-110, 20, "Material: %s (Press MBUTTON to change)", sMaterials[iCurrentMaterial].c_str() );
 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	float fBoxWeight = fMassMultiplier[iCurrentMaterial]*fBoxSize*fMassMultiplier[iCurrentMaterial]*fBoxSize;
-	float fCapsuleWeight = fMassMultiplier[iCurrentMaterial]*150.0f*fMassMultiplier[iCurrentMaterial]*fHeight;
+	GLfloat fBoxWeight = fMassMultiplier[iCurrentMaterial]*fBoxSize*fMassMultiplier[iCurrentMaterial]*fBoxSize;
+	GLfloat fCapsuleWeight = fMassMultiplier[iCurrentMaterial]*150.0f*fMassMultiplier[iCurrentMaterial]*fHeight;
 	if(iCurrentItem == 0)
 	{
 		ftFont.PrintFormatted(20, h-170, 20, "Size (half extents): %.2f (Press '+' and '-' to change)", fBoxSize);
@@ -743,10 +743,10 @@ void RenderScene(LPVOID lpParam)
 		iCurrentItem = (iCurrentItem+1)&3;
 	}
 
-	static bool bThrowing = false;
-	static float fInitForce = 0.0f;
+	static GLboolean bThrowing = false;
+	static GLfloat fInitForce = 0.0f;
 
-	int iMaterialToConsider = iCurrentItem == 2 ? 0 : iCurrentMaterial;
+	GLint iMaterialToConsider = iCurrentItem == 2 ? 0 : iCurrentMaterial;
 
 	if(Keys::Onekey(VK_LBUTTON) && !bThrowing)
 	{
@@ -807,25 +807,25 @@ void RenderScene(LPVOID lpParam)
 		bThrowing = false;
 	}
 
-	float fA = appMain.sof(fSimulationSpeed);
+	GLfloat fA = appMain.sof(fSimulationSpeed);
 
 	FOR(i, 1)
 	{
-		static bool baba = true;
+		static GLboolean baba = true;
 		if(baba)
 		_world->stepSimulation(fA, iSubSims);
 		if(Keys::Onekey(' '))baba = !baba;
 	}
 
-	int numManifolds = _world->getDispatcher()->getNumManifolds();
+	GLint numManifolds = _world->getDispatcher()->getNumManifolds();
 	set<int> rocketsToExplode;
-	for (int i=0;i<numManifolds;i++)
+	for (GLint i=0;i<numManifolds;i++)
 	{
 		//2
 		btPersistentManifold* contactManifold =  _world->getDispatcher()->getManifoldByIndexInternal(i);
 
 		//3
-		int numContacts = contactManifold->getNumContacts();
+		GLint numContacts = contactManifold->getNumContacts();
 		if (numContacts > 0)
 		{
 			//5
@@ -843,7 +843,7 @@ void RenderScene(LPVOID lpParam)
 	}
 	for(set<int>::reverse_iterator it = rocketsToExplode.rbegin(); it != rocketsToExplode.rend(); it++)
 	{
-		int ind = *it;
+		GLint ind = *it;
 		btTransform trans2 = rockets[ind]._body->getWorldTransform();
 		glm::vec3 vPositionRocket(trans2.getOrigin().x(), trans2.getOrigin().y(), trans2.getOrigin().z());
 		_world->removeRigidBody(rockets[ind]._body);
@@ -871,7 +871,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

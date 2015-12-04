@@ -4,7 +4,7 @@ CDoubleUzi gDUzi;
 
 //====================
 
-void CDoubleUzi::renderWeapon()
+GLvoid CDoubleUzi::renderWeapon()
 {
 	glPushMatrix();
 	glTranslatef(-0.35f, 0, fZ[0]);
@@ -24,7 +24,7 @@ void CDoubleUzi::renderWeapon()
 
 //====================
 
-void CDoubleUzi::renderAmmo()
+GLvoid CDoubleUzi::renderAmmo()
 {
 	if(iCurWeapon != DOUBLEUZI)iAmmo = gQMinigun.iAmmo;
 	glDisable(GL_TEXTURE_2D);
@@ -56,7 +56,7 @@ void CDoubleUzi::renderAmmo()
 
 //====================
 
-void CDoubleUzi::shoot()
+GLvoid CDoubleUzi::shoot()
 {
 	fZ[iAUzi] += glAp.sof(2.0f);
 	if(fZ[iAUzi] > 0.22f)
@@ -90,7 +90,7 @@ void CDoubleUzi::shoot()
 			}
 		}
 		pair<CVector3, CVector3> vCDirs = getNormQuad(vDir);
-		float fSign = -0.5f + (float)iAUzi * 1.0f;
+		GLfloat fSign = -0.5f + (float)iAUzi * 1.0f;
 		CVector3 vFPos = cCam.vView2 + vDir + vCDirs.first * fSign + vCDirs.second * 0.3f;
 		CVector3 vDir2 = vTarget - vFPos;
 		vecNormalize(vDir2);
@@ -109,4 +109,4 @@ void CDoubleUzi::shoot()
 
 //====================
 
-void CDoubleUzi::renderBlended(){}
+GLvoid CDoubleUzi::renderBlended(){}

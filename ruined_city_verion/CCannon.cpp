@@ -6,7 +6,7 @@ CCannon gCannon;
 
 //====================
 
-void CCannon::renderWeapon()
+GLvoid CCannon::renderWeapon()
 {
 	glTranslatef((float)sin(fShake) * 0.03f, 0.0f, fBack);
 	mWeapon.renderModel(NULL);
@@ -14,7 +14,7 @@ void CCannon::renderWeapon()
 
 //====================
 
-void CCannon::renderAmmo()
+GLvoid CCannon::renderAmmo()
 {
 	if(iCurWeapon != CANNON)fBack = 0.0f;
 	FOR(i, ESZ(bBalls))
@@ -36,7 +36,7 @@ void CCannon::renderAmmo()
 			glColor3ub(255, 128, 0);
 			glBindTexture(GL_TEXTURE_2D, uiExpTex);
 			glBegin(GL_QUADS);
-			float fSize = bBalls[i].fExpSize;
+			GLfloat fSize = bBalls[i].fExpSize;
 			glTexCoord2f(0.0f, 1.0f); glVertex3f(-fSize, 0.0f, -fSize);
 			glTexCoord2f(1.0f, 1.0f); glVertex3f(fSize, 0.0f, -fSize);
 			glTexCoord2f(1.0f, 0.0f); glVertex3f(fSize, 0.0f, fSize);
@@ -49,24 +49,24 @@ void CCannon::renderAmmo()
 		{
 			bBalls[i].vAcc.y -= glAp.sof(WEIGHT * 7.0f);
 			CVector3 vAdd = bBalls[i].vAcc * glAp.sof(1.0f);
-			float fLen = vecMagnitude(vAdd);
-			int iTimes = (int)(fLen / 1.5f) + 1;
+			GLfloat fLen = vecMagnitude(vAdd);
+			GLint iTimes = (int)(fLen / 1.5f) + 1;
 			if(iTimes > 5)iTimes = 5;
-			float fLen2 = vecMagnitude(bBalls[i].vAcc);
-			bool bStand = true;
+			GLfloat fLen2 = vecMagnitude(bBalls[i].vAcc);
+			GLboolean bStand = true;
 			FOR(l, iTimes)
 			{
 				bBalls[i].vLastPos = bBalls[i].vPos;
 				bBalls[i].vPos += vAdd / (float)iTimes;
 				FOR(j, ESZ(tTowers))FOR(k, tTowers[j].iNumCB)
 				{
-					float fDFCenter = 0.0f;
+					GLfloat fDFCenter = 0.0f;
 					if(collisionSpherePoly(tTowers[j].vColBox[k], 3, NULL, bBalls[i].vPos, 1.5f, fDFCenter))
 					{
-						float fAmplifier = vecMagnitude(bBalls[i].vAcc) / 90.0f;
+						GLfloat fAmplifier = vecMagnitude(bBalls[i].vAcc) / 90.0f;
 						if(fAmplifier > 1.0f)fAmplifier = 1.0f;
 						bBalls[i].fDamage *= fAmplifier;
-						float fDMTaken = min(bBalls[i].fDamage, tTowers[j].fLife);
+						GLfloat fDMTaken = min(bBalls[i].fDamage, tTowers[j].fLife);
 						bBalls[i].fDamage -= fDMTaken;
 						tTowers[j].fLife -= fDMTaken;
 					}
@@ -75,13 +75,13 @@ void CCannon::renderAmmo()
 				{
 					if(sSpiders[j].fLife < -25.0f)continue;
 					CVector3 vPos = sSpiders[j].vPos; vPos.y += 1.0f;
-					float fDist = vecDist(bBalls[i].vPos, vPos);
+					GLfloat fDist = vecDist(bBalls[i].vPos, vPos);
 					if(fDist < 6.0f)
 					{
-						float fAmplifier = vecMagnitude(bBalls[i].vAcc) / 90.0f;
+						GLfloat fAmplifier = vecMagnitude(bBalls[i].vAcc) / 90.0f;
 						if(fAmplifier > 1.0f)fAmplifier = 1.0f;
 						bBalls[i].fDamage *= fAmplifier;
-						float fDMTaken = min(bBalls[i].fDamage, sSpiders[j].fLife + 25.1f);
+						GLfloat fDMTaken = min(bBalls[i].fDamage, sSpiders[j].fLife + 25.1f);
 						bBalls[i].fDamage -= fDMTaken / 2.0f;
 						sSpiders[j].fLife -= fDMTaken;
 						sSpiders[j].addBlood(sSpiders[j].vPos, fDMTaken);
@@ -90,9 +90,9 @@ void CCannon::renderAmmo()
 
 				FOR(k, ESZ(lv1.iStand))
 				{
-					int j = lv1.iStand[k];
+					GLint j = lv1.iStand[k];
 					CVector3 vPoly[] = {lv1.vFaces[j*3], lv1.vFaces[j*3 + 1], lv1.vFaces[j*3 + 2]};
-					float fDFCenter = 0.0f;
+					GLfloat fDFCenter = 0.0f;
 					if(collisionSpherePoly(vPoly, 3, &lv1.vNorms[j], bBalls[i].vPos, 1.5f, fDFCenter))
 					{
 						CVector3 vOffset = lv1.vNorms[j];
@@ -107,32 +107,32 @@ void CCannon::renderAmmo()
 
 				FOR(k, ESZ(lv1.iNotStand))
 				{
-					int j = lv1.iNotStand[k];
+					GLint j = lv1.iNotStand[k];
 					CVector3 vPoly[] = {lv1.vFaces[j*3], lv1.vFaces[j*3 + 1], lv1.vFaces[j*3 + 2]};
-					float fDFCenter = 0.0f;
+					GLfloat fDFCenter = 0.0f;
 					if(collisionSpherePoly(vPoly, 3, &lv1.vNorms[j], bBalls[i].vPos, 1.5f, fDFCenter))
 					{
 						CVector3 vOffset = lv1.vNorms[j];
 						if(fDFCenter > 0.0f)vOffset *= (1.5f - fDFCenter);
 						else vOffset *= (1.5f + fDFCenter) * -1;
 						bBalls[i].vPos += vOffset;
-						float fLen1 = vecMagnitude(bBalls[i].vAcc);
+						GLfloat fLen1 = vecMagnitude(bBalls[i].vAcc);
 						CVector3 vNorm = lv1.vNorms[j];
 						if(fDFCenter < 0.0f)vNorm *= -1;
 						bBalls[i].vAcc = vNorm * 2.0f * vecDot(bBalls[i].vAcc * -1.0f, vNorm) + bBalls[i].vAcc;
-						float fLen2 = vecMagnitude(bBalls[i].vAcc);
+						GLfloat fLen2 = vecMagnitude(bBalls[i].vAcc);
 					}
 				}
 			}
 
 			if((bBalls[i].vAcc.y < 2.0f && bBalls[i].vAcc.y >= -2.0f) && bStand)
 			{
-				float fLen = vecMagnitude(bBalls[i].vAcc);
+				GLfloat fLen = vecMagnitude(bBalls[i].vAcc);
 				if(fLen != 0.0f)
 				{
-					float fSlowdown = WEIGHT * 4.0f;
-					float fLen2 = fLen - glAp.sof(fSlowdown);
-					float fRatio = fLen2 / fLen;
+					GLfloat fSlowdown = WEIGHT * 4.0f;
+					GLfloat fLen2 = fLen - glAp.sof(fSlowdown);
+					GLfloat fRatio = fLen2 / fLen;
 					if(fRatio < 0.0f)fRatio = 0.0f;
 					bBalls[i].vAcc *= fRatio;
 				}
@@ -142,7 +142,7 @@ void CCannon::renderAmmo()
 			{
 				if(i != j && !bBalls[j].bExploding)
 				{
-					float fDist = vecDist(bBalls[i].vPos, bBalls[j].vPos);
+					GLfloat fDist = vecDist(bBalls[i].vPos, bBalls[j].vPos);
 					if(fDist < 3.0f)
 					{
 						bBalls[i].vPos = bBalls[i].vLastPos;
@@ -182,7 +182,7 @@ void CCannon::renderAmmo()
 			vEye2.y += 3.0f; vView2.y += 3.0f;
 			bNew.vAcc = vView2 - vEye2;
 			vecNormalize(bNew.vAcc);
-			float fLen = 55.0f;
+			GLfloat fLen = 55.0f;
 			fLen += fBack * 143.3f;
 			bNew.vPos = vEye2 + bNew.vAcc * 3.5f;
 			bNew.vAcc *= fLen;
@@ -220,7 +220,7 @@ void CCannon::renderAmmo()
 
 //====================
 
-void CCannon::shoot()
+GLvoid CCannon::shoot()
 {
 	if(!bRecover && iAmmo > 0)
 	{
@@ -233,4 +233,4 @@ void CCannon::shoot()
 
 //====================
 
-void CCannon::renderBlended(){}
+GLvoid CCannon::renderBlended(){}

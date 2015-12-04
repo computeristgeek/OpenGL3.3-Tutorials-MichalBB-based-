@@ -12,7 +12,7 @@ Result:	Loads skybox and creates VAO and VBO for it.
 
 /*---------------------------------------------*/
 
-void CSkybox::LoadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom)
+GLvoid CSkybox::LoadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom)
 {
 	tTextures[0].LoadTexture2D(a_sDirectory+a_sFront);
 	tTextures[1].LoadTexture2D(a_sDirectory+a_sBack);
@@ -103,7 +103,7 @@ Result: Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CSkybox::RenderSkybox()
+GLvoid CSkybox::RenderSkybox()
 {
 	glDepthMask(0);
 	glBindVertexArray(uiVAO);
@@ -125,7 +125,7 @@ Result:	Deletes skybox and all associated memory.
 
 /*---------------------------------------------*/
 
-void CSkybox::DeleteSkybox()
+GLvoid CSkybox::DeleteSkybox()
 {
 	FOR(i, 6)tTextures[i].DeleteTexture();
 	glDeleteVertexArrays(1, &uiVAO);

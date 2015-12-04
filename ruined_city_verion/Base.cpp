@@ -48,14 +48,14 @@ LRESULT CALLBACK windowMsgs(HWND hWindow, UINT iMsg, WPARAM wParam, LPARAM lPara
 	}
 }
 
-void freeEverything()
+GLvoid freeEverything()
 {
 
 }
 
 //====================
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR cmdLine, int iShow)
+GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR cmdLine, GLint iShow)
 {
 	if(!glAp.initializeApp("Ruined city of Verion", (WNDPROC)windowMsgs))return 0;
 	glAp.registerAppClass(hInstance);

@@ -28,16 +28,16 @@ Result:	Creates one single character (its
 
 /*---------------------------------------------*/
 
-inline int next_p2(int n){int res = 1; while(res < n)res <<= 1; return res;}
+inline GLint next_p2(GLint n){GLint res = 1; while(res < n)res <<= 1; return res;}
 
-void CFreeTypeFont::CreateChar(int iIndex, GLubyte* bData)
+GLvoid CFreeTypeFont::CreateChar(GLint iIndex, GLubyte* bData)
 {
 	FT_Load_Glyph(ftFace, FT_Get_Char_Index(ftFace, iIndex), FT_LOAD_DEFAULT);
 
 	FT_Render_Glyph(ftFace->glyph, FT_RENDER_MODE_NORMAL);
 	FT_Bitmap* pBitmap = &ftFace->glyph->bitmap;
 
-	int iW = pBitmap->width, iH = pBitmap->rows;
+	GLint iW = pBitmap->width, iH = pBitmap->rows;
 
 	// Some characters when rendered, are somehow just bigger than our desired pixel size
 	// In this case, I just ignore them - another solution is to set iOneCharSquareSize in LoadFont function
@@ -47,9 +47,9 @@ void CFreeTypeFont::CreateChar(int iIndex, GLubyte* bData)
 	if(iH > iOneCharSquareSize)
 		return;
 
-	int iRow = (iIndex%CHARS_PER_TEXTURE)/CHARS_PER_TEXTUREROOT;
-	int iCol = (iIndex%CHARS_PER_TEXTURE)%CHARS_PER_TEXTUREROOT;
-	int iOneTextureByteRowSize = CHARS_PER_TEXTUREROOT*iOneCharSquareSize;
+	GLint iRow = (iIndex%CHARS_PER_TEXTURE)/CHARS_PER_TEXTUREROOT;
+	GLint iCol = (iIndex%CHARS_PER_TEXTURE)%CHARS_PER_TEXTUREROOT;
+	GLint iOneTextureByteRowSize = CHARS_PER_TEXTUREROOT*iOneCharSquareSize;
 
 	// Copy glyph data
 	FOR(ch, iH)memcpy(bData+iRow*iOneTextureByteRowSize*iOneCharSquareSize + iCol*iOneCharSquareSize + ch*iOneTextureByteRowSize, pBitmap->buffer + (iH-ch-1)*iW, iW);
@@ -72,7 +72,7 @@ void CFreeTypeFont::CreateChar(int iIndex, GLubyte* bData)
 		glm::vec2(float(iOneCharSquareSize), float(-iAdvY[iIndex]+iOneCharSquareSize)),
 		glm::vec2(float(iOneCharSquareSize), float(-iAdvY[iIndex]))
 	};
-	float fOneStep = 1.0f/(float(CHARS_PER_TEXTUREROOT));
+	GLfloat fOneStep = 1.0f/(float(CHARS_PER_TEXTUREROOT));
 	// Texture coordinates change depending on character index, which determines its position in the texture
 	glm::vec2 vTexQuad[] =
 	{
@@ -101,7 +101,7 @@ Result:	Loads whole font.
 
 /*---------------------------------------------*/
 
-bool CFreeTypeFont::LoadFont(string sFile, int iPXSize, int iMaxCharSupport)
+GLboolean CFreeTypeFont::LoadFont(string sFile, GLint iPXSize, GLint iMaxCharSupport)
 {
 	BOOL bError = FT_Init_FreeType(&ftLib);
 	
@@ -112,7 +112,7 @@ bool CFreeTypeFont::LoadFont(string sFile, int iPXSize, int iMaxCharSupport)
 	iOneCharSquareSize = next_p2(iLoadedPixelSize);
 
 	// Neat trick - we need to calculate ceil(iMaxCharSupport/CHARS_PER_TEXTURE) and that calculation does it, more in article
-	int iNumTextures = (iMaxCharSupport+CHARS_PER_TEXTURE-1)/CHARS_PER_TEXTURE;
+	GLint iNumTextures = (iMaxCharSupport+CHARS_PER_TEXTURE-1)/CHARS_PER_TEXTURE;
 
 	// One texture will store up to CHARS_PER_TEXTURE characters
 	GLubyte** bTextureData = new GLubyte*[iNumTextures];
@@ -121,7 +121,7 @@ bool CFreeTypeFont::LoadFont(string sFile, int iPXSize, int iMaxCharSupport)
 
 	FOR(i, iNumTextures)
 	{
-		int iTextureDataSize = iOneCharSquareSize*iOneCharSquareSize*CHARS_PER_TEXTURE;
+		GLint iTextureDataSize = iOneCharSquareSize*iOneCharSquareSize*CHARS_PER_TEXTURE;
 		bTextureData[i] = new GLubyte[iTextureDataSize];
 		memset(bTextureData[i], 0, iTextureDataSize);
 	}
@@ -176,7 +176,7 @@ Result:	Loads system font (from system Fonts
 
 /*---------------------------------------------*/
 
-bool CFreeTypeFont::LoadSystemFont(string sName, int iPXSize, int iMaxCharSupport)
+GLboolean CFreeTypeFont::LoadSystemFont(string sName, GLint iPXSize, GLint iMaxCharSupport)
 {
 	char buf[512]; GetWindowsDirectory(buf, 512);
 	string sPath = buf;
@@ -198,9 +198,9 @@ Result:	Returns width as number of pixels the
 
 /*---------------------------------------------*/
 
-int CFreeTypeFont::GetTextWidth(string sText, int iPXSize)
+GLint CFreeTypeFont::GetTextWidth(string sText, GLint iPXSize)
 {
-	int iResult = 0;
+	GLint iResult = 0;
 	FOR(i, ESZ(sText))iResult += iAdvX[sText[i]];
 
 	return iResult*iPXSize/iLoadedPixelSize;
@@ -219,18 +219,18 @@ Result:	Prints text at specified position
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::Print(string sText, int x, int y, int iPXSize)
+GLvoid CFreeTypeFont::Print(string sText, GLint x, GLint y, GLint iPXSize)
 {
 	if(!bLoaded)return;
-	int iLastBoundTexture = -1;
+	GLint iLastBoundTexture = -1;
 
 	glBindVertexArray(uiVAO);
 	shShaderProgram->SetUniform("gSampler", 0);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	int iCurX = x, iCurY = y;
+	GLint iCurX = x, iCurY = y;
 	if(iPXSize == -1)iPXSize = iLoadedPixelSize;
-	float fScale = float(iPXSize)/float(iLoadedPixelSize);
+	GLfloat fScale = float(iPXSize)/float(iLoadedPixelSize);
 	FOR(i, ESZ(sText))
 	{
 		if(sText[i] == '\n')
@@ -239,8 +239,8 @@ void CFreeTypeFont::Print(string sText, int x, int y, int iPXSize)
 			iCurY -= iNewLine*iPXSize/iLoadedPixelSize;
 			continue;
 		}
-		int iIndex = int(sText[i]);
-		int iTextureNeeded = iIndex/CHARS_PER_TEXTURE;
+		GLint iIndex = int(sText[i]);
+		GLint iTextureNeeded = iIndex/CHARS_PER_TEXTURE;
 		if(iTextureNeeded != iLastBoundTexture)
 		{
 			iLastBoundTexture = iTextureNeeded;
@@ -261,18 +261,18 @@ void CFreeTypeFont::Print(string sText, int x, int y, int iPXSize)
 	glDisable(GL_BLEND);
 }
 
-void CFreeTypeFont::Print(wstring sText, int x, int y, int iPXSize)
+GLvoid CFreeTypeFont::Print(wstring sText, GLint x, GLint y, GLint iPXSize)
 {
 	if(!bLoaded)return;
-	int iLastBoundTexture = -1;
+	GLint iLastBoundTexture = -1;
 
 	glBindVertexArray(uiVAO);
 	shShaderProgram->SetUniform("gSampler", 0);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	int iCurX = x, iCurY = y;
+	GLint iCurX = x, iCurY = y;
 	if(iPXSize == -1)iPXSize = iLoadedPixelSize;
-	float fScale = float(iPXSize)/float(iLoadedPixelSize);
+	GLfloat fScale = float(iPXSize)/float(iLoadedPixelSize);
 	FOR(i, ESZ(sText))
 	{
 		if(sText[i] == '\n')
@@ -281,8 +281,8 @@ void CFreeTypeFont::Print(wstring sText, int x, int y, int iPXSize)
 			iCurY -= iNewLine*iPXSize/iLoadedPixelSize;
 			continue;
 		}
-		int iIndex = int(sText[i]);
-		int iTextureNeeded = iIndex/CHARS_PER_TEXTURE;
+		GLint iIndex = int(sText[i]);
+		GLint iTextureNeeded = iIndex/CHARS_PER_TEXTURE;
 		if(iTextureNeeded < 0 || iTextureNeeded >= ESZ(tCharTextures))
 			continue;
 		if(iTextureNeeded != iLastBoundTexture)
@@ -318,7 +318,7 @@ Result:	Prints formatted text at specified position
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::PrintFormatted(int x, int y, int iPXSize, char* sText, ...)
+GLvoid CFreeTypeFont::PrintFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
 {
 	char buf[512];
 	va_list ap;
@@ -328,7 +328,7 @@ void CFreeTypeFont::PrintFormatted(int x, int y, int iPXSize, char* sText, ...)
 	Print(buf, x, y, iPXSize);
 }
 
-void CFreeTypeFont::PrintFormatted(int x, int y, int iPXSize, wchar_t* sText, ...)
+GLvoid CFreeTypeFont::PrintFormatted(GLint x, GLint y, GLint iPXSize, wchar_t* sText, ...)
 {
 	wchar_t buf[512];
 	va_list ap;
@@ -348,7 +348,7 @@ Result:	Deletes all font textures.
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::DeleteFont()
+GLvoid CFreeTypeFont::DeleteFont()
 {
 	FOR(i, ESZ(tCharTextures))
 		tCharTextures[i].DeleteTexture();
@@ -366,7 +366,7 @@ Result:	Sets shader program that font uses.
 
 /*---------------------------------------------*/
 
-void CFreeTypeFont::SetShaderProgram(CShaderProgram* a_shShaderProgram)
+GLvoid CFreeTypeFont::SetShaderProgram(CShaderProgram* a_shShaderProgram)
 {
 	shShaderProgram = a_shShaderProgram;
 }

@@ -14,11 +14,11 @@ Purpose:	Support class for handling materials
 class CMaterial
 {
 public:
-	float fSpecularIntensity;
-	float fSpecularPower;
+	GLfloat fSpecularIntensity;
+	GLfloat fSpecularPower;
 
-	void SetUniformData(CShaderProgram* spProgram, string sMaterialVarName);
+	GLvoid SetUniformData(CShaderProgram* spProgram, string sMaterialVarName);
 
 	CMaterial();
-	CMaterial(float a_fSpecularIntensity, float a_fSpecularPower);
+	CMaterial(GLfloat a_fSpecularIntensity, GLfloat a_fSpecularPower);
 };

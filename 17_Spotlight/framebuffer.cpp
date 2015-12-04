@@ -22,7 +22,7 @@ Result:	Creates a framebuffer and a texture to
 
 /*---------------------------------------------*/
 
-bool CFramebuffer::CreateFramebufferWithTexture(int a_iWidth, int a_iHeight)
+GLboolean CFramebuffer::CreateFramebufferWithTexture(GLint a_iWidth, GLint a_iHeight)
 {
 	if(uiFramebuffer != 0)return false;
 
@@ -50,7 +50,7 @@ Result:	Adds depth renderbuffer to framebuffer,
 
 /*---------------------------------------------*/
 
-bool CFramebuffer::AddDepthBuffer()
+GLboolean CFramebuffer::AddDepthBuffer()
 {
 	if(uiFramebuffer == 0)return false;
 
@@ -76,7 +76,7 @@ Result:	Binds this framebuffer.
 
 /*---------------------------------------------*/
 
-void CFramebuffer::BindFramebuffer(bool bSetFullViewport)
+GLvoid CFramebuffer::BindFramebuffer(GLboolean bSetFullViewport)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, uiFramebuffer);
 	if(bSetFullViewport)glViewport(0, 0, iWidth, iHeight);
@@ -94,7 +94,7 @@ Result:	Binds framebuffer texture, where renderings
 
 /*---------------------------------------------*/
 
-void CFramebuffer::BindFramebufferTexture(int iTextureUnit, bool bRegenMipMaps)
+GLvoid CFramebuffer::BindFramebufferTexture(GLint iTextureUnit, GLboolean bRegenMipMaps)
 {
 	tFramebufferTex.BindTexture(iTextureUnit);
 	if(bRegenMipMaps)glGenerateMipmap(GL_TEXTURE_2D);
@@ -113,7 +113,7 @@ Result:	Sets filtering of framebuffer texture,
 
 /*---------------------------------------------*/
 
-void CFramebuffer::SetFramebufferTextureFiltering(int a_tfMagnification, int a_tfMinification)
+GLvoid CFramebuffer::SetFramebufferTextureFiltering(GLint a_tfMagnification, GLint a_tfMinification)
 {
 	tFramebufferTex.SetFiltering(a_tfMagnification, a_tfMinification);
 }
@@ -128,7 +128,7 @@ Result:	Deletes framebuffer and frees memory.
 
 /*---------------------------------------------*/
 
-void CFramebuffer::DeleteFramebuffer()
+GLvoid CFramebuffer::DeleteFramebuffer()
 {
 	if(uiFramebuffer)
 	{
@@ -154,7 +154,7 @@ Result:	Calculates projection matrix.
 
 /*---------------------------------------------*/
 
-glm::mat4 CFramebuffer::CalculateProjectionMatrix(float fFOV, float fNear, float fFar)
+glm::mat4 CFramebuffer::CalculateProjectionMatrix(GLfloat fFOV, GLfloat fNear, GLfloat fFar)
 {
 	return glm::perspective(fFOV, float(iWidth)/float(iHeight), fNear, fFar);
 }
@@ -184,12 +184,12 @@ Result:	... They get something :D
 
 /*---------------------------------------------*/
 
-int CFramebuffer::GetWidth()
+GLint CFramebuffer::GetWidth()
 {
 	return iWidth;
 }
 
-int CFramebuffer::GetHeight()
+GLint CFramebuffer::GetHeight()
 {
 	return iHeight;
 }

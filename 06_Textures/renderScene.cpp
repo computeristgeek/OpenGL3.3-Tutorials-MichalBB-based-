@@ -34,7 +34,7 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -115,11 +115,11 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fRotationAngleCube = 0.0f, fRotationAnglePyramid = 0.0f;
-float fCubeRotationSpeed = 0.0f, fPyramidRotationSpeed = 0.0f;
-const float PIover180 = 3.1415f/180.0f;
+GLfloat fRotationAngleCube = 0.0f, fRotationAnglePyramid = 0.0f;
+GLfloat fCubeRotationSpeed = 0.0f, fPyramidRotationSpeed = 0.0f;
+const GLfloat PIover180 = 3.1415f/180.0f;
 
-void displayTextureFiltersInfo()
+GLvoid displayTextureFiltersInfo()
 {
 	char buf[255];
 	string sInfoMinification[] = 
@@ -140,15 +140,15 @@ void displayTextureFiltersInfo()
 	SetWindowText(appMain.hWnd, buf);
 }
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	int iModelViewLoc = glGetUniformLocation(spMain.getProgramID(), "modelViewMatrix");
-	int iProjectionLoc = glGetUniformLocation(spMain.getProgramID(), "projectionMatrix");
+	GLint iModelViewLoc = glGetUniformLocation(spMain.getProgramID(), "modelViewMatrix");
+	GLint iProjectionLoc = glGetUniformLocation(spMain.getProgramID(), "projectionMatrix");
 	glUniformMatrix4fv(iProjectionLoc, 1, GL_FALSE, glm::value_ptr(*oglControl->getProjectionMatrix()));
 
 	glm::mat4 mModelView = glm::lookAt(glm::vec3(0, 12, 27), glm::vec3(0, 0, 0), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -159,7 +159,7 @@ void renderScene(LPVOID lpParam)
 	// Texture binding - we set GL_ACTIVE_TEXTURE0, and then we tell fragment shader,
 	// that gSampler variable will fetch data from GL_ACTIVE_TEXTURE0
 
-	int iSamplerLoc = glGetUniformLocation(spMain.getProgramID(), "gSampler");
+	GLint iSamplerLoc = glGetUniformLocation(spMain.getProgramID(), "gSampler");
 	glUniform1i(iSamplerLoc, 0);
 
 	tGold.bindTexture(0);
@@ -211,7 +211,7 @@ void renderScene(LPVOID lpParam)
 	}
 	if(Keys::onekey(VK_F2))
 	{
-		int iNewMinFilter = tSnow.getMinificationFilter() == TEXTURE_FILTER_MIN_TRILINEAR ? TEXTURE_FILTER_MIN_NEAREST : tSnow.getMinificationFilter()+1;
+		GLint iNewMinFilter = tSnow.getMinificationFilter() == TEXTURE_FILTER_MIN_TRILINEAR ? TEXTURE_FILTER_MIN_NEAREST : tSnow.getMinificationFilter()+1;
 		tSnow.setFiltering(tSnow.getMagnificationFilter(), iNewMinFilter); 
 		tGold.setFiltering(tGold.getMagnificationFilter(), iNewMinFilter);
 		displayTextureFiltersInfo();
@@ -229,7 +229,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	spMain.deleteProgram();
 

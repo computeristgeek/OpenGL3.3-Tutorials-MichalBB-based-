@@ -49,9 +49,9 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-void initScene(LPVOID lpParam)
+GLvoid initScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -131,7 +131,7 @@ void initScene(LPVOID lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.0f, 0.26f, 0.48f, 1.0f);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
@@ -151,9 +151,9 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-float fGlobalAngle;
+GLfloat fGlobalAngle;
 
-void renderScene(LPVOID lpParam)
+GLvoid renderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -189,7 +189,7 @@ void renderScene(LPVOID lpParam)
 
 	SFOR(nb, 1, 9)
 	{
-		int iCnt = nb > 5 ? 10-nb : nb;
+		GLint iCnt = nb > 5 ? 10-nb : nb;
 		FOR(i, iCnt)
 		{
 			glm::vec3 vPos = glm::vec3(-20.0f+nb*8.02f, -6.0f+i*8.02f, -50.0f);
@@ -231,7 +231,7 @@ void renderScene(LPVOID lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	// Print something over scene
+	// PrGLint something over scene
 
 	spFont2D.useProgram();
 	glDisable(GL_DEPTH_TEST);
@@ -256,7 +256,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void releaseScene(LPVOID lpParam)
+GLvoid releaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

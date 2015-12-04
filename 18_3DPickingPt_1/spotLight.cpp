@@ -13,7 +13,7 @@ CSpotLight::CSpotLight()
 	fLinearAtt = 0.02f;
 }
 
-CSpotLight::CSpotLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, glm::vec3 a_vDirection, int a_bOn, float a_fConeAngle, float a_fLinearAtt)
+CSpotLight::CSpotLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, glm::vec3 a_vDirection, GLint a_bOn, GLfloat a_fConeAngle, GLfloat a_fLinearAtt)
 {
 	vColor = a_vColor;
 	vPosition = a_vPosition;
@@ -35,7 +35,7 @@ Result:	Sets all spot light data.
 
 /*---------------------------------------------*/
 
-void CSpotLight::SetUniformData(CShaderProgram* spProgram, string sLightVarName)
+GLvoid CSpotLight::SetUniformData(CShaderProgram* spProgram, string sLightVarName)
 {
 	spProgram->SetUniform(sLightVarName+".vColor", vColor);
 	spProgram->SetUniform(sLightVarName+".vPosition", vPosition);

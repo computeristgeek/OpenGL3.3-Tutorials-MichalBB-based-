@@ -1,7 +1,7 @@
 #include "main.h"
 #include "Weapons.h"
 Object Damage;
-void DrawShip(){
+GLvoid DrawShip(){
 		glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D,g_Texture[0]);
 	glBegin(GL_QUADS);
@@ -50,7 +50,7 @@ glRotatef(rotation,0,0,1);
 glPopMatrix();
 }
 
-void DrawEnemy(float x,float y){
+GLvoid DrawEnemy(GLfloat x,GLfloat y){
 	glPushMatrix();
 	glTranslatef(x,y,0);
 	glBegin(GL_TRIANGLES);

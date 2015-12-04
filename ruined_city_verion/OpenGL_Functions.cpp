@@ -8,9 +8,9 @@ vector<CVector3> vRipper, vRDir;
 vector<float> fRAn;
 #define CONSTSPEED 150.0f
 
-float afps, nnum;
+GLfloat afps, nnum;
 
-void glInit()
+GLvoid glInit()
 {
 	glEnable(GL_DEPTH_TEST); // Enables depth-testing
 	glEnable(GL_TEXTURE_2D); // Enables texturing
@@ -92,7 +92,7 @@ void glInit()
 	InitFMOD();
 }
 
-void glScene()
+GLvoid glScene()
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffer
@@ -122,7 +122,7 @@ void glScene()
 		glAp.switchFS();
 		ShowCursor(!glAp.fullscreen);
 	}
-	static float floaf;
+	static GLfloat floaf;
 	floaf += glAp.sof(1.0f);
 	if(floaf > 1.0f)
 	{

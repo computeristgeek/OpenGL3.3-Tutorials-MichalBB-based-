@@ -14,7 +14,7 @@ char* readline(FILE* fp, char* buffer)
 
 //====================
 
-void CWorld::loadWorld(char* strFile)
+GLvoid CWorld::loadWorld(char* strFile)
 {
 	FILE* fp = fopen(strFile, "rt");
 	char line[255];
@@ -48,10 +48,10 @@ void CWorld::loadWorld(char* strFile)
 	vNorms = new CVector3[iAll];
 	vCoords = new CVector2[iAll*3];
 	fAngles = new float[iAll];
-	int iCur = 0;
+	GLint iCur = 0;
 	FOR(i, iNumT)
 	{
-		for(int j = iCur; j < iCur + iFacesT[i]; j++)
+		for(GLint j = iCur; j < iCur + iFacesT[i]; j++)
 		{
 			FOR(k, 3)
 			{
@@ -60,8 +60,8 @@ void CWorld::loadWorld(char* strFile)
 			}
 			vNorms[j] = vecCross(vPts[j*3] - vPts[j*3 + 1], vPts[j*3 + 1] - vPts[j*3 + 2]);
 			vecNormalize(vNorms[j]);
-			float fAn = (float)vecAngle(vNorms[j], CVector3(0, 1, 0));
-			float fAn2 = (float)vecAngle(vNorms[j] * -1, CVector3(0, 1, 0));
+			GLfloat fAn = (float)vecAngle(vNorms[j], CVector3(0, 1, 0));
+			GLfloat fAn2 = (float)vecAngle(vNorms[j] * -1, CVector3(0, 1, 0));
 			if(fAn < 0.25f * PI || fAn2 < 0.25f * PI)iStand.push_back(j);
 			else iNotStand.push_back(j);
 			fAngles[j] = fAn;
@@ -89,16 +89,16 @@ UINT uiFlagTex;
 
 //====================
 
-void CWorld::renderWorld()
+GLvoid CWorld::renderWorld()
 {
 	glEnable(GL_TEXTURE_2D);
 	glColor3ub(255, 255, 255);
-	int iCur = 0;
+	GLint iCur = 0;
 	FOR(i, iNumT)
 	{
 		glBindTexture(GL_TEXTURE_2D, uiTxt[i]);
 		glBegin(GL_TRIANGLES);
-		for(int j = iCur; j < iCur + iFacesT[i]; j++)
+		for(GLint j = iCur; j < iCur + iFacesT[i]; j++)
 		{
 			glNormal3f(vNorms[j].x, vNorms[j].y, vNorms[j].z);
 			FOR(k, 3)
@@ -127,25 +127,25 @@ void CWorld::renderWorld()
 			glVertex3f(vFlags[i].x + FS, vFlags[i].y, vFlags[i].z);
 		glEnd();
 		glColor3ub(255, 255, 255);
-		float fEnd = fFangle[i] + 360.0f;
-		float fCur = fFangle[i];
+		GLfloat fEnd = fFangle[i] + 360.0f;
+		GLfloat fCur = fFangle[i];
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, uiFlagTex);
 		glBegin(GL_QUADS);
-		float fX = vFlags[i].x + FS;
-		float fX2a = 1.0f / ((360.0f / EACH) + 1);
-		float sin1 = sin(fCur * (PI / 180));
+		GLfloat fX = vFlags[i].x + FS;
+		GLfloat fX2a = 1.0f / ((360.0f / EACH) + 1);
+		GLfloat sin1 = sin(fCur * (PI / 180));
 		glTexCoord2f(0, 1); glVertex3f(fX, vFlags[i].y + 8, vFlags[i].z);
 		glTexCoord2f(fX2a, 1); glVertex3f(fX + SZX, vFlags[i].y + 8, vFlags[i].z - sin1 * SZ);
 		glTexCoord2f(fX2a, 0); glVertex3f(fX + SZX, vFlags[i].y + 6, vFlags[i].z - sin1 * SZ);
 		glTexCoord2f(0, 0); glVertex3f(fX, vFlags[i].y + 6, vFlags[i].z);
-		float fX2 = fX2a;
+		GLfloat fX2 = fX2a;
 		fX += SZX;
 		while(fCur < fEnd)
 		{
 			sin1 = sin(fCur * (PI / 180));
 			fCur += EACH;
-			float sin2 = sin(fCur * (PI / 180));
+			GLfloat sin2 = sin(fCur * (PI / 180));
 			glTexCoord2f(fX2, 1); glVertex3f(fX, vFlags[i].y + 8, vFlags[i].z - sin1 * SZ);
 			glTexCoord2f(fX2 + fX2a, 1); glVertex3f(fX + SZX, vFlags[i].y + 8, vFlags[i].z - sin2 * SZ);
 			glTexCoord2f(fX2 + fX2a, 0); glVertex3f(fX + SZX, vFlags[i].y + 6, vFlags[i].z - sin2 * SZ);
@@ -170,7 +170,7 @@ char* strSky[] = {"front.bmp", "left.bmp", "back.bmp", "right.bmp", "top.bmp"};
 
 //====================
 
-void loadSky()
+GLvoid loadSky()
 {
 	FOR(i, 5)
 	{
@@ -183,9 +183,9 @@ void loadSky()
 
 //====================
 
-void renderSky(CVector3 vCenter)
+GLvoid renderSky(CVector3 vCenter)
 {
-	float x = vCenter.x, y = vCenter.y, z = vCenter.z;
+	GLfloat x = vCenter.x, y = vCenter.y, z = vCenter.z;
 	glDepthMask(0);
 	glEnable(GL_TEXTURE_2D);
 	glColor3ub(255, 255, 255);

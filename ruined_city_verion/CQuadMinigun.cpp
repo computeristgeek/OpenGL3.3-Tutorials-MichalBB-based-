@@ -4,7 +4,7 @@
 
 CQuadMinigun gQMinigun;
 
-float fTrans[4][2] = 
+GLfloat fTrans[4][2] = 
 {
 	{0, 0.35f},
 	{0, -0.35f},
@@ -14,7 +14,7 @@ float fTrans[4][2] =
 
 //====================
 
-void CQuadMinigun::renderWeapon()
+GLvoid CQuadMinigun::renderWeapon()
 {
 	if(!bLoaded)
 	{
@@ -68,7 +68,7 @@ void CQuadMinigun::renderWeapon()
 
 //====================
 
-void CQuadMinigun::renderAmmo()
+GLvoid CQuadMinigun::renderAmmo()
 {
 	if(!glAp.key(VK_LBUTTON) || iCurWeapon != QMINIGUN || bOverheat)fOverheat -= glAp.sof(5.0f);
 	if(bOverheat && fOverheat < 75.0f)bOverheat = false;
@@ -85,7 +85,7 @@ void CQuadMinigun::renderAmmo()
 
 //====================
 
-void CQuadMinigun::shoot()
+GLvoid CQuadMinigun::shoot()
 {
 	if(iPhase == 0 && !bOverheat && iAmmo != 0)
 	{
@@ -169,4 +169,4 @@ void CQuadMinigun::shoot()
 
 //====================
 
-void CQuadMinigun::renderBlended(){}
+GLvoid CQuadMinigun::renderBlended(){}

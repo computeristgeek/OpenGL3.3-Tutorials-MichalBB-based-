@@ -23,7 +23,7 @@ Result: Loads a heightmap and builds up all OpenGL
 
 /*---------------------------------------------*/
 
-bool CMultiLayeredHeightmap::LoadHeightMapFromImage(string sImagePath)
+GLboolean CMultiLayeredHeightmap::LoadHeightMapFromImage(string sImagePath)
 {
 	if(bLoaded)
 	{
@@ -55,25 +55,25 @@ bool CMultiLayeredHeightmap::LoadHeightMapFromImage(string sImagePath)
 		return false;
 
 	// How much to increase data pointer to get to next pixel data
-	unsigned int ptr_inc = FreeImage_GetBPP(dib) == 24 ? 3 : 1;
+	unsigned GLint ptr_inc = FreeImage_GetBPP(dib) == 24 ? 3 : 1;
 	// Length of one row in data
-	unsigned int row_step = ptr_inc*iCols;
+	unsigned GLint row_step = ptr_inc*iCols;
 
 	vboHeightmapData.CreateVBO();
 	// All vertex data are here (there are iRows*iCols vertices in this heightmap), we will get to normals later
 	vector< vector< glm::vec3> > vVertexData(iRows, vector<glm::vec3>(iCols));
 	vector< vector< glm::vec2> > vCoordsData(iRows, vector<glm::vec2>(iCols));
 
-	float fTextureU = float(iCols)*0.1f;
-	float fTextureV = float(iRows)*0.1f;
+	GLfloat fTextureU = float(iCols)*0.1f;
+	GLfloat fTextureV = float(iRows)*0.1f;
 
 	FOR(i, iRows)
 	{
 		FOR(j, iCols)
 		{
-			float fScaleC = float(j)/float(iCols-1);
-			float fScaleR = float(i)/float(iRows-1);
-			float fVertexHeight = float(*(bDataPointer+row_step*i+j*ptr_inc))/255.0f;
+			GLfloat fScaleC = float(j)/float(iCols-1);
+			GLfloat fScaleR = float(i)/float(iRows-1);
+			GLfloat fVertexHeight = float(*(bDataPointer+row_step*i+j*ptr_inc))/255.0f;
 			vVertexData[i][j] = glm::vec3(-0.5f+fScaleC, fVertexHeight, -0.5f+fScaleR);
 			vCoordsData[i][j] = glm::vec2(fTextureU*fScaleC, fTextureV*fScaleR);
 		}
@@ -147,14 +147,14 @@ bool CMultiLayeredHeightmap::LoadHeightMapFromImage(string sImagePath)
 	}
 	// Now create a VBO with heightmap indices
 	vboHeightmapIndices.CreateVBO();
-	int iPrimitiveRestartIndex = iRows*iCols;
+	GLint iPrimitiveRestartIndex = iRows*iCols;
 	FOR(i, iRows-1)
 	{
 		FOR(j, iCols)
 		FOR(k, 2)
 		{
-			int iRow = i+(1-k);
-			int iIndex = iRow*iCols+j;
+			GLint iRow = i+(1-k);
+			GLint iIndex = iRow*iCols+j;
 			vboHeightmapIndices.AddData(&iIndex, sizeof(int));
 		}
 		// Restart triangle strips
@@ -197,9 +197,9 @@ Result: Loads common shader program used for
 
 /*---------------------------------------------*/
 
-bool CMultiLayeredHeightmap::LoadTerrainShaderProgram()
+GLboolean CMultiLayeredHeightmap::LoadTerrainShaderProgram()
 {
-	bool bOK = true;
+	GLboolean bOK = true;
 	bOK &= shShaders[0].LoadShader("data\\shaders\\terrain.vert", GL_VERTEX_SHADER);
 	bOK &= shShaders[1].LoadShader("data\\shaders\\terrain.frag", GL_FRAGMENT_SHADER);
 	bOK &= shShaders[2].LoadShader("data\\shaders\\dirLight.frag", GL_FRAGMENT_SHADER);
@@ -227,12 +227,12 @@ Result: Sets rendering size (scaling) of heightmap.
 
 /*---------------------------------------------*/
 
-void CMultiLayeredHeightmap::SetRenderSize(float fRenderX, float fHeight, float fRenderZ)
+GLvoid CMultiLayeredHeightmap::SetRenderSize(GLfloat fRenderX, GLfloat fHeight, GLfloat fRenderZ)
 {
 	vRenderScale = glm::vec3(fRenderX, fHeight, fRenderZ);
 }
 
-void CMultiLayeredHeightmap::SetRenderSize(float fQuadSize, float fHeight)
+GLvoid CMultiLayeredHeightmap::SetRenderSize(GLfloat fQuadSize, GLfloat fHeight)
 {
 	vRenderScale = glm::vec3(float(iCols)*fQuadSize, fHeight, float(iRows)*fQuadSize);
 }
@@ -247,7 +247,7 @@ Result: Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CMultiLayeredHeightmap::RenderHeightmap()
+GLvoid CMultiLayeredHeightmap::RenderHeightmap()
 {
 	spTerrain.UseProgram();
 
@@ -262,18 +262,18 @@ void CMultiLayeredHeightmap::RenderHeightmap()
 	glEnable(GL_PRIMITIVE_RESTART);
 	glPrimitiveRestartIndex(iRows*iCols);
 
-	int iNumIndices = (iRows-1)*iCols*2 + iRows-1;
+	GLint iNumIndices = (iRows-1)*iCols*2 + iRows-1;
 	glDrawElements(GL_TRIANGLE_STRIP, iNumIndices, GL_UNSIGNED_INT, 0);
 }
 
-void CMultiLayeredHeightmap::RenderHeightmapForNormals()
+GLvoid CMultiLayeredHeightmap::RenderHeightmapForNormals()
 {
 	// Now we're ready to render - we are drawing set of triangle strips using one call, but we g otta enable primitive restart
 	glBindVertexArray(uiVAO);
 	glEnable(GL_PRIMITIVE_RESTART);
 	glPrimitiveRestartIndex(iRows*iCols);
 
-	int iNumIndices = (iRows-1)*iCols*2 + iRows-1;
+	GLint iNumIndices = (iRows-1)*iCols*2 + iRows-1;
 	glDrawElements(GL_POINTS, iNumIndices, GL_UNSIGNED_INT, 0);
 }
 
@@ -288,7 +288,7 @@ Result: Releases all data of one heightmap instance.
 
 /*---------------------------------------------*/
 
-void CMultiLayeredHeightmap::ReleaseHeightmap()
+GLvoid CMultiLayeredHeightmap::ReleaseHeightmap()
 {
 	if(!bLoaded)
 		return; // Heightmap must be loaded
@@ -325,7 +325,7 @@ Result: Releases a common shader program used for
 
 /*---------------------------------------------*/
 
-void CMultiLayeredHeightmap::ReleaseTerrainShaderProgram()
+GLvoid CMultiLayeredHeightmap::ReleaseTerrainShaderProgram()
 {
 	spTerrain.DeleteProgram();
 	FOR(i, NUMTERRAINSHADERS)shShaders[i].DeleteShader();
@@ -341,12 +341,12 @@ Result:	They get something :)
 
 /*---------------------------------------------*/
 
-int CMultiLayeredHeightmap::GetNumHeightmapRows()
+GLint CMultiLayeredHeightmap::GetNumHeightmapRows()
 {
 	return iRows;
 }
 
-int CMultiLayeredHeightmap::GetNumHeightmapCols()
+GLint CMultiLayeredHeightmap::GetNumHeightmapCols()
 {
 	return iCols;
 }

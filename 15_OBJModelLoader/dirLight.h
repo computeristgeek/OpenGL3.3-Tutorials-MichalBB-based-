@@ -17,10 +17,10 @@ public:
 	glm::vec3 vColor; // Color of directional light
 	glm::vec3 vDirection; // and its direction
 
-	float fAmbient;
+	GLfloat fAmbient;
 
-	void setUniformData(CShaderProgram* spProgram, string sLightVarName);
+	GLvoid setUniformData(CShaderProgram* spProgram, string sLightVarName);
 
 	CDirectionalLight();
-	CDirectionalLight(glm::vec3 a_vColor, glm::vec3 a_vDirection, float a_fAmbient);
+	CDirectionalLight(glm::vec3 a_vColor, glm::vec3 a_vDirection, GLfloat a_fAmbient);
 };

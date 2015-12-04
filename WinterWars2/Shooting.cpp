@@ -10,9 +10,9 @@ CCamera g_Camera;
 // This function is for lasers, as many times you click left mouse button, as many lasers will be
 // drawn. But if they leaves play area, they have to deactivate
 
-void DisplayLasers(){
-	for(int lsr=0;lsr<lasercount;++lsr){
-float x=lasers[lsr].x,y=lasers[lsr].y,z=lasers[lsr].z;
+GLvoid DisplayLasers(){
+	for(GLint lsr=0;lsr<lasercount;++lsr){
+GLfloat x=lasers[lsr].x,y=lasers[lsr].y,z=lasers[lsr].z;
 CVector3 view;
 view=g_Camera.m_vView-g_Camera.m_vPosition;
 if(!lasers[lsr].active){
@@ -57,9 +57,9 @@ if((lasers[lsr].x<-100 || lasers[lsr].x>100 || lasers[lsr].z<-100 || lasers[lsr]
 
 
 
-void DisplayRockets(){
-	for(int rkt=0;rkt<rocketcount;rkt++){
-float x=rockets[rkt].x,y=rockets[rkt].y,z=rockets[rkt].z;
+GLvoid DisplayRockets(){
+	for(GLint rkt=0;rkt<rocketcount;rkt++){
+GLfloat x=rockets[rkt].x,y=rockets[rkt].y,z=rockets[rkt].z;
 CVector3 view;
 view=g_Camera.m_vView-g_Camera.m_vPosition;
 if(!rockets[rkt].active){
@@ -99,9 +99,9 @@ rocketcount-=1;Enemy.armor-=30; Sound("Data/Sounds/Arm.wav"); rockets[rkt].activ
 
 
 
-void DisplayPlasmas(){
-	for(int plm=0;plm<plasmacount;plm++){
-float x=plasmas[plm].x,y=plasmas[plm].y,z=plasmas[plm].z;
+GLvoid DisplayPlasmas(){
+	for(GLint plm=0;plm<plasmacount;plm++){
+GLfloat x=plasmas[plm].x,y=plasmas[plm].y,z=plasmas[plm].z;
 CVector3 view;
 view=g_Camera.m_vView-g_Camera.m_vPosition;
 if(!plasmas[plm].active){
@@ -139,7 +139,7 @@ plasmacount-=1;Enemy.armor-=12; Sound("Data/Sounds/Arm.wav"); plasmas[plm].activ
 
 
 
-void Shoot(float lasertime,float rockettime, float plasmatime){
+GLvoid Shoot(GLfloat lasertime,GLfloat rockettime, GLfloat plasmatime){
 	
 	if(keys[VK_LBUTTON] && ammol>0 && timer==0.1f && weapon==Lasergun){
 	inc=0.1f;

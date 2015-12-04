@@ -7,8 +7,8 @@ extern glm::vec2 vCubeTexCoords[6];
 extern glm::vec3 vCubeNormals[6];
 extern glm::vec3 vGround[6];
 
-int generateTorus(CVertexBufferObject &vboDest, float fRadius, float fTubeRadius, int iSubDivAround, int iSubDivTube);
+GLint generateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
 
-void LoadAllStaticObjects(CVertexBufferObject& dstVBO, UINT& dstVAO);
+GLvoid LoadAllStaticObjects(CVertexBufferObject& dstVBO, UINT& dstVAO);
 
-extern int iCapsuleFaces;
+extern GLint iCapsuleFaces;

@@ -6,9 +6,9 @@
 
 #include "OpenGLControl.h"
 
-#include <gl/wglew.h>
+#include <GL/wglew.h>
 
-bool COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
+GLboolean COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
 
 /*-----------------------------------------------
 
@@ -21,7 +21,7 @@ Result:	Creates fake window and OpenGL rendering
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::InitGLEW(HINSTANCE hInstance)
+GLboolean COpenGLControl::InitGLEW(HINSTANCE hInstance)
 {
 	if(bGlewInitialized)return true;
 
@@ -45,7 +45,7 @@ bool COpenGLControl::InitGLEW(HINSTANCE hInstance)
 	pfd.cDepthBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
  
-	int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+	GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
 	if (iPixelFormat == 0)return false;
 
 	if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -55,7 +55,7 @@ bool COpenGLControl::InitGLEW(HINSTANCE hInstance)
 	HGLRC hRCFake = wglCreateContext(hDC);
 	wglMakeCurrent(hDC, hRCFake);
 
-	bool bResult = true;
+	GLboolean bResult = true;
 
 	if(!bGlewInitialized)
 	{
@@ -93,14 +93,14 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVersion, int iMinorVersion, void (*a_InitScene)(LPVOID), void (*a_RenderScene)(LPVOID), void(*a_ReleaseScene)(LPVOID), LPVOID lpParam)
+GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(LPVOID), GLvoid (*a_RenderScene)(LPVOID), void(*a_ReleaseScene)(LPVOID), LPVOID lpParam)
 {
 	if(!InitGLEW(hInstance))return false;
 
 	hWnd = a_hWnd;
 	hDC = GetDC(*hWnd);
 
-	bool bError = false;
+	GLboolean bError = false;
 	PIXELFORMATDESCRIPTOR pfd;
 
 	if(iMajorVersion <= 2)
@@ -114,7 +114,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 		pfd.cDepthBits = 32;
 		pfd.iLayerType = PFD_MAIN_PLANE;
  
-		int iPixelFormat = ChoosePixelFormat(hDC, &pfd);
+		GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
 		if (iPixelFormat == 0)return false;
 
 		if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
@@ -126,7 +126,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 	}
 	else if(WGLEW_ARB_create_context && WGLEW_ARB_pixel_format)
 	{
-		const int iPixelFormatAttribList[] =
+		const GLint iPixelFormatAttribList[] =
 		{
 			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
@@ -137,7 +137,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 			WGL_STENCIL_BITS_ARB, 8,
 			0 // End of attributes list
 		};
-		int iContextAttribs[] =
+		GLint iContextAttribs[] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, iMajorVersion,
 			WGL_CONTEXT_MINOR_VERSION_ARB, iMinorVersion,
@@ -145,7 +145,7 @@ bool COpenGLControl::InitOpenGL(HINSTANCE hInstance, HWND* a_hWnd, int iMajorVer
 			0 // End of attributes list
 		};
 
-		int iPixelFormat, iNumFormats;
+		GLint iPixelFormat, iNumFormats;
 		wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &iPixelFormat, (UINT*)&iNumFormats);
 
 		// PFD seems to be only redundant parameter now
@@ -189,7 +189,7 @@ Result:	Resizes viewport to full window with perspective
 
 /*---------------------------------------------*/
 
-void COpenGLControl::ResizeOpenGLViewportFull()
+GLvoid COpenGLControl::ResizeOpenGLViewportFull()
 {
 	if(hWnd == NULL)return;
 	RECT rRect; GetClientRect(*hWnd, &rRect);
@@ -206,7 +206,7 @@ Result:	Registers simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::RegisterSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::RegisterSimpleOpenGLClass(HINSTANCE hInstance)
 {
 	if(bClassRegistered)return;
 	WNDCLASSEX wc;
@@ -238,7 +238,7 @@ Result:	Unregisters simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::UnregisterSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::UnregisterSimpleOpenGLClass(HINSTANCE hInstance)
 {
 	if(bClassRegistered)
 	{
@@ -284,7 +284,7 @@ Result:	Swaps back and front buffer.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::SwapBuffersM()
+GLvoid COpenGLControl::SwapBuffersM()
 {
 	SwapBuffers(hDC);
 }
@@ -301,7 +301,7 @@ Result:	Makes current device and OpenGL rendering
 
 /*---------------------------------------------*/
 
-void COpenGLControl::MakeCurrent()
+GLvoid COpenGLControl::MakeCurrent()
 {
 	wglMakeCurrent(hDC, hRC);
 }
@@ -316,7 +316,7 @@ Result:	Calls previously set render function.
 
 /*---------------------------------------------*/
 
-void COpenGLControl::Render(LPVOID lpParam)
+GLvoid COpenGLControl::Render(LPVOID lpParam)
 {
 	if(RenderScene)RenderScene(lpParam);
 }
@@ -332,7 +332,7 @@ Result:	Calls previously set release function
 
 /*---------------------------------------------*/
 
-void COpenGLControl::ReleaseOpenGLControl(LPVOID lpParam)
+GLvoid COpenGLControl::ReleaseOpenGLControl(LPVOID lpParam)
 {
 	if(ReleaseScene)ReleaseScene(lpParam);
 

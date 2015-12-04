@@ -6,7 +6,7 @@ string fileName(string strPath)
 {
 	while(1)
 	{
-		int iPos = (int)strPath.find('\\');
+		GLint iPos = (int)strPath.find('\\');
 		if(iPos == -1)break;
 		strPath = strPath.substr(iPos+1, strPath.length()-iPos-1);
 	}
@@ -30,7 +30,7 @@ char* fileDir(char* strFileName)
 {
 	string strPath = strFileName;
 	reverse(strPath.begin(), strPath.end());
-	int iSlash = (int)strPath.find('\\');
+	GLint iSlash = (int)strPath.find('\\');
 	if(iSlash == -1)return "";
 	else
 	{
@@ -44,7 +44,7 @@ char* fileDir(char* strFileName)
 
 //====================
 
-void changeDir(char* strNew)
+GLvoid changeDir(char* strNew)
 {
 	static char strDef[256] = {0};
 	if(strDef[0] == 0)GetCurrentDirectory(256, strDef);

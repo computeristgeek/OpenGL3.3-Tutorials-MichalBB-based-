@@ -16,11 +16,11 @@ Result:  Returns i-th RGB color.
 
 /*---------------------------------------------*/
 
-glm::vec4 GetColorByIndex(int index)
+glm::vec4 GetColorByIndex(GLint index)
 {
-	int r = index&0xFF;
-	int g = (index>>8)&0xFF;
-	int b = (index>>16)&0xFF;
+	GLint r = index&0xFF;
+	GLint g = (index>>8)&0xFF;
+	GLint b = (index>>16)&0xFF;
 
 	return glm::vec4(float(r)/255.0f, float(g)/255.0f, float(b)/255.0f, 1.0f);
 }
@@ -36,7 +36,7 @@ Result:  Kind of inverse to previous function,
 
 /*---------------------------------------------*/
 
-int GetIndexByColor(int r, int g, int b)
+GLint GetIndexByColor(GLint r, GLint g, GLint b)
 {
 	return (r)|(g<<8)|(b<<16);
 }
@@ -51,7 +51,7 @@ Result:  Returns i-th RGB color.
 
 /*---------------------------------------------*/
 
-int GetPickedColorIndexUnderMouse()
+GLint GetPickedColorIndexUnderMouse()
 {
 	POINT mp; GetCursorPos(&mp);
 	ScreenToClient(appMain.hWnd, &mp);
@@ -59,7 +59,7 @@ int GetPickedColorIndexUnderMouse()
 	mp.y = rect.bottom-mp.y;
 	BYTE bArray[4];
 	glReadPixels(mp.x, mp.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, bArray);
-	int iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]);
+	GLint iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]);
 	if(iResult == RGB_WHITE)return -1;
 	return iResult;
 }

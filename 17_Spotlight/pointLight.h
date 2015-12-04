@@ -7,24 +7,24 @@
 Class:		CPointLight
 
 Purpose:	Support class for adding
-			point lights to scene.
+			poGLint lights to scene.
 
 ********************************/
 
 class CPointLight
 {
 public:
-	glm::vec3 vColor; // Color of point light
+	glm::vec3 vColor; // Color of poGLint light
 	glm::vec3 vPosition; // and position
 
-	float fAmbient;
+	GLfloat fAmbient;
 
-	float fConstantAtt;
-	float fLinearAtt;
-	float fExpAtt;
+	GLfloat fConstantAtt;
+	GLfloat fLinearAtt;
+	GLfloat fExpAtt;
 
-	void SetUniformData(CShaderProgram* spProgram, string sLightVarName);
+	GLvoid SetUniformData(CShaderProgram* spProgram, string sLightVarName);
 
 	CPointLight();
-	CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, float a_fAmbient, float a_fConstantAtt, float a_fLinearAtt, float a_fExpAtt);
+	CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, GLfloat a_fAmbient, GLfloat a_fConstantAtt, GLfloat a_fLinearAtt, GLfloat a_fExpAtt);
 };

@@ -15,19 +15,19 @@ Purpose:	Class for handling obj
 class CObjModel
 {
 public:
-	bool LoadModel(string sFileName, string sMtlFileName);
-	void RenderModel();
-	void DeleteModel();
+	GLboolean LoadModel(string sFileName, string sMtlFileName);
+	GLvoid RenderModel();
+	GLvoid DeleteModel();
 
-	int GetPolygonCount();
+	GLint GetPolygonCount();
 
 	CObjModel();
 private:
-	bool bLoaded;
-	int iAttrBitField;
-	int iNumFaces;
+	GLboolean bLoaded;
+	GLint iAttrBitField;
+	GLint iNumFaces;
 
-	bool LoadMaterial(string sFullMtlFileName);
+	GLboolean LoadMaterial(string sFullMtlFileName);
 
 	CVertexBufferObject vboModelData;
 	UINT uiVAO;

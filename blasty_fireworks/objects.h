@@ -5,7 +5,7 @@
 struct CParticle
 {
 	CVector3 vPos, vDir;
-	float fFade;
+	GLfloat fFade;
 	BYTE bColor[3];
 };
 
@@ -15,25 +15,25 @@ class CCamera
 {
 public:
 	CVector3 vEye, vView, vUp;
-	float fSense, fSpeed;
+	GLfloat fSense, fSpeed;
 
-	void rotateByMouse();
-	void update();
-	void look();
+	GLvoid rotateByMouse();
+	GLvoid update();
+	GLvoid look();
 
-	void setMoving(int siForw, int siBack, int siLeft, int siRight);
-	void resetMouse();
+	GLvoid setMoving(GLint siForw, GLint siBack, GLint siLeft, GLint siRight);
+	GLvoid resetMouse();
 
-	void checkCollision();
+	GLvoid checkCollision();
 
-	float getAngleX(), getAngleY();
+	GLfloat getAngleX(), getAngleY();
 
 	CCamera(){};
-	CCamera(CVector3 svEye, CVector3 svView, CVector3 svUp, float sfSense, float sfSpeed);
+	CCamera(CVector3 svEye, CVector3 svView, CVector3 svUp, GLfloat sfSense, GLfloat sfSpeed);
 
 private:
 	POINT pMPCur;
-	int iForw, iBack, iLeft, iRight;
+	GLint iForw, iBack, iLeft, iRight;
 };
 
 //====================
@@ -53,13 +53,13 @@ struct CWorld
 		vector<CVector3> vBoundBox;
 		vector<CVector3> vNorms;
 		CVector3 vPos;
-		int iModel;
+		GLint iModel;
 	};
 
 	vector<CObject> oObjects;
 	
-	void loadWorld(char* strFile);
-	void renderWorld();
+	GLvoid loadWorld(char* strFile);
+	GLvoid renderWorld();
 };
 
 //====================
@@ -67,7 +67,7 @@ struct CWorld
 char* readline(FILE* fp);
 string fileName(string strPath);
 char* fileDir(char* strFileName);
-void changeDir(char* strNew);
+GLvoid changeDir(char* strNew);
 
 //====================
 
@@ -77,4 +77,4 @@ extern CWorld wWorld;
 
 //====================
 
-void loadTextures();
+GLvoid loadTextures();

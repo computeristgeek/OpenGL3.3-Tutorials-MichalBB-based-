@@ -26,7 +26,7 @@ CMaterial matShiny;
 
 UINT uiOcclusionQuery;
 
-bool bDisplayNormals = false; // Do not display normals by default
+GLboolean bDisplayNormals = false; // Do not display normals by default
 
 /*-----------------------------------------------
 
@@ -39,7 +39,7 @@ Result:  Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -56,7 +56,7 @@ void InitScene(LPVOID lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -86,12 +86,12 @@ Result:  Renders whole scene.
 /*---------------------------------------------*/
 
 glm::vec3 vModelPosition = glm::vec3(0, 20, 0);
-float fGlobalAngle;
+GLfloat fGlobalAngle;
 
-bool bShowOccluders = false;
-bool bEnableOcclusionQuery = true;
+GLboolean bShowOccluders = false;
+GLboolean bEnableOcclusionQuery = true;
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -124,7 +124,7 @@ void RenderScene(LPVOID lpParam)
 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
 
 	// This values set the darkness of whole scene (direction of light), that's why such name of variable :D
-	static float fAngleOfDarkness = 45.0f;
+	static GLfloat fAngleOfDarkness = 45.0f;
 	// You can play with direction of light with '+' and '-' key
 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
@@ -151,8 +151,8 @@ void RenderScene(LPVOID lpParam)
 	tTextures[1].BindTexture();
 	glDrawArrays(GL_TRIANGLES, iSphereFaces*3, 36);
 
-	int iSpheresPassed = 0;
-	bool bRenderSphere[3][3][3];
+	GLint iSpheresPassed = 0;
+	GLboolean bRenderSphere[3][3][3];
 	glm::mat4 mModelMatrices[3][3][3];
 
 	spOccluders.UseProgram();
@@ -173,7 +173,7 @@ void RenderScene(LPVOID lpParam)
 			FOR(z, 3)
 			{
 				bRenderSphere[x][y][z] = false;
-				float fLocalRotAngle = fGlobalAngle + x*60.0f + y*20.0f + z*6.0f;
+				GLfloat fLocalRotAngle = fGlobalAngle + x*60.0f + y*20.0f + z*6.0f;
 				glm::vec3 vOcclusionCubePos = glm::vec3(-fCubeHalfSize+fCubeHalfSize*x*2.0f/3.0f + fCubeHalfSize/3.0f, -fCubeHalfSize+fCubeHalfSize*y*2.0f/3.0f + fCubeHalfSize/3.0f, -fCubeHalfSize+fCubeHalfSize*z*2.0f/3.0f + fCubeHalfSize/3.0f);
 
 				mModelMatrices[x][y][z] = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, fCubeHalfSize, 0.0f));
@@ -193,7 +193,7 @@ void RenderScene(LPVOID lpParam)
 						glDrawArrays(GL_TRIANGLES, 0, 36);
 					glEndQuery(GL_SAMPLES_PASSED);
 					// Now get tthe number of pixels passed
-					int iSamplesPassed = 0;
+					GLint iSamplesPassed = 0;
 					glGetQueryObjectiv(uiOcclusionQuery, GL_QUERY_RESULT, &iSamplesPassed);
 					
 					// If some samples passed, this means, that we should better render the whole sphere, because we were able 
@@ -258,13 +258,13 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -294,7 +294,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

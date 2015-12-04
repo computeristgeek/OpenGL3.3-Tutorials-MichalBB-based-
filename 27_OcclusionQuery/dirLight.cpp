@@ -11,7 +11,7 @@ CDirectionalLight::CDirectionalLight()
 	iSkybox = 0;
 }
 
-CDirectionalLight::CDirectionalLight(glm::vec3 a_vColor, glm::vec3 a_vDirection, float a_fAmbient, int a_iSkybox)
+CDirectionalLight::CDirectionalLight(glm::vec3 a_vColor, glm::vec3 a_vDirection, GLfloat a_fAmbient, GLint a_iSkybox)
 {
 	vColor = a_vColor;
 	vDirection = a_vDirection;
@@ -31,7 +31,7 @@ Result:	Sets all directional light data.
 
 /*---------------------------------------------*/
 
-void CDirectionalLight::SetUniformData(CShaderProgram *spProgram, std::string sLightVarName)
+GLvoid CDirectionalLight::SetUniformData(CShaderProgram *spProgram, std::string sLightVarName)
 {
 	spProgram->SetUniform(sLightVarName+".vColor", vColor);
 	spProgram->SetUniform(sLightVarName+".vDirection", vDirection);

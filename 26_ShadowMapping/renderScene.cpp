@@ -38,9 +38,9 @@ CAssimpModel amModels[4];
 
 CMultiLayeredHeightmap hmWorld;
 
-int iTorusFaces;
+GLint iTorusFaces;
 
-bool bDisplayNormals = false; // Do not display normals by default
+GLboolean bDisplayNormals = false; // Do not display normals by default
 
 CParticleSystemTransformFeedback psMainParticleSystem;
 CMD2Model md2Models[1];
@@ -49,9 +49,9 @@ animState_t animationStateMain;
 #include "framebuffer.h"
 
 CFramebuffer fboShadowMap;
-bool bShadowsOn = true;
-bool bDisplayShadowMap = true;
-int iShadowMapTextureSize = 1024;
+GLboolean bShadowsOn = true;
+GLboolean bDisplayShadowMap = true;
+GLint iShadowMapTextureSize = 1024;
 
 CVertexBufferObject vboShadowMapQuad;
 UINT uiVAOShadowMapQuad;
@@ -67,7 +67,7 @@ Result:  Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-void InitScene(LPVOID lpParam)
+GLvoid InitScene(LPVOID lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -102,7 +102,7 @@ void InitScene(LPVOID lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 
-	// Here we load font with pixel size 32 - this means that if we print with size above 32, the quality will be low
+	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
@@ -196,20 +196,20 @@ Result:  Renders whole scene.
 /*---------------------------------------------*/
 
 glm::vec3 vModelPosition = glm::vec3(0, 20, 0);
-float fModelRotation;
+GLfloat fModelRotation;
 animType_t atCurrentAnimation = STAND;
 
 struct SShootedArrow
 {
 	glm::vec3 vPos;
 	glm::vec3 vDir;
-	float fRotAngle;
-	float fLifeTime;
+	GLfloat fRotAngle;
+	GLfloat fLifeTime;
 };
 
 std::vector<SShootedArrow> arrows;
 
-void RenderScene(LPVOID lpParam)
+GLvoid RenderScene(LPVOID lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -218,7 +218,7 @@ void RenderScene(LPVOID lpParam)
 	glm::mat4 mModel;
 	if(bShadowsOn) // So if the shadows are on
 	{
-		// We are going to render scene from the light's point of view
+		// We are going to render scene from the light's poGLint of view
 		fboShadowMap.BindFramebuffer();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		spShadowMapper.UseProgram();
@@ -229,7 +229,7 @@ void RenderScene(LPVOID lpParam)
 
 		// Because we have a directional light, we just set it high enough (vLightPos) so that it sees all objects on scene
 		// We also create orthographics projection matrix for the purposes of rendering shadows
-		const float fRangeX = 150, fRangeY = 150, fMinZ = 0.05f, fMaxZ = 400;
+		const GLfloat fRangeX = 150, fRangeY = 150, fMinZ = 0.05f, fMaxZ = 400;
 		glm::mat4 mPROJ = glm::ortho<float>(-fRangeX, fRangeX, -fRangeY, fRangeY, fMinZ, fMaxZ);
 		glm::vec3 vLightPos = -dlSun.vDirection*150.0f;
 		glm::mat4 mViewFromLight = glm::lookAt(vLightPos, glm::vec3(0,0,0), glm::vec3(0,1,0));
@@ -351,7 +351,7 @@ void RenderScene(LPVOID lpParam)
 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
 
 	// This values set the darkness of whole scene (direction of light), that's why such name of variable :D
-	static float fAngleOfDarkness = 45.0f;
+	static GLfloat fAngleOfDarkness = 45.0f;
 	// You can play with direction of light with '+' and '-' key
 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
@@ -513,13 +513,13 @@ void RenderScene(LPVOID lpParam)
 
 	cCamera.Update();
 
-	// Print something over scene
+	// PrGLint something over scene
 	
 	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
 
-	int w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
 	
 	spFont2D.SetUniform("vColor", glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
@@ -542,13 +542,13 @@ void RenderScene(LPVOID lpParam)
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 
-	bool bRunning = false;
-	static bool bLastFrameRunning = false;
+	GLboolean bRunning = false;
+	static GLboolean bLastFrameRunning = false;
 
 	if(Keys::Key(VK_UP))
 	{
-		float fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
-		float fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
 
 		glm::vec3 vMoveVector(fSine, 0, fCosine);
 
@@ -559,8 +559,8 @@ void RenderScene(LPVOID lpParam)
 	}
 	if(Keys::Key(VK_DOWN))
 	{
-		float fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
-		float fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
 
 		glm::vec3 vMoveVector(fSine, 0, fCosine);
 
@@ -585,8 +585,8 @@ void RenderScene(LPVOID lpParam)
 		newArrow.fLifeTime = 4.0f;
 		newArrow.fRotAngle = fModelRotation+90;
 
-		float fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
-		float fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
 
 		newArrow.vDir = glm::vec3(fSine, 0, fCosine);
 		newArrow.vPos = vModelPosition;
@@ -602,7 +602,7 @@ void RenderScene(LPVOID lpParam)
 	if(Keys::Onekey('R'))bShadowsOn = !bShadowsOn;
 	if(Keys::Onekey('M'))bDisplayShadowMap = !bDisplayShadowMap;
 
-	bool bRecreate = false;
+	GLboolean bRecreate = false;
 	if(Keys::Onekey(VK_PRIOR))
 	{
 		iShadowMapTextureSize <<= 1;
@@ -639,7 +639,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-void ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(LPVOID lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

@@ -2,14 +2,14 @@
 
 #include "vertexBufferObject.h"
 
-int GenerateTorus(CVertexBufferObject &vboDest, float fRadius, float fTubeRadius, int iSubDivAround, int iSubDivTube);
+GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
 
 extern UINT uiVAOSceneObjects;
 extern UINT uiVAOOccluders;
 extern CVertexBufferObject vboSceneObjects;
 extern CVertexBufferObject vboOccluders;
-extern int iSphereFaces;
+extern GLint iSphereFaces;
 
-extern float fCubeHalfSize;
+extern GLfloat fCubeHalfSize;
 
-void PrepareStaticSceneObjects();
+GLvoid PrepareStaticSceneObjects();

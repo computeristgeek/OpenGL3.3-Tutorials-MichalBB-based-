@@ -22,9 +22,9 @@ public:
 	glm::vec3 vPosition;
 	glm::vec3 vVelocity;
 	glm::vec3 vColor;
-	float fLifeTime;
-	float fSize;
-	int iType;
+	GLfloat fLifeTime;
+	GLfloat fSize;
+	GLint iType;
 };
 
 /**********************************************************************
@@ -38,26 +38,26 @@ Purpose:	Particle system class that uses transform feedback feature.
 class CParticleSystemTransformFeedback
 {
 public:
-	bool InitalizeParticleSystem();
+	GLboolean InitalizeParticleSystem();
 
-	void RenderParticles();
-	void UpdateParticles(float fTimePassed);
+	GLvoid RenderParticles();
+	GLvoid UpdateParticles(GLfloat fTimePassed);
 
-	void SetGeneratorProperties(glm::vec3 a_vGenPosition, glm::vec3 a_vGenVelocityMin, glm::vec3 a_vGenVelocityMax, glm::vec3 a_vGenGravityVector, glm::vec3 a_vGenColor, float a_fGenLifeMin, float a_fGenLifeMax, float a_fGenSize, float fEvery, int a_iNumToGenerate);
+	GLvoid SetGeneratorProperties(glm::vec3 a_vGenPosition, glm::vec3 a_vGenVelocityMin, glm::vec3 a_vGenVelocityMax, glm::vec3 a_vGenGravityVector, glm::vec3 a_vGenColor, GLfloat a_fGenLifeMin, GLfloat a_fGenLifeMax, GLfloat a_fGenSize, GLfloat fEvery, GLint a_iNumToGenerate);
 
-	void ClearAllParticles();
-	bool ReleaseParticleSystem();
+	GLvoid ClearAllParticles();
+	GLboolean ReleaseParticleSystem();
 
-	int GetNumParticles();
+	GLint GetNumParticles();
 
-	void SetMatrices(glm::mat4* a_matProjection, glm::vec3 vEye, glm::vec3 vView, glm::vec3 vUpVector);
+	GLvoid SetMatrices(glm::mat4* a_matProjection, glm::vec3 vEye, glm::vec3 vView, glm::vec3 vUpVector);
 
-	void DeleteParticleSystem();
+	GLvoid DeleteParticleSystem();
 
 	CParticleSystemTransformFeedback();
 
 private:
-	bool bInitialized;
+	GLboolean bInitialized;
 	
 	UINT uiTransformFeedbackBuffer;
 
@@ -67,24 +67,24 @@ private:
 	UINT uiQuery;
 	UINT uiTexture;
 
-	int iCurReadBuffer;
-	int iNumParticles;
+	GLint iCurReadBuffer;
+	GLint iNumParticles;
 
 	glm::mat4 matProjection, matView;
 	glm::vec3 vQuad1, vQuad2;
 
-	float fElapsedTime;
-	float fNextGenerationTime;
+	GLfloat fElapsedTime;
+	GLfloat fNextGenerationTime;
 
 	glm::vec3 vGenPosition;
 	glm::vec3 vGenVelocityMin, vGenVelocityRange;
 	glm::vec3 vGenGravityVector;
 	glm::vec3 vGenColor;
 
-	float fGenLifeMin, fGenLifeRange;
-	float fGenSize;
+	GLfloat fGenLifeMin, fGenLifeRange;
+	GLfloat fGenSize;
 
-	int iNumToGenerate;
+	GLint iNumToGenerate;
 
 	CShader shVertexRender, shGeomRender, shFragRender;
 	CShader shVertexUpdate, shGeomUpdate, shFragUpdate;

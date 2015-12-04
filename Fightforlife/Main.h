@@ -12,9 +12,9 @@
 //*************************************** Main.h **********************************************
 
 #include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-#include <gl\glaux.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glaux.h>
 #include <float.h>
 #include <math.h>
 #include <string>
@@ -34,27 +34,27 @@ extern HINSTANCE g_Inst; // Global application instance variable
 extern HDC g_DC;		// Global device context variable
 extern HGLRC g_RC;      // Global rendering context variable
 
-void UpdateFPS5();
+GLvoid UpdateFPS5();
 
 // Initializes whole application
-	void Init();
+	GLvoid Init();
 // Main message loop
 	WPARAM MainLoop();
 // Draws whole program
-	void RenderScene();
+	GLvoid RenderScene();
 // Freeing memory, variables and everything in the end of application
-	void QuitApplication();
+	GLvoid QuitApplication();
 // Window message handling
 	LRESULT CALLBACK WndProc(HWND hWnd,UINT uMsg, WPARAM wParam, LPARAM lParam);
 // Initializes OpenGL
-	void InitOpenGL(int w, int h);
-	extern bool quitapp;
+	GLvoid InitOpenGL(GLint w, GLint h);
+	extern GLboolean quitapp;
 // Key pressed only one time
-	bool onekey(int keyid);
+	GLboolean onekey(GLint keyid);
 // Key pressed
-	bool keys(int keyid);
+	GLboolean keys(GLint keyid);
 // Optimalized float
-	float f(float inc);
+	GLfloat f(GLfloat inc);
 //----------------------------------------------------------------------------------------------
 
-void PlayIntro(),PlayOutro();
+GLvoid PlayIntro(),PlayOutro();

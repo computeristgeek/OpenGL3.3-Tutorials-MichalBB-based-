@@ -23,7 +23,7 @@ Result:	Creates texture from provided data.
 
 /*---------------------------------------------*/
 
-void CTexture::createFromData(BYTE* bData, int a_iWidth, int a_iHeight, int a_iBPP, GLenum format, bool bGenerateMipMaps)
+GLvoid CTexture::createFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
 {
 	// Generate an OpenGL texture ID for this texture
 	glGenTextures(1, &uiTexture);
@@ -57,7 +57,7 @@ Result:	Loads texture from a file, supports most
 
 /*---------------------------------------------*/
 
-bool CTexture::loadTexture2D(string a_sPath, bool bGenerateMipMaps)
+GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 {
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	FIBITMAP* dib(0);
@@ -82,7 +82,7 @@ bool CTexture::loadTexture2D(string a_sPath, bool bGenerateMipMaps)
 		return false;
 
 	GLenum format;
-	int bada = FreeImage_GetBPP(dib);
+	GLint bada = FreeImage_GetBPP(dib);
 	if(FreeImage_GetBPP(dib) == 32)format = GL_RGBA;
 	if(FreeImage_GetBPP(dib) == 24)format = GL_BGR;
 	if(FreeImage_GetBPP(dib) == 8)format = GL_LUMINANCE;
@@ -95,7 +95,7 @@ bool CTexture::loadTexture2D(string a_sPath, bool bGenerateMipMaps)
 	return true; // Success
 }
 
-void CTexture::setSamplerParameter(GLenum parameter, GLenum value)
+GLvoid CTexture::setSamplerParameter(GLenum parameter, GLenum value)
 {
 	glSamplerParameteri(uiSampler, parameter, value);
 }
@@ -114,7 +114,7 @@ Result:	Sets magnification and minification
 
 /*---------------------------------------------*/
 
-void CTexture::setFiltering(int a_tfMagnification, int a_tfMinification)
+GLvoid CTexture::setFiltering(GLint a_tfMagnification, GLint a_tfMinification)
 {
 	// Set magnification filter
 	if(a_tfMagnification == TEXTURE_FILTER_MAG_NEAREST)
@@ -148,7 +148,7 @@ Result:	Guess what it does :)
 
 /*---------------------------------------------*/
 
-void CTexture::bindTexture(int iTextureUnit)
+GLvoid CTexture::bindTexture(GLint iTextureUnit)
 {
 	glActiveTexture(GL_TEXTURE0+iTextureUnit);
 	glBindTexture(GL_TEXTURE_2D, uiTexture);
@@ -165,33 +165,33 @@ Result:	Frees all memory used by texture.
 
 /*---------------------------------------------*/
 
-void CTexture::releaseTexture()
+GLvoid CTexture::releaseTexture()
 {
 	glDeleteSamplers(1, &uiSampler);
 	glDeleteTextures(1, &uiTexture);
 }
 
-int CTexture::getMinificationFilter()
+GLint CTexture::getMinificationFilter()
 {
 	return tfMinification;
 }
 
-int CTexture::getMagnificationFilter()
+GLint CTexture::getMagnificationFilter()
 {
 	return tfMagnification;
 }
 
-int CTexture::getWidth()
+GLint CTexture::getWidth()
 {
 	return iWidth;
 }
 
-int CTexture::getHeight()
+GLint CTexture::getHeight()
 {
 	return iHeight;
 }
 
-int CTexture::getBPP()
+GLint CTexture::getBPP()
 {
 	return iBPP;
 }

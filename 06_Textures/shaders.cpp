@@ -18,7 +18,7 @@ Result:	Loads and compiles shader.
 
 /*---------------------------------------------*/
 
-bool CShader::loadShader(string sFile, int a_iType)
+GLboolean CShader::loadShader(string sFile, GLint a_iType)
 {
 	FILE* fp = fopen(sFile.c_str(), "rt");
 	if(!fp)return false;
@@ -40,7 +40,7 @@ bool CShader::loadShader(string sFile, int a_iType)
 
 	delete[] sProgram;
 
-	int iCompilationStatus;
+	GLint iCompilationStatus;
 	glGetShaderiv(uiShader, GL_COMPILE_STATUS, &iCompilationStatus);
 
 	if(iCompilationStatus == GL_FALSE)return false;
@@ -60,7 +60,7 @@ Result:	True if shader was loaded and compiled.
 
 /*---------------------------------------------*/
 
-bool CShader::isLoaded()
+GLboolean CShader::isLoaded()
 {
 	return bLoaded;
 }
@@ -90,7 +90,7 @@ Result:	Deletes shader and frees memory in GPU.
 
 /*---------------------------------------------*/
 
-void CShader::deleteShader()
+GLvoid CShader::deleteShader()
 {
 	if(!isLoaded())return;
 	bLoaded = false;
@@ -112,7 +112,7 @@ Result:	Creates a new program.
 
 /*---------------------------------------------*/
 
-void CShaderProgram::createProgram()
+GLvoid CShaderProgram::createProgram()
 {
 	uiProgram = glCreateProgram();
 }
@@ -128,7 +128,7 @@ Result:	Adds a shader (like source file) to
 
 /*---------------------------------------------*/
 
-bool CShaderProgram::addShaderToProgram(CShader* shShader)
+GLboolean CShaderProgram::addShaderToProgram(CShader* shShader)
 {
 	if(!shShader->isLoaded())return false;
 
@@ -147,10 +147,10 @@ Result:	Performs final linkage of OpenGL program.
 
 /*---------------------------------------------*/
 
-bool CShaderProgram::linkProgram()
+GLboolean CShaderProgram::linkProgram()
 {
 	glLinkProgram(uiProgram);
-	int iLinkStatus;
+	GLint iLinkStatus;
 	glGetProgramiv(uiProgram, GL_LINK_STATUS, &iLinkStatus);
 	bLinked = iLinkStatus == GL_TRUE;
 	return bLinked;
@@ -166,7 +166,7 @@ Result:	Deletes program and frees memory on GPU.
 
 /*---------------------------------------------*/
 
-void CShaderProgram::deleteProgram()
+GLvoid CShaderProgram::deleteProgram()
 {
 	if(!bLinked)return;
 	bLinked = false;
@@ -183,7 +183,7 @@ Result:	Tells OpenGL to use this program.
 
 /*---------------------------------------------*/
 
-void CShaderProgram::useProgram()
+GLvoid CShaderProgram::useProgram()
 {
 	if(bLinked)glUseProgram(uiProgram);
 }

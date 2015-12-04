@@ -19,7 +19,7 @@ pair<CVector3, CVector3> getNormQuad(CVector3 vNorm)
 
 //====================
 
-void renderAllParticles(vector<CParticle> &pParts, int iFade)
+GLvoid renderAllParticles(vector<CParticle> &pParts, GLint iFade)
 {
 	pair<CVector3, CVector3> vDirs = getNormQuad(camMain.vView-camMain.vEye);
 	vDirs.first /= 4.0f; vDirs.second /= 4.0f;
@@ -52,14 +52,14 @@ void renderAllParticles(vector<CParticle> &pParts, int iFade)
 
 //====================
 
-float randValue(float fMin, float fMax)
+GLfloat randValue(GLfloat fMin, GLfloat fMax)
 {
 	return fMin+((float)(rand())/(float)RAND_MAX)*(fMax-fMin);
 }
 
 //====================
 
-void createParticles(CVector3 vPos, float fMaxSpeed, int iCount, BYTE* bColor)
+GLvoid createParticles(CVector3 vPos, GLfloat fMaxSpeed, GLint iCount, BYTE* bColor)
 {
 	FOR(i, iCount)
 	{
@@ -74,7 +74,7 @@ void createParticles(CVector3 vPos, float fMaxSpeed, int iCount, BYTE* bColor)
 
 //====================
 
-void loadTextures()
+GLvoid loadTextures()
 {
 	tTextures.resize(1);
 	textureBMP(&tTextures[0].second, "textures/particle.bmp", false, false, LINEAR);

@@ -41,24 +41,24 @@ glm::vec2 vGroundTC[6] =
 	glm::vec2(0, 20), glm::vec2(0, 0), glm::vec2(20, 0), glm::vec2(20, 0), glm::vec2(20, 20), glm::vec2(0, 20)
 };
 
-int GenerateCapsule(CVertexBufferObject &vboDest, float fRadius, float fHeight, int iSubDivAround, float fMapU, float fMapV)
+GLint GenerateCapsule(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU, GLfloat fMapV)
 {
-	float fAddAngleAround = 360.0f/(float)(iSubDivAround-1);
+	GLfloat fAddAngleAround = 360.0f/(float)(iSubDivAround-1);
 
-	float fCurAngleAround = 0.0f;
-	int iStepsAround = 1;
-	const float PI = float(atan(1.0)*4.0);
+	GLfloat fCurAngleAround = 0.0f;
+	GLint iStepsAround = 1;
+	const GLfloat PI = float(atan(1.0)*4.0);
 
-	int iFacesAdded = 0;
+	GLint iFacesAdded = 0;
 
 	while(iStepsAround <= iSubDivAround)
 	{
-		float fSineAround = sin(fCurAngleAround/180.0f*PI);
-		float fCosineAround = cos(fCurAngleAround/180.0f*PI);
+		GLfloat fSineAround = sin(fCurAngleAround/180.0f*PI);
+		GLfloat fCosineAround = cos(fCurAngleAround/180.0f*PI);
 		glm::vec3 vDir1(fCosineAround, 0.0f, fSineAround);
-		float fNextAngleAround = fCurAngleAround+fAddAngleAround;
-		float fNextSineAround = sin(fNextAngleAround/180.0f*PI);
-		float fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
+		GLfloat fNextAngleAround = fCurAngleAround+fAddAngleAround;
+		GLfloat fNextSineAround = sin(fNextAngleAround/180.0f*PI);
+		GLfloat fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
 		glm::vec3 vDir2(fNextCosineAround, 0.0f, fNextSineAround);
 
 		glm::vec3 vQuadPoints[] = 
@@ -88,11 +88,11 @@ int GenerateCapsule(CVertexBufferObject &vboDest, float fRadius, float fHeight, 
 			vDir2
 		};
 
-		int iIndices[] = {0, 1, 2, 2, 3, 0};
+		GLint iIndices[] = {0, 1, 2, 2, 3, 0};
 
 		FOR(i, 6)
 		{
-			int index = iIndices[i];
+			GLint index = iIndices[i];
 			vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
 			vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
 			vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
@@ -103,36 +103,36 @@ int GenerateCapsule(CVertexBufferObject &vboDest, float fRadius, float fHeight, 
 		iStepsAround++;
 	}
 
-	float fSigns[] = {1.0f, -1.0f};
+	GLfloat fSigns[] = {1.0f, -1.0f};
 
 	FOR(i, 2)
 	{
 		fCurAngleAround = 0.0f;
 		iStepsAround = 1;
-		float fs = fSigns[i];
+		GLfloat fs = fSigns[i];
 
 		while(iStepsAround <= iSubDivAround)
 		{
-			float fSineAround = sin(fCurAngleAround/180.0f*PI);
-			float fCosineAround = cos(fCurAngleAround/180.0f*PI);
+			GLfloat fSineAround = sin(fCurAngleAround/180.0f*PI);
+			GLfloat fCosineAround = cos(fCurAngleAround/180.0f*PI);
 			glm::vec3 vDir1(fCosineAround, 0.0f, fSineAround);
-			float fNextAngleAround = fCurAngleAround+fAddAngleAround;
-			float fNextSineAround = sin(fNextAngleAround/180.0f*PI);
-			float fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
+			GLfloat fNextAngleAround = fCurAngleAround+fAddAngleAround;
+			GLfloat fNextSineAround = sin(fNextAngleAround/180.0f*PI);
+			GLfloat fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
 			glm::vec3 vDir2(fNextCosineAround, 0.0f, fNextSineAround);
 
 
-			int iStepsHalfSphere = 1;
-			float fAngleHalfSphere = 0.0f;
-			float fAngleHalfStep = 90.0f/10.0f;
+			GLint iStepsHalfSphere = 1;
+			GLfloat fAngleHalfSphere = 0.0f;
+			GLfloat fAngleHalfStep = 90.0f/10.0f;
 			while(iStepsHalfSphere <= 10)
 			{
-				float fNextAngleHalfSphere = fAngleHalfSphere + fAngleHalfStep;
+				GLfloat fNextAngleHalfSphere = fAngleHalfSphere + fAngleHalfStep;
 
-				float fSineExtend = sin(fAngleHalfSphere/180.0f*PI);
-				float fNextSineExtend = sin(fNextAngleHalfSphere/180.0f*PI);
-				float fCosineExtend = cos(fAngleHalfSphere/180.0f*PI);
-				float fNextCosineExtend = cos(fNextAngleHalfSphere/180.0f*PI);
+				GLfloat fSineExtend = sin(fAngleHalfSphere/180.0f*PI);
+				GLfloat fNextSineExtend = sin(fNextAngleHalfSphere/180.0f*PI);
+				GLfloat fCosineExtend = cos(fAngleHalfSphere/180.0f*PI);
+				GLfloat fNextCosineExtend = cos(fNextAngleHalfSphere/180.0f*PI);
 
 				glm::vec3 vOrigin = glm::vec3(0.0f, fs*fHeight/2.0f, 0.0f);
 
@@ -164,11 +164,11 @@ int GenerateCapsule(CVertexBufferObject &vboDest, float fRadius, float fHeight, 
 					vNormals[k] = glm::normalize(vNormals[k]);
 				}
 
-				int iIndices[] = {0, 1, 2, 2, 3, 0};
+				GLint iIndices[] = {0, 1, 2, 2, 3, 0};
 
 				FOR(i, 6)
 				{
-					int index = iIndices[i];
+					GLint index = iIndices[i];
 					vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
 					vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
 					vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
@@ -187,10 +187,10 @@ int GenerateCapsule(CVertexBufferObject &vboDest, float fRadius, float fHeight, 
 	return iFacesAdded;
 }
 
-int iCapsuleFaces;
+GLint iCapsuleFaces;
 
 
-void LoadAllStaticObjects(CVertexBufferObject& dstVBO, UINT& dstVAO)
+GLvoid LoadAllStaticObjects(CVertexBufferObject& dstVBO, UINT& dstVAO)
 {
 	dstVBO.CreateVBO();
 	glGenVertexArrays(1, &dstVAO); // Create one VAO

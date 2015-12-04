@@ -5,7 +5,7 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-const float PI = atan(1.0)*4.0;
+const GLfloat PI = atan(1.0)*4.0;
 
 CFlyingCamera::CFlyingCamera()
 {
@@ -16,7 +16,7 @@ CFlyingCamera::CFlyingCamera()
 	fSensitivity = 0.1f;
 }
 
-CFlyingCamera::CFlyingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, float a_fSpeed, float a_fSensitivity)
+CFlyingCamera::CFlyingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, GLfloat a_fSpeed, GLfloat a_fSensitivity)
 {
 	vEye = a_vEye; vView = a_vView; vUp = a_vUp;
 	fSpeed = a_fSpeed;
@@ -34,15 +34,15 @@ Result:	Checks for moving of mouse and rotates
 
 /*---------------------------------------------*/
 
-void CFlyingCamera::rotateWithMouse()
+GLvoid CFlyingCamera::rotateWithMouse()
 {
 	GetCursorPos(&pCur);
 	RECT rRect; GetWindowRect(appMain.hWnd, &rRect);
-	int iCentX = (rRect.left+rRect.right)>>1,
+	GLint iCentX = (rRect.left+rRect.right)>>1,
 		iCentY = (rRect.top+rRect.bottom)>>1;
 
-	float deltaX = (float)(iCentX-pCur.x)*fSensitivity;
-	float deltaY = (float)(iCentY-pCur.y)*fSensitivity;
+	GLfloat deltaX = (float)(iCentX-pCur.x)*fSensitivity;
+	GLfloat deltaY = (float)(iCentY-pCur.y)*fSensitivity;
 
 	if(deltaX != 0.0f)
 	{
@@ -54,8 +54,8 @@ void CFlyingCamera::rotateWithMouse()
 	{
 		glm::vec3 vAxis = glm::cross(vView-vEye, vUp);
 		vAxis = glm::normalize(vAxis);
-		float fAngle = deltaY;
-		float fNewAngle = fAngle+getAngleX();
+		GLfloat fAngle = deltaY;
+		GLfloat fNewAngle = fAngle+getAngleX();
 		if(fNewAngle > -89.80f && fNewAngle < 89.80f)
 		{
 			vView -= vEye;
@@ -77,11 +77,11 @@ Result:	Gets Y angle of camera (head turning left
 
 /*---------------------------------------------*/
 
-float CFlyingCamera::getAngleY()
+GLfloat CFlyingCamera::getAngleY()
 {
 	glm::vec3 vDir = vView-vEye; vDir.y = 0.0f;
 	glm::normalize(vDir);
-	float fAngle = acos(glm::dot(glm::vec3(0, 0, -1), vDir))*(180.0f/PI);
+	GLfloat fAngle = acos(glm::dot(glm::vec3(0, 0, -1), vDir))*(180.0f/PI);
 	if(vDir.x < 0)fAngle = 360.0f-fAngle;
 	return fAngle;
 }
@@ -97,13 +97,13 @@ Result:	Gets X angle of camera (head turning up
 
 /*---------------------------------------------*/
 
-float CFlyingCamera::getAngleX()
+GLfloat CFlyingCamera::getAngleX()
 {
 	glm::vec3 vDir = vView-vEye;
 	vDir = glm::normalize(vDir);
 	glm::vec3 vDir2 = vDir; vDir2.y = 0.0f;
 	vDir2 = glm::normalize(vDir2);
-	float fAngle =  acos(glm::dot(vDir2, vDir))*(180.0f/PI);
+	GLfloat fAngle =  acos(glm::dot(vDir2, vDir))*(180.0f/PI);
 	if(vDir.y < 0)fAngle *= -1.0f;
 	return fAngle;
 }
@@ -121,7 +121,7 @@ Result:	Sets keys for moving camera.
 
 /*---------------------------------------------*/
 
-void CFlyingCamera::setMovingKeys(int a_iForw, int a_iBack, int a_iLeft, int a_iRight)
+GLvoid CFlyingCamera::setMovingKeys(GLint a_iForw, GLint a_iBack, GLint a_iLeft, GLint a_iRight)
 {
 	iForw = a_iForw;
 	iBack = a_iBack;
@@ -140,7 +140,7 @@ Result:	Performs updates of camera - moving and
 
 /*---------------------------------------------*/
 
-void CFlyingCamera::update()
+GLvoid CFlyingCamera::update()
 {
 	rotateWithMouse();
 
@@ -153,7 +153,7 @@ void CFlyingCamera::update()
 	vStrafe = glm::normalize(vStrafe);
 	vStrafe *= fSpeed;
 
-	int iMove = 0;
+	GLint iMove = 0;
 	glm::vec3 vMoveBy;
 	// Get vector of move
 	if(Keys::key(iForw))vMoveBy += vMove*appMain.sof(1.0f);
@@ -174,10 +174,10 @@ Result:	Sets mouse cursor back to the center of
 
 /*---------------------------------------------*/
 
-void CFlyingCamera::resetMouse()
+GLvoid CFlyingCamera::resetMouse()
 {
 	RECT rRect; GetWindowRect(appMain.hWnd, &rRect);
-	int iCentX = (rRect.left+rRect.right)>>1,
+	GLint iCentX = (rRect.left+rRect.right)>>1,
 		iCentY = (rRect.top+rRect.bottom)>>1;
 	SetCursorPos(iCentX, iCentY);
 }

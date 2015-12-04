@@ -12,7 +12,7 @@
 //
 //////////////////////////////////// SOLDIER::DRAW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Soldier::Draw()
+GLvoid Soldier::Draw()
 {
 	glColor3f(1,1,1); // Set color to white
 	glPushMatrix(); // Push the matrix
@@ -38,7 +38,7 @@ void Soldier::Draw()
 	// End of rendering
 	glPopMatrix(); // Pop the matrix
 
-	for(int s=0;s<bullets.size();s++)
+	for(GLint s=0;s<bullets.size();s++)
 	{
 		glPushMatrix(); // Push the matrix
 		glTranslatef(bullets[s].mvPos.x,bullets[s].mvPos.y,0);// Translate position
@@ -124,7 +124,7 @@ void Soldier::Draw()
 			}
 		}
 	}
-	POINT mp; // Create Mouse Point structure
+	POINT mp; // Create Mouse PoGLint structure
 	GetCursorPos(&mp); // Get position of cursor
 	mvShoot.x=-27+(float)mp.x/14.8f; // Calculate crosshair's position
 	mvShoot.y=20-(float)mp.y/14.8f;
@@ -136,7 +136,7 @@ void Soldier::Draw()
 //
 ///////////////////////////////// SOLDIER::DISPLAYINFO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void Soldier::DisplayInfo()
+GLvoid Soldier::DisplayInfo()
 {
 	Start2D(); // Start 2D screen
 	glDisable(GL_TEXTURE_2D); // Disable texturing
@@ -154,8 +154,8 @@ void Soldier::DisplayInfo()
 	End2D(); // End 2D screen
 
 	if(life>200)life=200;
-	PrintText(CVector2(20,20),1,Rgb(0,1,0),0,NOTHING,"%d",life); // Print life
-	PrintText(CVector2(80,20),1,Rgb(1,1,0),0,NOTHING,"%d",ammo[weapon]); // Print ammo
+	PrintText(CVector2(20,20),1,Rgb(0,1,0),0,NOTHING,"%d",life); // PrGLint life
+	PrintText(CVector2(80,20),1,Rgb(1,1,0),0,NOTHING,"%d",ammo[weapon]); // PrGLint ammo
 }
 
 ////////////////////////////////////// PLAYINTRO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
@@ -164,10 +164,10 @@ void Soldier::DisplayInfo()
 //
 ////////////////////////////////////// PLAYINTRO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void PlayIntro()
+GLvoid PlayIntro()
 {
 	MSG msg;
-	bool end=false;
+	GLboolean end=false;
 	while(1)											// Do our infinate loop
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 	// Check if there was a message
@@ -229,11 +229,11 @@ void PlayIntro()
 //
 ////////////////////////////////////// PLAYOUTRO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void PlayOutro()
+GLvoid PlayOutro()
 {
 	glClearColor(1,1,1,1); // Clear color to green
 	MSG msg;
-	bool end=false;
+	GLboolean end=false;
 	while(1)											// Do our infinate loop
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 	// Check if there was a message

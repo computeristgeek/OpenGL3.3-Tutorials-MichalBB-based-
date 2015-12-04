@@ -12,17 +12,17 @@ Purpose:	Wraps OpenGL vertex buffer
 class CVertexBufferObject
 {
 public:
-	void createVBO(int a_iSize = 0);
-	void releaseVBO();
+	GLvoid createVBO(GLint a_iSize = 0);
+	GLvoid releaseVBO();
 
-	void* mapBufferToMemory(int iUsageHint);
-	void* mapSubBufferToMemory(int iUsageHint, UINT uiOffset, UINT uiLength);
-	void unmapBuffer();
+	void* mapBufferToMemory(GLint iUsageHint);
+	void* mapSubBufferToMemory(GLint iUsageHint, UINT uiOffset, UINT uiLength);
+	GLvoid unmapBuffer();
 
-	void bindVBO(int a_iBufferType = GL_ARRAY_BUFFER);
-	void uploadDataToGPU(int iUsageHint);
+	GLvoid bindVBO(GLint a_iBufferType = GL_ARRAY_BUFFER);
+	GLvoid uploadDataToGPU(GLint iUsageHint);
 	
-	void addData(void* ptrData, UINT uiDataSize);
+	GLvoid addData(void* ptrData, UINT uiDataSize);
 
 	void* getDataPointer();
 	UINT getBuffer();
@@ -31,9 +31,9 @@ public:
 
 private:
 	UINT uiBuffer;
-	int iSize;
-	int iBufferType;
+	GLint iSize;
+	GLint iBufferType;
 	vector<BYTE> data;
 
-	bool bDataUploaded;
+	GLboolean bDataUploaded;
 };

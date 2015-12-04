@@ -2,7 +2,7 @@
 #define _CAMERA_H
 
 #define kSpeed	0.2f
-extern float angleY, angleZ;
+extern GLfloat angleY, angleZ;
 // This is our camera class
 class CCamera {
 
@@ -24,42 +24,42 @@ public:
 	
 	// This changes the position, view, and up vector of the camera.
 	// This is primarily used for initialization
-	void PositionCamera(float positionX, float positionY, float positionZ,
-			 		    float viewX,     float viewY,     float viewZ,
-						float upVectorX, float upVectorY, float upVectorZ);
+	GLvoid PositionCamera(GLfloat positionX, GLfloat positionY, GLfloat positionZ,
+			 		    GLfloat viewX,     GLfloat viewY,     GLfloat viewZ,
+						GLfloat upVectorX, GLfloat upVectorY, GLfloat upVectorZ);
 
 	// This rotates the camera's view around the position depending on the values passed in.
-	void RotateView(float angle, float X, float Y, float Z);
+	GLvoid RotateView(GLfloat angle, GLfloat X, GLfloat Y, GLfloat Z);
 
 	// This moves the camera's view by the mouse movements (First person view)
-	void SetViewByMouse(); 
+	GLvoid SetViewByMouse(); 
 
-	// This rotates the camera around a point (I.E. your character).
-	void RotateAroundPoint(CVector3 vCenter, float X, float Y, float Z);
+	// This rotates the camera around a poGLint (I.E. your character).
+	GLvoid RotateAroundPoint(CVector3 vCenter, GLfloat X, GLfloat Y, GLfloat Z);
 
 
 /////// * /////////// * /////////// * NEW * /////// * /////////// * /////////// *
 
 	// This strafes the camera left or right depending on the speed (+/-) 
-	void StrafeCamera(float speed);
+	GLvoid StrafeCamera(GLfloat speed);
 
 /////// * /////////// * /////////// * NEW * /////// * /////////// * /////////// *
 
 
 	// This will move the camera forward or backward depending on the speed
-	void MoveCamera(float speed);
+	GLvoid MoveCamera(GLfloat speed);
 
 	// This checks for keyboard movement
-	void CheckForMovement();
+	GLvoid CheckForMovement();
 
 
 /////// * /////////// * /////////// * NEW * /////// * /////////// * /////////// *
 
 	// This updates the camera's view and other data (Should be called each frame)
-	void Update();
+	GLvoid Update();
 
 	// This uses gluLookAt() to tell OpenGL where to look
-	void Look();
+	GLvoid Look();
 
 
 

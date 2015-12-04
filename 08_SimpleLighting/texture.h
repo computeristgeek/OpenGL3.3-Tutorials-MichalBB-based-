@@ -24,24 +24,24 @@ Purpose:	Wraps OpenGL texture
 class CTexture
 {
 public:
-	bool loadTexture2D(string a_sPath, bool bGenerateMipMaps = false);
-	void bindTexture(int iTextureUnit = 0);
+	GLboolean loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
+	GLvoid bindTexture(GLint iTextureUnit = 0);
 
-	void setFiltering(int a_tfMagnification, int a_tfMinification);
+	GLvoid setFiltering(GLint a_tfMagnification, GLint a_tfMinification);
 
-	int getMinificationFilter();
-	int getMagnificationFilter();
+	GLint getMinificationFilter();
+	GLint getMagnificationFilter();
 
-	void releaseTexture();
+	GLvoid releaseTexture();
 
 	CTexture();
 private:
-	int iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
+	GLint iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
 	UINT uiTexture; // Texture name
 	UINT uiSampler; // Sampler name
-	bool bMipMapsGenerated;
+	GLboolean bMipMapsGenerated;
 
-	int tfMinification, tfMagnification;
+	GLint tfMinification, tfMagnification;
 
 	string sPath;
 };

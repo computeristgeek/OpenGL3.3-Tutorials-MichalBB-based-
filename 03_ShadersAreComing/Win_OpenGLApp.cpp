@@ -16,7 +16,7 @@ Result:	Return true if key is pressed.
 
 /*---------------------------------------------*/
 
-int Keys::Key(int iKey)
+GLint Keys::Key(GLint iKey)
 {
 	return (GetAsyncKeyState(iKey)>>15)&1;
 }
@@ -32,7 +32,7 @@ Result:	Return true if key was pressed, but only
 
 /*---------------------------------------------*/
 
-int Keys::Onekey(int iKey)
+GLint Keys::Onekey(GLint iKey)
 {
 	if(Key(iKey) && !kp[iKey]){kp[iKey] = 1; return 1;}
 	if(!Key(iKey))kp[iKey] = 0;
@@ -50,7 +50,7 @@ Result:	Resets application timer (for example
 
 /*---------------------------------------------*/
 
-void COpenGLWinApp::ResetTimer()
+GLvoid COpenGLWinApp::ResetTimer()
 {
 	dwLastFrame = GetTickCount();
 	fFrameInterval = 0.0f;
@@ -66,7 +66,7 @@ Result:	Updates application timer.
 
 /*---------------------------------------------*/
 
-void COpenGLWinApp::UpdateTimer()
+GLvoid COpenGLWinApp::UpdateTimer()
 {
 	DWORD dwCur = GetTickCount();
 	fFrameInterval = float(dwCur-dwLastFrame)*0.001f;
@@ -83,7 +83,7 @@ Result:	Stands for speed optimized float.
 
 /*---------------------------------------------*/
 
-float COpenGLWinApp::sof(float fVal)
+GLfloat COpenGLWinApp::sof(GLfloat fVal)
 {
 	return fVal*fFrameInterval;
 }
@@ -99,7 +99,7 @@ Result:	Initializes app with specified (unique)
 
 /*---------------------------------------------*/
 
-bool COpenGLWinApp::InitializeApp(string a_sAppName)
+GLboolean COpenGLWinApp::InitializeApp(string a_sAppName)
 {
 	sAppName = a_sAppName;
 	hMutex = CreateMutex(NULL, 1, sAppName.c_str());
@@ -126,7 +126,7 @@ LRESULT CALLBACK GlobalMessageHandler(HWND hWnd, UINT uiMsg, WPARAM wParam, LPAR
 	return appMain.MsgHandlerMain(hWnd, uiMsg, wParam, lParam);
 }
 
-void COpenGLWinApp::RegisterAppClass(HINSTANCE a_hInstance)
+GLvoid COpenGLWinApp::RegisterAppClass(HINSTANCE a_hInstance)
 {
 	WNDCLASSEX wcex;
 	memset(&wcex, 0, sizeof(WNDCLASSEX));
@@ -158,7 +158,7 @@ Result:	Creates main application window.
 
 /*---------------------------------------------*/
 
-bool COpenGLWinApp::CreateAppWindow(string sTitle)
+GLboolean COpenGLWinApp::CreateAppWindow(string sTitle)
 {
 	hWnd = CreateWindowEx(0, sAppName.c_str(), sTitle.c_str(), WS_OVERLAPPEDWINDOW | WS_MAXIMIZE | WS_CLIPCHILDREN,
 		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
@@ -185,7 +185,7 @@ Result:	Main application body infinite loop.
 
 /*---------------------------------------------*/
 
-void COpenGLWinApp::AppBody()
+GLvoid COpenGLWinApp::AppBody()
 {
 	MSG msg;
 	while(1)
@@ -219,7 +219,7 @@ Result:	Shuts down application and releases used
 
 /*---------------------------------------------*/
 
-void COpenGLWinApp::Shutdown()
+GLvoid COpenGLWinApp::Shutdown()
 {
 	oglControl.ReleaseOpenGLControl(&oglControl);
 
@@ -300,11 +300,11 @@ Name:	WinMain
 
 Params:	whatever
 
-Result:	Windows entry point for application.
+Result:	Windows entry poGLint for application.
 
 /*---------------------------------------------*/
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR sCmdLine, int iShow)
+GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR sCmdLine, GLint iShow)
 {
 	if(!appMain.InitializeApp("03_opengl_3_3"))
 		return 0;

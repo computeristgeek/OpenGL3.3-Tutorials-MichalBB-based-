@@ -4,9 +4,9 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <gl\gl.h>										// Header File For The OpenGL32 Library
-#include <gl\glu.h>										// Header File For The GLu32 Library
-#include <gl\glaux.h>
+#include <GL/gl.h>										// Header File For The OpenGL32 Library
+#include <GL/glu.h>										// Header File For The GLu32 Library
+#include <GL/glaux.h>
 #include <math.h>	
 #define SCREEN_WIDTH 800								// We want our screen width 800 pixels
 #define SCREEN_HEIGHT 600								// We want our screen height 600 pixels
@@ -16,14 +16,14 @@ extern UINT g_Texture[MAX_TEXTURES];
 // *EXTERNING VARIABLES*
 BOOL PlayMidi(char *sFileName);
 BOOL StopMidi();
-extern bool  g_bFullScreen;								// Set full screen as default
+extern GLboolean  g_bFullScreen;								// Set full screen as default
 extern HWND  g_hWnd;									// This is the handle for the window
 extern RECT  g_rRect;									// This holds the window dimensions
 extern HDC   g_hDC;										// General HDC - (handle to device context)
 extern HGLRC g_hRC;										// General OpenGL_DC - Our Rendering Context for OpenGL
 extern HINSTANCE g_hInstance;							// This holds our window hInstance
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, int ishow);
+GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow);
 
 // The window proc which handles all of window's messages.
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -32,29 +32,29 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 WPARAM MainLoop();
 
 // This changes the screen to full screen mode
-void ChangeToFullScreen();
+GLvoid ChangeToFullScreen();
 
 // This is our own function that makes creating a window modular and easy
-HWND CreateMyWindow(LPSTR strWindowName, int width, int height, DWORD dwStyle, bool bFullScreen, HINSTANCE hInstance);
+HWND CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance);
 
 // This allows us to configure our window for OpenGL and backbuffered
-bool bSetupPixelFormat(HDC hdc);
+GLboolean bSetupPixelFormat(HDC hdc);
 
 // This inits our screen translations and projections
-void SizeOpenGLScreen(int width, int height);
+GLvoid SizeOpenGLScreen(GLint width, GLint height);
 
 // This sets up OpenGL
-void InitializeOpenGL(int width, int height);
+GLvoid InitializeOpenGL(GLint width, GLint height);
 
 // This initializes the whole program
-void Init(HWND hWnd);
+GLvoid Init(HWND hWnd);
 
 // This draws everything to the screen
-void RenderScene();
+GLvoid RenderScene();
 
 // This frees all our memory in our program
-void DeInit();
-void CreateTexture(UINT textureArray[], LPSTR strFileName, int textureID);
-extern float timer,inc;
+GLvoid DeInit();
+GLvoid CreateTexture(UINT textureArray[], LPSTR strFileName, GLint textureID);
+extern GLfloat timer,inc;
 #endif 
 

@@ -1,7 +1,7 @@
 
 #include "main.h"
 #include "resource.h"
-void CreateTexture(UINT textureArray[], LPSTR strFileName, int textureID)
+GLvoid CreateTexture(UINT textureArray[], LPSTR strFileName, GLint textureID)
 {
 	AUX_RGBImageRec *pBitmap = NULL;
 	
@@ -66,7 +66,7 @@ void CreateTexture(UINT textureArray[], LPSTR strFileName, int textureID)
 		free(pBitmap);									// Free the bitmap structure
 	}
 }
-void ChangeToFullScreen()
+GLvoid ChangeToFullScreen()
 {
 	DEVMODE dmSettings;									// Device Mode variable
 
@@ -87,7 +87,7 @@ void ChangeToFullScreen()
 	// This function actually changes the screen to full screen
 	// CDS_FULLSCREEN Gets Rid Of Start Bar.
 	// We always want to get a result from this function to check if we failed
-	int result = ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN);	
+	GLint result = ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN);	
 
 	// Check if we didn't recieved a good return message From the function
 	if(result != DISP_CHANGE_SUCCESSFUL)
@@ -104,7 +104,7 @@ void ChangeToFullScreen()
 /////
 ///////////////////////////////// CREATE MY WINDOW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-HWND CreateMyWindow(LPSTR strWindowName, int width, int height, DWORD dwStyle, bool bFullScreen, HINSTANCE hInstance)
+HWND CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
 {
 	HWND hWnd;
 	WNDCLASS wndclass;
@@ -155,10 +155,10 @@ HWND CreateMyWindow(LPSTR strWindowName, int width, int height, DWORD dwStyle, b
 }
 //////////////////////////// SET UP PIXEL FORMAT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-bool bSetupPixelFormat(HDC hdc) 
+GLboolean bSetupPixelFormat(HDC hdc) 
 { 
     PIXELFORMATDESCRIPTOR pfd; 
-    int pixelformat; 
+    GLint pixelformat; 
  
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);			// Set the size of the structure
     pfd.nVersion = 1;									// Always set this to 1
@@ -193,7 +193,7 @@ bool bSetupPixelFormat(HDC hdc)
 /////	This function resizes the viewport for OpenGL.
 /////
 //////////////////////////// RESIZE OPENGL SCREEN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
-void SizeOpenGLScreen(int width, int height)			// Initialize The GL Window
+GLvoid SizeOpenGLScreen(GLint width, GLint height)			// Initialize The GL Window
 {
 	if (height==0)										// Prevent A Divide By Zero error
 	{
@@ -211,7 +211,7 @@ void SizeOpenGLScreen(int width, int height)			// Initialize The GL Window
 }
 
 
-void InitializeOpenGL(int width, int height) 
+GLvoid InitializeOpenGL(GLint width, GLint height) 
 {  
     g_hDC = GetDC(g_hWnd);								// This sets our global HDC
 														// We don't free this hdc until the end of our program
@@ -233,7 +233,7 @@ CreateTexture(g_Texture,"Data/Win.bmp",1);
 /////
 ///////////////////////////////// DE INIT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-void DeInit()
+GLvoid DeInit()
 {
 	if (g_hRC)											
 	{
@@ -262,7 +262,7 @@ void DeInit()
 /////
 ///////////////////////////////// WIN MAIN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, int ishow)
+GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow)
 {	
 	HWND hWnd;
 
