@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PS_Engine Demo 2.1 Context", "PS_Engine Demo 2.1 Context\PS_Engine Demo 2.1 Context.vcproj", "{515FB9EE-619F-450B-98DD-6C95E848DC7C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F448675-EBA5-4899-B751-2F8309171D69} = {4F448675-EBA5-4899-B751-2F8309171D69}
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744} = {6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PS_Engine Demo 3.3 Context", "PS_Engine Demo 3.3 Context\PS_Engine Demo 3.3 Context.vcproj", "{71807749-80FE-4BFE-8033-317C5E448683}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F448675-EBA5-4899-B751-2F8309171D69} = {4F448675-EBA5-4899-B751-2F8309171D69}
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744} = {6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "blaze_effects", "blaze_effects\blaze_effects.vcproj", "{4F448675-EBA5-4899-B751-2F8309171D69}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744} = {6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "blaze_part_sys_engine", "blaze_part_sys_engine\blaze_part_sys_engine.vcproj", "{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{515FB9EE-619F-450B-98DD-6C95E848DC7C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{515FB9EE-619F-450B-98DD-6C95E848DC7C}.Debug|Win32.Build.0 = Debug|Win32
+		{515FB9EE-619F-450B-98DD-6C95E848DC7C}.Release|Win32.ActiveCfg = Release|Win32
+		{515FB9EE-619F-450B-98DD-6C95E848DC7C}.Release|Win32.Build.0 = Release|Win32
+		{71807749-80FE-4BFE-8033-317C5E448683}.Debug|Win32.ActiveCfg = Debug|Win32
+		{71807749-80FE-4BFE-8033-317C5E448683}.Debug|Win32.Build.0 = Debug|Win32
+		{71807749-80FE-4BFE-8033-317C5E448683}.Release|Win32.ActiveCfg = Release|Win32
+		{71807749-80FE-4BFE-8033-317C5E448683}.Release|Win32.Build.0 = Release|Win32
+		{4F448675-EBA5-4899-B751-2F8309171D69}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F448675-EBA5-4899-B751-2F8309171D69}.Debug|Win32.Build.0 = Debug|Win32
+		{4F448675-EBA5-4899-B751-2F8309171D69}.Release|Win32.ActiveCfg = Release|Win32
+		{4F448675-EBA5-4899-B751-2F8309171D69}.Release|Win32.Build.0 = Release|Win32
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}.Debug|Win32.Build.0 = Debug|Win32
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}.Release|Win32.ActiveCfg = Release|Win32
+		{6A5CD1CB-C5AA-48CB-BF2C-F46F26A40744}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
