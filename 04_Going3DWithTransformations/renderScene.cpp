@@ -30,7 +30,7 @@ GLboolean bVerticalSync = true;
 CShader shVertex, shFragment;
 CShaderProgram spMain;
 
-GLvoid initScene(LPVOID lpParam)
+GLvoid initScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -118,7 +118,7 @@ Result:	Renders whole scene.
 GLfloat fRotationAngle = 0.0f;
 const GLfloat PIover180 = 3.1415f/180.0f;
 
-GLvoid renderScene(LPVOID lpParam)
+GLvoid renderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -201,7 +201,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(LPVOID lpParam)
+GLvoid releaseScene(GLvoid* lpParam)
 {
 	spMain.deleteProgram();
 

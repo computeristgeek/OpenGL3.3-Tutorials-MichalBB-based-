@@ -51,7 +51,7 @@ Result:	Initializes OpenGL features that will
 
 GLint iTorusFaces;
 
-GLvoid initScene(LPVOID lpParam)
+GLvoid initScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -154,7 +154,7 @@ Result:	Renders whole scene.
 GLfloat fGlobalAngle;
 GLfloat fDryAmount = 0.75f;
 
-GLvoid renderScene(LPVOID lpParam)
+GLvoid renderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -296,7 +296,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(LPVOID lpParam)
+GLvoid releaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

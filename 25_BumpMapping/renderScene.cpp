@@ -59,7 +59,7 @@ Result:  Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-GLvoid InitScene(LPVOID lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -147,7 +147,7 @@ glm::vec3 vModelPosition = glm::vec3(0, 20, 0);
 GLfloat fModelRotation;
 animType_t atCurrentAnimation = STAND;
 
-GLvoid RenderScene(LPVOID lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -444,7 +444,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

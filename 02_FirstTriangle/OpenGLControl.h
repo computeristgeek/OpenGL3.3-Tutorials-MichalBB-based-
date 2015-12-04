@@ -14,12 +14,12 @@ Purpose:	Provides convenient usage
 class COpenGLControl
 {
 public:
-	GLboolean InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(LPVOID), GLvoid (*a_RenderScene)(LPVOID), void(*a_ReleaseScene)(LPVOID), LPVOID lpParam);
+	GLboolean InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_ReleaseScene)(GLvoid*), GLvoid* lpParam);
 	
 	GLvoid ResizeOpenGLViewportFull();
 
-	GLvoid Render(LPVOID lpParam);
-	GLvoid ReleaseOpenGLControl(LPVOID lpParam);
+	GLvoid Render(GLvoid* lpParam);
+	GLvoid ReleaseOpenGLControl(GLvoid* lpParam);
 
 	static GLvoid RegisterSimpleOpenGLClass(HINSTANCE hInstance);
 	static GLvoid UnregisterSimpleOpenGLClass(HINSTANCE hInstance);
@@ -37,7 +37,7 @@ private:
 	static GLboolean bGlewInitialized;
 	GLint iMajorVersion, iMinorVersion;
 
-	GLvoid (*InitScene)(LPVOID lpParam), (*RenderScene)(LPVOID lpParam), (*ReleaseScene)(LPVOID lpParam);
+	GLvoid (*InitScene)(GLvoid* lpParam), (*RenderScene)(GLvoid* lpParam), (*ReleaseScene)(GLvoid* lpParam);
 };
 
 LRESULT CALLBACK MsgHandlerSimpleOpenGLClass(GLuint, GLuint, WPARAM, LPARAM);

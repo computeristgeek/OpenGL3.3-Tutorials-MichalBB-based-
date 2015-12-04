@@ -41,7 +41,7 @@ Result:	Initializes OpenGL features that will
 
 GLint iTorusFaces1, iTorusFaces2;
 
-GLvoid initScene(LPVOID lpParam)
+GLvoid initScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -128,7 +128,7 @@ Result:	Renders whole scene.
 GLfloat fGlobalAngle;
 GLfloat fSunAngle = 45.0f;
 
-GLvoid renderScene(LPVOID lpParam)
+GLvoid renderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -229,7 +229,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(LPVOID lpParam)
+GLvoid releaseScene(GLvoid* lpParam)
 {
 	FOR(i, 4)tTextures[i].releaseTexture();
 

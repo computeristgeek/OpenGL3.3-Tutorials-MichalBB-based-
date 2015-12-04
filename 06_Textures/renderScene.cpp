@@ -34,7 +34,7 @@ Result:	Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-GLvoid initScene(LPVOID lpParam)
+GLvoid initScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -140,7 +140,7 @@ GLvoid displayTextureFiltersInfo()
 	SetWindowText(appMain.hWnd, buf);
 }
 
-GLvoid renderScene(LPVOID lpParam)
+GLvoid renderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -229,7 +229,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(LPVOID lpParam)
+GLvoid releaseScene(GLvoid* lpParam)
 {
 	spMain.deleteProgram();
 

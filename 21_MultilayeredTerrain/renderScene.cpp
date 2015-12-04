@@ -43,7 +43,7 @@ Result:  Initializes OpenGL features that will
 
 /*---------------------------------------------*/
 
-GLvoid InitScene(LPVOID lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -87,7 +87,7 @@ Result:  Renders whole scene.
 
 /*---------------------------------------------*/
 
-GLvoid RenderScene(LPVOID lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -200,7 +200,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

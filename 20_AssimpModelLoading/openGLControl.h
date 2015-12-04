@@ -14,7 +14,7 @@ Purpose: Provides convenient usage
 class COpenGLControl
 {
 public:
-	GLboolean InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(LPVOID), GLvoid (*a_ptrRenderScene)(LPVOID), void(*a_ptrReleaseScene)(LPVOID), LPVOID lpParam);
+	GLboolean InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(GLvoid*), GLvoid (*a_ptrRenderScene)(GLvoid*), void(*a_ptrReleaseScene)(GLvoid*), GLvoid* lpParam);
 	
 	GLvoid ResizeOpenGLViewportFull();
 	GLvoid SetProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
@@ -23,8 +23,8 @@ public:
 	glm::mat4* GetProjectionMatrix();
 	glm::mat4* GetOrthoMatrix();
 
-	GLvoid Render(LPVOID lpParam);
-	GLvoid ReleaseOpenGLControl(LPVOID lpParam);
+	GLvoid Render(GLvoid* lpParam);
+	GLvoid ReleaseOpenGLControl(GLvoid* lpParam);
 
 	static GLvoid RegisterSimpleOpenGLClass(HINSTANCE hInstance);
 	static GLvoid UnregisterSimpleOpenGLClass(HINSTANCE hInstance);
@@ -63,7 +63,7 @@ private:
 	// Viewport parameters
 	GLint iViewportWidth, iViewportHeight;
 
-	GLvoid (*ptrInitScene)(LPVOID lpParam), (*ptrRenderScene)(LPVOID lpParam), (*ptrReleaseScene)(LPVOID lpParam);
+	GLvoid (*ptrInitScene)(GLvoid* lpParam), (*ptrRenderScene)(GLvoid* lpParam), (*ptrReleaseScene)(GLvoid* lpParam);
 };
 
 LRESULT CALLBACK msgHandlerSimpleOpenGLClass(GLuint, GLuint, WPARAM, LPARAM);

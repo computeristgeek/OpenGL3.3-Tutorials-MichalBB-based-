@@ -42,4 +42,4 @@ namespace Keys
 
 extern COpenGLWinApp appMain;
 
-GLvoid initScene(LPVOID), renderScene(LPVOID), releaseScene(LPVOID);
+GLvoid initScene(GLvoid*), renderScene(GLvoid*), releaseScene(GLvoid*);

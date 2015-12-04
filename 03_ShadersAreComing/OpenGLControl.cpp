@@ -93,7 +93,7 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(LPVOID), GLvoid (*a_RenderScene)(LPVOID), void(*a_ReleaseScene)(LPVOID), LPVOID lpParam)
+GLboolean COpenGLControl::InitOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_ReleaseScene)(GLvoid*), GLvoid* lpParam)
 {
 	if(!InitGLEW(hInstance))return false;
 
@@ -316,7 +316,7 @@ Result:	Calls previously set render function.
 
 /*---------------------------------------------*/
 
-GLvoid COpenGLControl::Render(LPVOID lpParam)
+GLvoid COpenGLControl::Render(GLvoid* lpParam)
 {
 	if(RenderScene)RenderScene(lpParam);
 }
@@ -332,7 +332,7 @@ Result:	Calls previously set release function
 
 /*---------------------------------------------*/
 
-GLvoid COpenGLControl::ReleaseOpenGLControl(LPVOID lpParam)
+GLvoid COpenGLControl::ReleaseOpenGLControl(GLvoid* lpParam)
 {
 	if(ReleaseScene)ReleaseScene(lpParam);
 

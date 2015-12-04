@@ -61,7 +61,7 @@ Result:  Initializes OpenGL features that will
 
 #include "static_geometry.h"
 
-GLvoid InitScene(LPVOID lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -217,7 +217,7 @@ Result:  Renders whole scene.
 GLfloat fGlobalAngle;
 GLboolean bWireFrame = false;
 
-GLvoid RenderScene(LPVOID lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -385,7 +385,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

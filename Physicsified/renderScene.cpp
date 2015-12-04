@@ -104,7 +104,7 @@ GLfloat fVelLimit = 0.1f;
 
 vector<btRigidBody*> ptrs;
 
-GLvoid InitScene(LPVOID lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 	oglControl->SetVerticalSynchronization(false);
@@ -436,7 +436,7 @@ GLvoid ApplyExplosion(glm::vec3 vPosition, GLfloat fForce, BYTE r, BYTE g, BYTE 
 	}
 }
 
-GLvoid RenderScene(LPVOID lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -871,7 +871,7 @@ Result:  Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid ReleaseScene(LPVOID lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
 	sbMainSkybox.DeleteSkybox();

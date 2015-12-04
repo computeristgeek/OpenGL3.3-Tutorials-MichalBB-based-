@@ -14,14 +14,14 @@ Purpose:	Provides convenient usage
 class COpenGLControl
 {
 public:
-	GLboolean initOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(LPVOID), GLvoid (*a_renderScene)(LPVOID), void(*a_releaseScene)(LPVOID), LPVOID lpParam);
+	GLboolean initOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_renderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam);
 	
 	GLvoid resizeOpenGLViewportFull();
 	GLvoid setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
 	glm::mat4* getProjectionMatrix();
 
-	GLvoid render(LPVOID lpParam);
-	GLvoid releaseOpenGLControl(LPVOID lpParam);
+	GLvoid render(GLvoid* lpParam);
+	GLvoid releaseOpenGLControl(GLvoid* lpParam);
 
 	static GLvoid registerSimpleOpenGLClass(HINSTANCE hInstance);
 	static GLvoid unregisterSimpleOpenGLClass(HINSTANCE hInstance);
@@ -52,7 +52,7 @@ private:
 	// Matrix for perspective projection
 	glm::mat4 mProjection;
 
-	GLvoid (*initScene)(LPVOID lpParam), (*renderScene)(LPVOID lpParam), (*releaseScene)(LPVOID lpParam);
+	GLvoid (*initScene)(GLvoid* lpParam), (*renderScene)(GLvoid* lpParam), (*releaseScene)(GLvoid* lpParam);
 };
 
 LRESULT CALLBACK msgHandlerSimpleOpenGLClass(GLuint, GLuint, WPARAM, LPARAM);

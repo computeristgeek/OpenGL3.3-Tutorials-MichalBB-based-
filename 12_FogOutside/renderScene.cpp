@@ -52,7 +52,7 @@ Result:	Initializes OpenGL features that will
 
 GLint iTorusFaces;
 
-GLvoid initScene(LPVOID lpParam)
+GLvoid initScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -169,7 +169,7 @@ namespace FogParameters
 	GLint iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
 };
 
-GLvoid renderScene(LPVOID lpParam)
+GLvoid renderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
@@ -319,7 +319,7 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(LPVOID lpParam)
+GLvoid releaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();

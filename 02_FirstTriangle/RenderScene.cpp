@@ -18,7 +18,7 @@ GLfloat fQuad[12]; // Data to render quad using triangle strips (4 vertices, eac
 
 GLuint uiVBO[2];
 
-GLvoid InitScene(LPVOID lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
 	glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
 
@@ -54,7 +54,7 @@ Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
-GLvoid RenderScene(LPVOID lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
