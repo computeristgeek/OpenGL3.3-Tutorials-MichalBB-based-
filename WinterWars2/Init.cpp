@@ -32,7 +32,7 @@ GLvoid ChangeToFullScreen()
 }
 
 
-GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, GLvoid* hInstance)
+GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, unsigned long dwStyle, GLboolean bFullScreen, GLvoid* hInstance)
 {
 	GLuint hWnd;
 	WNDCLASS wndclass;

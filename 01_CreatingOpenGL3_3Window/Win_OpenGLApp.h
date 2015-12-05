@@ -29,7 +29,7 @@ private:
 	void* hMutex;
 
 	GLboolean bAppActive; // To check if application is active (not minimized)
-	DWORD dwLastFrame;
+	unsigned long dwLastFrame;
 	GLfloat fFrameInterval;
 };
 

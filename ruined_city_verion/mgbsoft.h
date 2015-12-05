@@ -85,7 +85,7 @@ public:
 	GLboolean fullscreen; // To check if app is in fullscreen mode
 
 	GLboolean active; // To check if app is active
-	DWORD frameTime, lastTime;
+	unsigned long frameTime, lastTime;
 	GLfloat frameInterval;
 
 	GLint FPS; // How many frames per second are there

@@ -172,7 +172,7 @@ GLvoid RegisterMyClass(const GLvoid* &hInst)
 
 GLboolean CreateMyWindow(const GLvoid*& hInst, LPSTR title) 
 {
-	DWORD dwStyle= WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;	
+	unsigned long dwStyle= WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;	
 
     g_Wnd= CreateWindow(class_name,title, dwStyle, 0, 0,
 						800,600, 

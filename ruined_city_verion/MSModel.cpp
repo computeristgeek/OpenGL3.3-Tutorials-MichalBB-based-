@@ -110,7 +110,7 @@ GLvoid CMSModel::loadModelData(char* strFile)
 			}
 			aAnims[i].bBitFld[j] = new BYTE(1 + wNGroups / 8);
 
-			DWORD dwTime; fread(&dwTime, sizeof(DWORD), 1, fp);
+			unsigned long dwTime; fread(&dwTime, sizeof(unsigned long), 1, fp);
 			aAnims[i].fTime[j] = (float)dwTime;
 			fread(&aAnims[i].bKFData[j], sizeof(BYTE), 1, fp);
 

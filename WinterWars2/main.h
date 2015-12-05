@@ -88,7 +88,7 @@ GLuint MainLoop();
 GLvoid ChangeToFullScreen();
 
 // This is our own function that makes creating a window modular and easy
-GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, GLvoid* hInstance);
+GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, unsigned long dwStyle, GLboolean bFullScreen, GLvoid* hInstance);
 
 // This allows us to configure our window for OpenGL and backbuffered
 GLboolean bSetupPixelFormat(GLvoid* hdc);

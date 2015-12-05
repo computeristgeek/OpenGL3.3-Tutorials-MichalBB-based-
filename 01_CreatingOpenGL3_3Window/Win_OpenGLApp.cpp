@@ -68,7 +68,7 @@ Result:	Updates application timer.
 
 GLvoid COpenGLWinApp::UpdateTimer()
 {
-	DWORD dwCur = GetTickCount();
+	unsigned long dwCur = GetTickCount();
 	fFrameInterval = float(dwCur-dwLastFrame)*0.001f;
 	dwLastFrame = dwCur;
 }

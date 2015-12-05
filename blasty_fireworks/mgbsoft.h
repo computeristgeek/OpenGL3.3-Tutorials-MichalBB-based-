@@ -106,7 +106,7 @@ public:
 	DispMode dm;
 
 	GLint iActive; // To check if app is active
-	DWORD frameTime, lastTime;
+	unsigned long frameTime, lastTime;
 	GLfloat frameInterval;
 	GLint FPS; // How many frames per second are there
 	GLvoid resetTimer();
