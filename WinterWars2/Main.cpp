@@ -48,7 +48,7 @@ GLfloat camerax,cameraz;
 
 
 
-WPARAM MainLoop()
+GLuint MainLoop()
 { 
 	MSG msg;
 LoadModels();
@@ -223,7 +223,7 @@ timer+=inc;
 
 }
 
-LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

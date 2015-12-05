@@ -11,7 +11,7 @@ GLvoid getModes(GLuint hDialog, GLint iResID)
 {
 	DEVMODE dmSet; EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dmSet);
 	SendDlgItemMessage(hDialog, iResID, CB_RESETCONTENT, 0, 0);
-	SendDlgItemMessage(hDialog, iResID, CB_INSERTSTRING, 0, (LPARAM)"Choose one");
+	SendDlgItemMessage(hDialog, iResID, CB_INSERTSTRING, 0, (long)"Choose one");
 	GLint iCur = 1;
 	FOR(i, 16)FOR(j, 16)
 	{
@@ -21,7 +21,7 @@ GLvoid getModes(GLuint hDialog, GLint iResID)
 		if(ChangeDisplaySettings(&dmSet, CDS_TEST | CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL)
 		{
 			GLchar strText[50]; sprintf(strText, "%dx%d", iScrX[i], iScrY[j]);
-			SendDlgItemMessage(hDialog, iResID, CB_INSERTSTRING, iCur, (LPARAM)strText);
+			SendDlgItemMessage(hDialog, iResID, CB_INSERTSTRING, iCur, (long)strText);
 			iCur++;
 		}
 	}
@@ -30,16 +30,16 @@ GLvoid getModes(GLuint hDialog, GLint iResID)
 
 //======================
 
-LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, GLuint wParam, long lParam)
 {
 	switch(uMessage)
 	{
 		case WM_INITDIALOG:
 			InitCommonControls();
 			getModes(hWnd, ID_VID_RES);
-			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_INSERTSTRING, 0, (LPARAM)"16");
-			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_INSERTSTRING, 1, (LPARAM)"24");
-			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_INSERTSTRING, 2, (LPARAM)"32");
+			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_INSERTSTRING, 0, (long)"16");
+			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_INSERTSTRING, 1, (long)"24");
+			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_INSERTSTRING, 2, (long)"32");
 			SendDlgItemMessage(hWnd, ID_VID_BPP, CB_SETCURSEL, 2, 0);
 			CheckDlgButton(hWnd, ID_VID_FUL, 1);
 			break;
@@ -54,7 +54,7 @@ LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, WPARAM wParam, LPARAM 
 			case ID_OK:
 			{
 				GLchar strText[50]; GLint iCurSel = (int)SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETCURSEL, 0, 0);
-				SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETLBTEXT, iCurSel, (LPARAM)strText);
+				SendDlgItemMessage(hWnd, ID_VID_RES, CB_GETLBTEXT, iCurSel, (long)strText);
 				if(!strcmp(strText, "Choose one"))
 				{
 					MessageBox(hWnd, "Please choose a resolution!", "Resolution", MB_ICONINFORMATION | MB_OK);
@@ -62,7 +62,7 @@ LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, WPARAM wParam, LPARAM 
 				}
 				sscanf(strText, "%dx%d", &dm.iScrX, &dm.iScrY);
 				iCurSel = (int)SendDlgItemMessage(hWnd, ID_VID_BPP, CB_GETCURSEL, 0, 0);
-				SendDlgItemMessage(hWnd, ID_VID_BPP, CB_GETLBTEXT, iCurSel, (LPARAM)strText);
+				SendDlgItemMessage(hWnd, ID_VID_BPP, CB_GETLBTEXT, iCurSel, (long)strText);
 				sscanf(strText, "%d", &dm.iBpp);
 				dm.iFS = IsDlgButtonChecked(hWnd, ID_VID_FUL);
 				iStartRes = 1;

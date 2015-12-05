@@ -39,13 +39,13 @@ GLvoid UpdateFPS5();
 // Initializes whole application
 	GLvoid Init();
 // Main message loop
-	WPARAM MainLoop();
+	GLuint MainLoop();
 // Draws whole program
 	GLvoid RenderScene();
 // Freeing memory, variables and everything in the end of application
 	GLvoid QuitApplication();
 // Window message handling
-	LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam);
 // Initializes OpenGL
 	GLvoid InitOpenGL(GLint w, GLint h);
 	extern GLboolean quitapp;

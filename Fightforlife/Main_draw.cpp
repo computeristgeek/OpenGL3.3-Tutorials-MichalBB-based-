@@ -221,7 +221,7 @@ GLvoid RenderScene()
 //
 ////////////////////////////////////////// WNDPROC \\\\\\\\\\\\\\\\=\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

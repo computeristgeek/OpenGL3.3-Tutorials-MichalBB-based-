@@ -66,4 +66,4 @@ private:
 	GLvoid (*ptrInitScene)(GLvoid* lpParam), (*ptrRenderScene)(GLvoid* lpParam), (*ptrReleaseScene)(GLvoid* lpParam);
 };
 
-LRESULT CALLBACK msgHandlerSimpleOpenGLClass(GLuint, GLuint, WPARAM, LPARAM);
+LRESULT CALLBACK msgHandlerSimpleOpenGLClass(GLuint, GLuint, GLuint, long);

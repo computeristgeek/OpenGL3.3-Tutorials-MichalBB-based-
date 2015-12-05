@@ -196,7 +196,7 @@ GLboolean CreateMyWindow(const HINSTANCE& hInst, LPSTR title)
 //////////////////////////////////////// MAIN LOOP \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
 
-WPARAM MainLoop()
+GLuint MainLoop()
 {
 	MSG msg;
 

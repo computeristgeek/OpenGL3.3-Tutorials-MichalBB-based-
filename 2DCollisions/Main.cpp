@@ -28,7 +28,7 @@ Ryby();
 initd();
 }
 
-WPARAM MainLoop()
+GLuint MainLoop()
 {
 	MSG msg;
 
@@ -88,7 +88,7 @@ StopMidi();
 timer+=inc;
 }
 
-LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

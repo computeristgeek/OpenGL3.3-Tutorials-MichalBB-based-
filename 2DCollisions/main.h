@@ -26,10 +26,10 @@ extern HINSTANCE g_hInstance;							// This holds our window hInstance
 GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow);
 
 // The window proc which handles all of window's messages.
-LRESULT CALLBACK WinProc(GLuint hwnd, GLuint message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK WinProc(GLuint hwnd, GLuint message, GLuint wParam, long lParam);
 
 // This controls our main program loop
-WPARAM MainLoop();
+GLuint MainLoop();
 
 // This changes the screen to full screen mode
 GLvoid ChangeToFullScreen();

@@ -21,7 +21,7 @@ public:
 
 	HINSTANCE getInstance();
 
-	LRESULT CALLBACK msgHandlerMain(GLuint hWnd, GLuint uiMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK msgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
 
 private:
 	HINSTANCE hInstance; // Application's instance
