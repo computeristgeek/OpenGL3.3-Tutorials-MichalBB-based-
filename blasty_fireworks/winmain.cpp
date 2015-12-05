@@ -50,7 +50,7 @@ LRESULT CALLBACK windowMsgs(GLuint hWindow, GLuint iMsg, GLuint wParam, long lPa
 
 //====================
 
-GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR cmdLine, GLint iShow)
+GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInst, LPSTR cmdLine, GLint iShow)
 {
 	if(!glAp.initializeApp("Blasty Fireworks", (WNDPROC)windowMsgs))return 0;
 	DialogBox(hInstance, MAKEINTRESOURCE(ID_STARTUP), NULL, (DLGPROC)dlgStartup);

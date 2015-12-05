@@ -126,7 +126,7 @@ LRESULT CALLBACK globalMessageHandler(GLuint hWnd, GLuint uiMsg, GLuint wParam, 
 	return appMain.msgHandlerMain(hWnd, uiMsg, wParam, lParam);
 }
 
-GLvoid COpenGLWinApp::registerAppClass(HINSTANCE a_hInstance)
+GLvoid COpenGLWinApp::registerAppClass(GLvoid* a_hInstance)
 {
 	WNDCLASSEX wcex;
 	memset(&wcex, 0, sizeof(WNDCLASSEX));
@@ -304,7 +304,7 @@ Result:	Returns application instance.
 
 /*---------------------------------------------*/
 
-HINSTANCE COpenGLWinApp::getInstance()
+GLvoid* COpenGLWinApp::getInstance()
 {
 	return hInstance;
 }
@@ -319,7 +319,7 @@ Result:	Application messages handler.
 
 /*---------------------------------------------*/
 
-GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR sCmdLine, GLint iShow)
+GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
 {
 	if(!appMain.initializeApp("13_opengl_3_3"))
 		return 0;

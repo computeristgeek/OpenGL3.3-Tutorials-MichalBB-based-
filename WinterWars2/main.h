@@ -71,12 +71,12 @@ CVector3 Normalize(CVector3);
 extern GLboolean  g_bFullScreen;									// Set full screen as default
 extern GLuint  g_hWnd;										// This is the handle for the window
 extern RECT  g_rRect;										// This holds the window dimensions
-extern HDC   g_hDC;											// General HDC - (handle to device context)
+extern GLvoid*   g_hDC;											// General GLvoid* - (handle to device context)
 extern HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
-extern HINSTANCE g_hInstance;								// This holds our window hInstance
+extern GLvoid* g_hInstance;								// This holds our window hInstance
 
 // This is our MAIN() for windows
-GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow);
+GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hprev, PSTR cmdline, GLint ishow);
 
 // The window proc which handles all of window's messages.
 LRESULT CALLBACK WinProc(GLuint hwnd, GLuint message, GLuint wParam, long lParam);
@@ -88,10 +88,10 @@ GLuint MainLoop();
 GLvoid ChangeToFullScreen();
 
 // This is our own function that makes creating a window modular and easy
-GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance);
+GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, GLvoid* hInstance);
 
 // This allows us to configure our window for OpenGL and backbuffered
-GLboolean bSetupPixelFormat(HDC hdc);
+GLboolean bSetupPixelFormat(GLvoid* hdc);
 
 // This inits our screen translations and projections
 GLvoid SizeOpenGLScreen(GLint width, GLint height);

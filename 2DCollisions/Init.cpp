@@ -104,7 +104,7 @@ GLvoid ChangeToFullScreen()
 /////
 ///////////////////////////////// CREATE MY WINDOW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, HINSTANCE hInstance)
+GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwStyle, GLboolean bFullScreen, GLvoid* hInstance)
 {
 	GLuint hWnd;
 	WNDCLASS wndclass;
@@ -155,7 +155,7 @@ GLuint CreateMyWindow(LPSTR strWindowName, GLint width, GLint height, DWORD dwSt
 }
 //////////////////////////// SET UP PIXEL FORMAT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLboolean bSetupPixelFormat(HDC hdc) 
+GLboolean bSetupPixelFormat(GLvoid* hdc) 
 { 
     PIXELFORMATDESCRIPTOR pfd; 
     GLint pixelformat; 
@@ -213,7 +213,7 @@ GLvoid SizeOpenGLScreen(GLint width, GLint height)			// Initialize The GL Window
 
 GLvoid InitializeOpenGL(GLint width, GLint height) 
 {  
-    g_hDC = GetDC(g_hWnd);								// This sets our global HDC
+    g_hDC = GetDC(g_hWnd);								// This sets our global GLvoid*
 														// We don't free this hdc until the end of our program
     if (!bSetupPixelFormat(g_hDC))						// This sets our pixel format/information
         PostQuitMessage (0);							// If there's an error, quit
@@ -242,7 +242,7 @@ GLvoid DeInit()
 	}
 	
 	if (g_hDC) 
-		ReleaseDC(g_hWnd, g_hDC);						// Release our HDC from memory
+		ReleaseDC(g_hWnd, g_hDC);						// Release our GLvoid* from memory
 		
 	if(g_bFullScreen)									// If we were in full screen
 	{
@@ -262,7 +262,7 @@ GLvoid DeInit()
 /////
 ///////////////////////////////// WIN MAIN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hprev, PSTR cmdline, GLint ishow)
+GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hprev, PSTR cmdline, GLint ishow)
 {	
 	GLuint hWnd;
 

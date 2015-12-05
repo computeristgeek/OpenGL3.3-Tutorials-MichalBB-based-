@@ -8,9 +8,9 @@ GLboolean hrot;GLfloat x,y,xinc,yinc;
 GLboolean  g_bFullScreen = TRUE;								
 GLuint  g_hWnd;											
 RECT  g_rRect;											// This holds the window dimensions
-HDC   g_hDC;											// General HDC - (handle to device context)
+GLvoid*   g_hDC;											// General GLvoid* - (handle to device context)
 HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
-HINSTANCE g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
+GLvoid* g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
 GLfloat rotation;
 const GLfloat piover180 = 0.0174532925f;
 GLuint g_Texture[MAX_TEXTURES];	

@@ -22,18 +22,18 @@ public:
 	GLfloat sof(GLfloat fVal);
 
 	GLboolean InitializeApp(string a_sAppName);
-	GLvoid RegisterAppClass(HINSTANCE hAppInstance);
+	GLvoid RegisterAppClass(GLvoid* hAppInstance);
 	GLboolean CreateAppWindow(string sTitle);
 	
 	GLvoid AppBody();
 	GLvoid Shutdown();
 
-	HINSTANCE GetInstance();
+	GLvoid* GetInstance();
 
 	LRESULT CALLBACK msgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
 
 private:
-	HINSTANCE hInstance; // Application's instance
+	GLvoid* hInstance; // Application's instance
 	string sAppName;
 	HANDLE hMutex;
 

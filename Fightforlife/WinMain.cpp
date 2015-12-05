@@ -9,8 +9,8 @@
 
 
 GLuint g_Wnd;		  // Our global window variable used for lots of functions
-HINSTANCE g_Inst; // Global application instance variable
-HDC g_DC;
+GLvoid* g_Inst; // Global application instance variable
+GLvoid* g_DC;
 HGLRC g_RC;
 
 GLboolean kp[256];   // Is key pressed?
@@ -126,7 +126,7 @@ GLvoid QuitApplication()
 		wglDeleteContext(g_RC);						// Delete our OpenGL Rendering Context	
 	}
 	
-	if (g_DC) ReleaseDC(g_Wnd, g_DC);						// Release our HDC from memory
+	if (g_DC) ReleaseDC(g_Wnd, g_DC);						// Release our GLvoid* from memory
 		
 	ChangeDisplaySettings(NULL,0);					// If So Switch Back To The Desktop
 	ShowCursor(TRUE);								// Show Mouse Pointer
@@ -141,7 +141,7 @@ GLvoid QuitApplication()
 //
 ///////////////////////////////// REGISTER MY CLASS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLvoid RegisterMyClass(const HINSTANCE &hInst)
+GLvoid RegisterMyClass(const GLvoid* &hInst)
 {
 	WNDCLASSEX wcex; // This is our window class variable
 
@@ -170,7 +170,7 @@ GLvoid RegisterMyClass(const HINSTANCE &hInst)
 //
 ///////////////////////////////////// CREATE MY WINDOW \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLboolean CreateMyWindow(const HINSTANCE& hInst, LPSTR title) 
+GLboolean CreateMyWindow(const GLvoid*& hInst, LPSTR title) 
 {
 	DWORD dwStyle= WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;	
 
@@ -228,7 +228,7 @@ GLuint MainLoop()
 //
 ///////////////////////////////////////// WIN MAIN \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*
 
-GLint WINAPI WinMain(HINSTANCE mainInst,HINSTANCE prevInst,LPSTR command,GLint show)
+GLint WINAPI WinMain(GLvoid* mainInst,GLvoid* prevInst,LPSTR command,GLint show)
 {								
 	RegisterMyClass(mainInst);						// Register class with Windows OS	
 	if(!CreateMyWindow(mainInst,"Collisions in 3D world"))return false; // Create window and if something wasn't succesful, return false and quit app

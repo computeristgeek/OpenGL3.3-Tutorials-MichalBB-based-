@@ -17,9 +17,9 @@ GLfloat timer=0.0f;							// Set full screen as default
 GLfloat inc=0.0f;
 GLuint  g_hWnd;											// This is the handle for the window
 RECT  g_rRect;											// This holds the window dimensions
-HDC   g_hDC;											// General HDC - (handle to device context)
+GLvoid*   g_hDC;											// General GLvoid* - (handle to device context)
 HGLRC g_hRC;											// General OpenGL_DC - Our Rendering Context for OpenGL
-HINSTANCE g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
+GLvoid* g_hInstance;									// This holds the global hInstance for UnregisterClass() in DeInit()
 GLboolean menu=true;
 GLint lasercount,rocketcount,plasmacount,enemyammo;
 GLfloat rotate;

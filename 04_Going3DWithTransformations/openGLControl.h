@@ -14,7 +14,7 @@ Purpose:	Provides convenient usage
 class COpenGLControl
 {
 public:
-	GLboolean initOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_renderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam);
+	GLboolean initOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_renderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam);
 	
 	GLvoid resizeOpenGLViewportFull();
 	GLvoid setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
@@ -23,8 +23,8 @@ public:
 	GLvoid render(GLvoid* lpParam);
 	GLvoid releaseOpenGLControl(GLvoid* lpParam);
 
-	static GLvoid registerSimpleOpenGLClass(HINSTANCE hInstance);
-	static GLvoid unregisterSimpleOpenGLClass(HINSTANCE hInstance);
+	static GLvoid registerSimpleOpenGLClass(GLvoid* hInstance);
+	static GLvoid unregisterSimpleOpenGLClass(GLvoid* hInstance);
 
 	GLvoid makeCurrent();
 	GLvoid swapBuffers();
@@ -36,9 +36,9 @@ public:
 	COpenGLControl();
 
 private:
-	GLboolean initGLEW(HINSTANCE hInstance);
+	GLboolean initGLEW(GLvoid* hInstance);
 
-	HDC hDC;
+	GLvoid* hDC;
 	GLuint* hWnd;
 	HGLRC hRC;
 	static GLboolean bClassRegistered;

@@ -87,12 +87,12 @@ class CApplication
 {
 public:
 	GLuint hWindow; // Handle to a window
-	HDC hDC; // Window's device context
+	GLvoid* hDC; // Window's device context
 	HGLRC hRC; // Rendering context
 
 	//-----------------
 
-	HINSTANCE hInstance; // CApplication's instance
+	GLvoid* hInstance; // CApplication's instance
 	char* appName;
 	HANDLE hMutex;
 
@@ -128,7 +128,7 @@ public:
 
 	//-----------------
 
-	GLvoid registerAppClass(HINSTANCE appInstance);
+	GLvoid registerAppClass(GLvoid* appInstance);
 	GLint createGLWindow(GLint width, GLint height, GLint bpp, GLint iFS);
 	GLint destroyGLWindow();
 	GLvoid setGLViewport(GLint iX, GLint iY, GLint iWidth, GLint iHeight, GLfloat sfNear, GLfloat sfFar, GLfloat sfVAngle);

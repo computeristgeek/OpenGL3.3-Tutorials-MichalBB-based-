@@ -55,7 +55,7 @@ GLvoid freeEverything()
 
 //====================
 
-GLint WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR cmdLine, GLint iShow)
+GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInst, LPSTR cmdLine, GLint iShow)
 {
 	if(!glAp.initializeApp("Ruined city of Verion", (WNDPROC)windowMsgs))return 0;
 	glAp.registerAppClass(hInstance);

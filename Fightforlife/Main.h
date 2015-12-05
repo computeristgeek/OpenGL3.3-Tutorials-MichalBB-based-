@@ -30,8 +30,8 @@ using namespace std;
 #define class_name "Fight for life"
 
 extern GLuint g_Wnd;		  // Our global window variable used for lots of functions
-extern HINSTANCE g_Inst; // Global application instance variable
-extern HDC g_DC;		// Global device context variable
+extern GLvoid* g_Inst; // Global application instance variable
+extern GLvoid* g_DC;		// Global device context variable
 extern HGLRC g_RC;      // Global rendering context variable
 
 GLvoid UpdateFPS5();

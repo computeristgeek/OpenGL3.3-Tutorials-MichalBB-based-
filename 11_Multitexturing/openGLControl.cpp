@@ -28,7 +28,7 @@ Result:	Creates fake window and OpenGL rendering
 
 /*---------------------------------------------*/
 
-GLboolean COpenGLControl::initGLEW(HINSTANCE hInstance)
+GLboolean COpenGLControl::initGLEW(GLvoid* hInstance)
 {
 	if(bGlewInitialized)return true;
 
@@ -100,7 +100,7 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-GLboolean COpenGLControl::initOpenGL(HINSTANCE hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_renderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam)
+GLboolean COpenGLControl::initOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_renderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam)
 {
 	if(!initGLEW(hInstance))return false;
 
@@ -277,7 +277,7 @@ Result:	Registers simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-GLvoid COpenGLControl::registerSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::registerSimpleOpenGLClass(GLvoid* hInstance)
 {
 	if(bClassRegistered)return;
 	WNDCLASSEX wc;
@@ -309,7 +309,7 @@ Result:	Unregisters simple OpenGL window class.
 
 /*---------------------------------------------*/
 
-GLvoid COpenGLControl::unregisterSimpleOpenGLClass(HINSTANCE hInstance)
+GLvoid COpenGLControl::unregisterSimpleOpenGLClass(GLvoid* hInstance)
 {
 	if(bClassRegistered)
 	{
