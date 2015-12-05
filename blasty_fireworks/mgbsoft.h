@@ -94,7 +94,7 @@ public:
 
 	GLvoid* hInstance; // CApplication's instance
 	char* appName;
-	HANDLE hMutex;
+	void* hMutex;
 
 	//-----------------
 

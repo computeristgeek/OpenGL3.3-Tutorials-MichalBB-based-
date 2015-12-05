@@ -35,7 +35,7 @@ public:
 private:
 	GLvoid* hInstance; // Application's instance
 	string sAppName;
-	HANDLE hMutex;
+	void* hMutex;
 
 	GLboolean bAppActive; // To check if application is active (not minimized)
 	clock_t tLastFrame;

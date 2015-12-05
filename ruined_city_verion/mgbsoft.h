@@ -78,7 +78,7 @@ public:
 	GLvoid* hInstance; // CApplication's instance
 
 	char* appName;
-	HANDLE hMutex;
+	void* hMutex;
 
 	GLint scrX, scrY, iBpp;
 	DEVMODE dmSettings;
