@@ -45,7 +45,7 @@ GLvoid UpdateFPS5();
 // Freeing memory, variables and everything in the end of application
 	GLvoid QuitApplication();
 // Window message handling
-	LRESULT CALLBACK WndProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam);
+	long CALLBACK WndProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam);
 // Initializes OpenGL
 	GLvoid InitOpenGL(GLint w, GLint h);
 	extern GLboolean quitapp;

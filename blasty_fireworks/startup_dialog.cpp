@@ -30,7 +30,7 @@ GLvoid getModes(GLuint hDialog, GLint iResID)
 
 //======================
 
-LRESULT CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, GLuint wParam, long lParam)
+long CALLBACK dlgStartup(GLuint hWnd, GLuint uMessage, GLuint wParam, long lParam)
 {
 	switch(uMessage)
 	{

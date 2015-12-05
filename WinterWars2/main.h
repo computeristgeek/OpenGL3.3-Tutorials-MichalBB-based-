@@ -79,7 +79,7 @@ extern GLvoid* g_hInstance;								// This holds our window hInstance
 GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hprev, PSTR cmdline, GLint ishow);
 
 // The window proc which handles all of window's messages.
-LRESULT CALLBACK WinProc(GLuint hwnd, GLuint message, GLuint wParam, long lParam);
+long CALLBACK WinProc(GLuint hwnd, GLuint message, GLuint wParam, long lParam);
 
 // This controls our main program loop
 GLuint MainLoop();

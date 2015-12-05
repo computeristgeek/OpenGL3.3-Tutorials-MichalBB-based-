@@ -223,7 +223,7 @@ timer+=inc;
 
 }
 
-LRESULT CALLBACK WinProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam)
+long CALLBACK WinProc(GLuint hWnd,GLuint uMsg, GLuint wParam, long lParam)
 {
     LONG    lRet = 0; 
     PAINTSTRUCT    ps;

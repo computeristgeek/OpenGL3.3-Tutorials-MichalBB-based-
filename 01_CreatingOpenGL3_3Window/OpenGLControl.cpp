@@ -258,7 +258,7 @@ Result:	Handles messages from windows that use
 
 /*---------------------------------------------*/
 
-LRESULT CALLBACK MsgHandlerSimpleOpenGLClass(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
+long CALLBACK MsgHandlerSimpleOpenGLClass(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
 {
 	PAINTSTRUCT ps;
 	switch(uiMsg)
