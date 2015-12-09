@@ -1,6 +1,12 @@
 #pragma once
 
 #include "OpenGLControl.h"
+/*----------------Linux Semaphores---------*/
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+/*----------------Linux Semaphores---------*/
 
 class COpenGLWinApp
 {
@@ -26,7 +32,8 @@ public:
 private:
 	GLvoid* hInstance; // Application's instance
 	string sAppName;
-	void* hMutex;
+	int hMutex;
+	struct sembuf   semBuf;
 
 	GLboolean bAppActive; // To check if application is active (not minimized)
 	unsigned long dwLastFrame;
