@@ -1,6 +1,6 @@
 // Header files of frequent usage
-
-#include <windows.h>
+#include <cstdio>
+#include <iostream>
 
 #include <algorithm>
 #include <cmath>

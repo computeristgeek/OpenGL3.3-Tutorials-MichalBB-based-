@@ -1,12 +1,8 @@
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "glu32.lib")
-#pragma comment(lib, "glew32.lib")
-
 #include "common_header.h"
 
 #include "OpenGLControl.h"
 
-#include <GL/wglew.h>
+#include <GL/glew.h>
 
 GLboolean COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
 

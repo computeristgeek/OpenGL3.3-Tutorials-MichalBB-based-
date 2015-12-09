@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 COpenGLWinApp appMain;
 

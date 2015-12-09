@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "Win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 /*-----------------------------------------------
 
