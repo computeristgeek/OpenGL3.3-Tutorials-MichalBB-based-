@@ -102,45 +102,10 @@ Result:	Initializes app with specified (unique)
 GLboolean COpenGLWinApp::InitializeApp(string a_sAppName)
 {
 	sAppName = a_sAppName;
-	union semun {
-	    int                 val;   /* value for SETVAL             */
-	    struct semid_ds    *buf;   /* buffer for IPC_STAT, IPC_SET */
-	    unsigned short     *array; /* array for GETALL, SETALL     */
-	    struct seminfo     __buf;  /* buffer for IPC info          */ 
-	}arg;
-	key_t 	       semKey;
-	int		flag;
-	flag = IPC_CREAT;
-	if( ( semKey = (key_t) atol( sAppName.c_str() ) ) == 0 )
+	hMutex = CreateMutex(NULL, 1, sAppName.c_str());
+	if(GetLastError() == ERROR_ALREADY_EXISTS)
 	{
-		cerr<<"This application already runs!"<<"Multiple Instances Found."<<endl;
-		return 0;
-	}
-	flag |= S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
-	int tmp;
-	if (tmp=(int) semget( semKey, 1, flag )==EEXIST)
-	{
-		cerr<<"This application already runs!"<<"Multiple Instances Found."<<endl;
-		return 0;
-	}
-	else hMutex=tmp;
-	if (hMutex < 0)
-	{
-		cerr<<"RC_OBJECT_NOT_CREATED"<<endl;
-		return 0;
-	}
-	arg.val = 1;
-	if (semctl(hMutex, 0, SETVAL, arg) == -1)
-	{
-		cerr<<"RC_OBJECT_NOT_CREATED"<<endl;
-		return 0;
-	}
-	semBuf.sem_num = 0;
-	semBuf.sem_op = -1;
-	semBuf.sem_flg = SEM_UNDO;
-	if (semop(hMutex, &semBuf, 1) != 0)
-	{
-		cerr<<"RC_LOCK_ERROR"<<endl;
+		MessageBox(NULL, "This application already runs!", "Multiple Instances Found.", MB_ICONINFORMATION | MB_OK);
 		return 0;
 	}
 	return 1;
@@ -258,16 +223,10 @@ GLvoid COpenGLWinApp::Shutdown()
 {
 	oglControl.ReleaseOpenGLControl(&oglControl);
 
+	DestroyWindow(hWnd);
+	UnregisterClass(sAppName.c_str(), hInstance);
 	COpenGLControl::UnregisterSimpleOpenGLClass(hInstance);
-	semBuf.sem_num = 0;
-	semBuf.sem_op  = 1;
-	semBuf.sem_flg = SEM_UNDO;
-	if (semop(hMutex, &semBuf, 1) != 0)
-	{
-		cerr<<"RC_UNLOCK_ERROR"<<endl;
-		abort();
-	}
-	semctl(hMutex, 0, IPC_RMID );
+	ReleaseMutex(hMutex);
 }
 
 /*-----------------------------------------------
