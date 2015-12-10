@@ -78,12 +78,7 @@ Name:	RegisterAppClass
 Params:	a_hInstance - application instance handle
 
 Result:	Registers application window class.
-TODO: Replace Handler or remove
 
-long CALLBACK GlobalMessageHandler(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
-{
-	return appMain.MsgHandlerMain(hWnd, uiMsg, wParam, lParam);
-}
 /*---------------------------------------------*/
 
 GLvoid COpenGLWinApp::RegisterAppClass(GLvoid* a_hInstance)
@@ -162,56 +157,6 @@ GLvoid COpenGLWinApp::Shutdown()
 	COpenGLControl::UnregisterSimpleOpenGLClass(hInstance);
 	glfwTerminate();
 }
-
-/*-----------------------------------------------
-
-Name:	MsgHandlerMain
-
-Params:	windows message stuff
-
-Result:	Application messages handler.
-
-
-long CALLBACK COpenGLWinApp::MsgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
-{
-	PAINTSTRUCT ps;
-
-	switch(uiMsg)
-	{
-		case WM_PAINT:
-			BeginPaint(hWnd, &ps);					
-			EndPaint(hWnd, &ps);
-			break;
-
-		case WM_CLOSE:
-			PostQuitMessage(0);
-			break;
-
-		case WM_ACTIVATE:
-		{
-			switch(LOWORD(wParam))
-			{
-				case WA_ACTIVE:
-				case WA_CLICKACTIVE:
-					bAppActive = true;
-					break;
-				case WA_INACTIVE:
-					bAppActive = false;
-					break;
-			}
-			break;
-		}
-
-		case WM_SIZE:
-			oglControl.ResizeOpenGLViewportFull();
-			break;
-
-		default:
-			return DefWindowProc(hWnd, uiMsg, wParam, lParam);
-	}
-	return 0;
-}
-/*---------------------------------------------*/
 
 /*-----------------------------------------------
 

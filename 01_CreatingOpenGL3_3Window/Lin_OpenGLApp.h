@@ -21,8 +21,6 @@ public:
 
 	GLvoid* GetInstance();
 
-	//long CALLBACK MsgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
-
 private:
 	GLvoid* hInstance; // Application's instance
 	string sAppName;

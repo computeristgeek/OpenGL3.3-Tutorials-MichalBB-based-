@@ -40,5 +40,3 @@ private:
 
 	GLvoid (*InitScene)(GLvoid* lpParam), (*RenderScene)(GLvoid* lpParam), (*ReleaseScene)(GLvoid* lpParam);
 };
-
-//long CALLBACK MsgHandlerSimpleOpenGLClass(GLuint, GLuint, GLuint, long);

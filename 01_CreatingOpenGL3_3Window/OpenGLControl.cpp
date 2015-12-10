@@ -172,33 +172,6 @@ GLvoid COpenGLControl::UnregisterSimpleOpenGLClass(GLvoid* hInstance)
 }
 
 /*-----------------------------------------------
-TODO: Find Alternative For This or Remove
-Name:	MsgHandlerSimpleOpenGLClass
-
-Params:	windows messages stuff
-
-Result:	Handles messages from windows that use
-		simple OpenGL class.
-
-
-long MsgHandlerSimpleOpenGLClass(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
-{
-	PAINTSTRUCT ps;
-	switch(uiMsg)
-	{
-		case WM_PAINT:									
-			BeginPaint(hWnd, &ps);							
-			EndPaint(hWnd, &ps);					
-			break;
-
-		default:
-			return DefWindowProc(hWnd, uiMsg, wParam, lParam); // Default window procedure
-	}
-	return 0;
-}
-/*---------------------------------------------*/
-
-/*-----------------------------------------------
 
 Name:	SwapBuffersM
 
