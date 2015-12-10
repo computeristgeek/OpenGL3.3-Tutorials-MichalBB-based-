@@ -14,12 +14,12 @@ Params:	iKey - virtual key code
 
 Result:	Return true if key is pressed.
 
-/*---------------------------------------------*/
 
 GLint Keys::Key(GLint iKey)
 {
 	return (GetAsyncKeyState(iKey)>>15)&1;
 }
+/*---------------------------------------------*/
 
 /*-----------------------------------------------
 
@@ -30,7 +30,6 @@ Params:	iKey - virtual key code
 Result:	Return true if key was pressed, but only
 		once (the key must be released).
 
-/*---------------------------------------------*/
 
 GLint Keys::Onekey(GLint iKey)
 {
@@ -38,6 +37,7 @@ GLint Keys::Onekey(GLint iKey)
 	if(!Key(iKey))kp[iKey] = 0;
 	return 0;
 }
+/*---------------------------------------------*/
 
 /*-----------------------------------------------
 
@@ -52,7 +52,7 @@ Result:	Resets application timer (for example
 
 GLvoid COpenGLWinApp::ResetTimer()
 {
-	dwLastFrame = GetTickCount();
+	dwLastFrame = glfwGetTime();
 	fFrameInterval = 0.0f;
 }
 
@@ -68,7 +68,7 @@ Result:	Updates application timer.
 
 GLvoid COpenGLWinApp::UpdateTimer()
 {
-	unsigned long dwCur = GetTickCount();
+	unsigned long dwCur = glfwGetTime();
 	fFrameInterval = float(dwCur-dwLastFrame)*0.001f;
 	dwLastFrame = dwCur;
 }
@@ -102,12 +102,13 @@ Result:	Initializes app with specified (unique)
 GLboolean COpenGLWinApp::InitializeApp(string a_sAppName)
 {
 	sAppName = a_sAppName;
-	hMutex = CreateMutex(NULL, 1, sAppName.c_str());
-	if(GetLastError() == ERROR_ALREADY_EXISTS)
-	{
-		MessageBox(NULL, "This application already runs!", "Multiple Instances Found.", MB_ICONINFORMATION | MB_OK);
-		return 0;
-	}
+	glfwInit();
+////////hMutex = CreateMutex(NULL, 1, sAppName.c_str());
+////////if(GetLastError() == ERROR_ALREADY_EXISTS)
+////////{
+////////	MessageBox(NULL, "This application already runs!", "Multiple Instances Found.", MB_ICONINFORMATION | MB_OK);
+////////	return 0;
+////////}
 	return 1;
 }
 
@@ -118,34 +119,16 @@ Name:	RegisterAppClass
 Params:	a_hInstance - application instance handle
 
 Result:	Registers application window class.
-
-/*---------------------------------------------*/
+TODO: Replace Handler or remove
 
 long CALLBACK GlobalMessageHandler(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
 {
 	return appMain.MsgHandlerMain(hWnd, uiMsg, wParam, lParam);
 }
+/*---------------------------------------------*/
 
 GLvoid COpenGLWinApp::RegisterAppClass(GLvoid* a_hInstance)
 {
-	WNDCLASSEX wcex;
-	memset(&wcex, 0, sizeof(WNDCLASSEX));
-	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style = CS_OWNDC;
-
-	wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-
-	wcex.hIcon = LoadIcon(hInstance, IDI_WINLOGO);
-	wcex.hIconSm = LoadIcon(hInstance, IDI_WINLOGO);
-	wcex.hCursor = LoadCursor(hInstance, IDC_ARROW);
-	wcex.hInstance = hInstance;
-
-	wcex.lpfnWndProc = GlobalMessageHandler;
-	wcex.lpszClassName = sAppName.c_str();
-
-	wcex.lpszMenuName = NULL;
-
-	RegisterClassEx(&wcex);
 }
 
 /*-----------------------------------------------
@@ -160,18 +143,15 @@ Result:	Creates main application window.
 
 GLboolean COpenGLWinApp::CreateAppWindow(string sTitle)
 {
-	hWnd = CreateWindowEx(0, sAppName.c_str(), sTitle.c_str(), WS_OVERLAPPEDWINDOW | WS_MAXIMIZE | WS_CLIPCHILDREN,
-		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
-		NULL, hInstance, NULL);
+	hWnd = glfwCreateWindow(800, 600, sTitle.c_str(), glfwGetPrimaryMonitor(),NULL);
 
-	if(!oglControl.InitOpenGL(hInstance, &hWnd, 3, 1, InitScene, RenderScene, NULL, &oglControl))return false;
+	if(!oglControl.InitOpenGL(hInstance, hWnd, 3, 3, InitScene, RenderScene, NULL, &oglControl))return false;
 
-	ShowWindow(hWnd, SW_SHOW);
-
-	// Just to send WM_SIZE message again
-	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
-	UpdateWindow(hWnd);
-
+	if (!hWnd)
+	{
+		MessageBox(*hWnd, "Could Not Set Fullscreen", "Fullscreen Error", MB_ICONERROR);
+		return false;
+	}
 	return true;
 }
 
@@ -187,24 +167,20 @@ Result:	Main application body infinite loop.
 
 GLvoid COpenGLWinApp::AppBody()
 {
-	MSG msg;
-	while(1)
+	while(!glfwWindowShouldClose(hWnd))
 	{
-		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if(glfwGetKey(hWnd, GLFW_KEY_ESCAPE ) == GLFW_PRESS)
 		{
-			if(msg.message == WM_QUIT)break; // If the message was WM_QUIT then exit application
-			else
-			{
-				TranslateMessage(&msg); // Otherwise send message to appropriate window
-				DispatchMessage(&msg);
-			}
+			MessageBox(hWnd,"ESC PRESSED","Normal Exit",NULL);
+			return;
 		}
-		else if(bAppActive)
+		else 
 		{
 			UpdateTimer();
 			oglControl.Render(&oglControl);
 		}
-		else Sleep(200); // Do not consume processor power if application isn't active
+		//else Sleep(200); // Do not consume processor power if application isn't active
+		glfwPollEvents();
 	}
 }
 
@@ -223,10 +199,10 @@ GLvoid COpenGLWinApp::Shutdown()
 {
 	oglControl.ReleaseOpenGLControl(&oglControl);
 
-	DestroyWindow(hWnd);
-	UnregisterClass(sAppName.c_str(), hInstance);
+	glfwDestroyWindow(hWnd);
 	COpenGLControl::UnregisterSimpleOpenGLClass(hInstance);
-	ReleaseMutex(hMutex);
+	//ReleaseMutex(hMutex);
+	glfwTerminate();
 }
 
 /*-----------------------------------------------
@@ -237,7 +213,6 @@ Params:	windows message stuff
 
 Result:	Application messages handler.
 
-/*---------------------------------------------*/
 
 long CALLBACK COpenGLWinApp::MsgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
 {
@@ -278,6 +253,7 @@ long CALLBACK COpenGLWinApp::MsgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wP
 	}
 	return 0;
 }
+/*---------------------------------------------*/
 
 /*-----------------------------------------------
 
@@ -304,11 +280,12 @@ Result:	Application messages handler.
 
 /*---------------------------------------------*/
 
-GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+//GLint main(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+int main(int argc, char** argv)
 {
 	if(!appMain.InitializeApp("01_opengl_3_3"))
 		return 0;
-	appMain.RegisterAppClass(hInstance);
+	appMain.RegisterAppClass(&appMain);
 
 	if(!appMain.CreateAppWindow("01.) Creating OpenGL 3.3 Window - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
 		return 0;

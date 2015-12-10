@@ -35,6 +35,8 @@ GLvoid RenderScene(GLvoid* lpParam)
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
+	oglControl->MakeCurrent();
+
 	// We just clear color
 	glClear(GL_COLOR_BUFFER_BIT);
 

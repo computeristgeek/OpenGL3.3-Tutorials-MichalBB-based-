@@ -5,7 +5,7 @@
 class COpenGLWinApp
 {
 public:
-	GLuint hWnd; // Handle to application window
+	GLFWwindow* hWnd; // Handle to application window
 	COpenGLControl oglControl; // OpenGL Control
 
 	GLvoid ResetTimer();
@@ -21,7 +21,7 @@ public:
 
 	GLvoid* GetInstance();
 
-	long CALLBACK MsgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
+	//long CALLBACK MsgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
 
 private:
 	GLvoid* hInstance; // Application's instance
