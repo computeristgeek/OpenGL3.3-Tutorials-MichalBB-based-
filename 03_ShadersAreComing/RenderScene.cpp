@@ -2,7 +2,7 @@
 
 #include "Lin_OpenGLApp.h"
 
-#include "Shaders.h"
+#include "shaders.h"
 
 /*-----------------------------------------------
 
