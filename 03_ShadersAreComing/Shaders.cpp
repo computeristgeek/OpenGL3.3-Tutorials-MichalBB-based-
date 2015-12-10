@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "shaders.h"
+#include "Shaders.h"
 
 CShader::CShader()
 {

@@ -1,22 +1,21 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
-#include "shaders.h"
+#include "Shaders.h"
 
 /*-----------------------------------------------
 
-Name:		initScene
+Name:	InitScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Initializes OpenGL features that will
-			be used.
+		be used.
 
 /*---------------------------------------------*/
-
-GLfloat fTriangle[9]; // Data to render triangle (3 vertices, each has 3 floats)
-GLfloat fQuad[12]; // Data to render quad using triangle strips (4 vertices, each has 3 floats)
+float fTriangle[9]; // Data to render triangle (3 vertices, each has 3 floats)
+float fQuad[12]; // Data to render quad using triangle strips (4 vertices, each has 3 floats)
 GLfloat fTriangleColor[9];
 GLfloat fQuadColor[12];
 
@@ -28,8 +27,9 @@ CShaderProgram spMain;
 
 GLvoid InitScene(GLvoid* lpParam)
 {
+	// For now, we just clear color to light blue,
+	// to see if OpenGL context is working
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
 	// Setup triangle vertices
 	fTriangle[0] = -0.4f; fTriangle[1] = 0.1f; fTriangle[2] = 0.0f;
 	fTriangle[3] = 0.4f; fTriangle[4] = 0.1f; fTriangle[5] = 0.0f;
@@ -40,9 +40,9 @@ GLvoid InitScene(GLvoid* lpParam)
 	fTriangleColor[0] = 1.0f; fTriangleColor[1] = 0.0f; fTriangleColor[2] = 0.0f;
 	fTriangleColor[3] = 0.0f; fTriangleColor[4] = 1.0f; fTriangleColor[5] = 0.0f;
 	fTriangleColor[6] = 0.0f; fTriangleColor[7] = 0.0f; fTriangleColor[8] = 1.0f;
- 
+
 	// Setup quad vertices
- 
+
 	fQuad[0] = -0.2f; fQuad[1] = -0.1f; fQuad[2] = 0.0f;
 	fQuad[3] = -0.2f; fQuad[4] = -0.6f; fQuad[5] = 0.0f;
 	fQuad[6] = 0.2f; fQuad[7] = -0.1f; fQuad[8] = 0.0f;
@@ -86,8 +86,8 @@ GLvoid InitScene(GLvoid* lpParam)
 
 	// Load shaders and create shader program
 
-	shVertex.LoadShader("data\\shaders\\shader.vert", GL_VERTEX_SHADER);
-	shFragment.LoadShader("data\\shaders\\shader.frag", GL_FRAGMENT_SHADER);
+	shVertex.LoadShader("data/shaders/shader.vert", GL_VERTEX_SHADER);
+	shFragment.LoadShader("data/shaders/shader.frag", GL_FRAGMENT_SHADER);
 
 	spMain.CreateProgram();
 	spMain.AddShaderToProgram(&shVertex);
@@ -101,7 +101,7 @@ GLvoid InitScene(GLvoid* lpParam)
 
 Name:	RenderScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Renders whole scene.
 
@@ -112,9 +112,11 @@ GLvoid RenderScene(GLvoid* lpParam)
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
+	oglControl->MakeCurrent();
+
 	// We just clear color
 	glClear(GL_COLOR_BUFFER_BIT);
-
+	
 	glBindVertexArray(uiVAO[0]);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -140,4 +142,71 @@ GLvoid ReleaseScene(GLvoid* lpParam)
 
 	shVertex.DeleteShader();
 	shFragment.DeleteShader();
+}
+
+/*-----------------------------------------------
+
+Name:	key_CB
+
+Params:	[in]	window	The window that received the event.
+	[in]	key	The keyboard key that was pressed or released.
+	[in]	scancode	The system-specific scancode of the key.
+	[in]	action	GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+	[in]	mods	Bit field describing which modifier keys were held down
+
+Result:	Keyboard Callback
+
+/*---------------------------------------------*/
+
+GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
+{
+	glfwMakeContextCurrent(hWnd);
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			cout<<"Normal Exit:ESC Pressed"<<endl;
+			glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			break;
+		case 'C':
+			if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+			{
+				cout<<"Normal Exit:^C Pressed"<<endl;
+				glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			}
+			break;
+	}
+}
+
+/*-----------------------------------------------
+
+Name:	framebuffer_CB
+
+Params:	[in]	window	The window whose framebuffer was resized.
+	[in]	width	The new width, in pixels, of the framebuffer.
+	[in]	height	The new height, in pixels, of the framebuffer.
+
+Result:	Frame Buffer Size Callback
+
+/*---------------------------------------------*/
+
+GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
+{
+	glfwMakeContextCurrent(hWnd);
+	glViewport(0,0,width,height);
+}
+
+/*-----------------------------------------------
+
+Name:	error_CB
+
+Params:	[in]	error	An error code.
+	[in]	description	A UTF-8 encoded string describing the error.
+
+Result:	Error Callback
+
+/*---------------------------------------------*/
+
+void error_CB(int error, const char* description)
+{
+	cerr<<"Error "<<hex<<error<<":"<<description<<endl;
 }
