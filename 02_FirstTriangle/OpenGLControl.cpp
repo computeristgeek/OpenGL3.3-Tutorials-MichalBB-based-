@@ -1,12 +1,7 @@
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "glu32.lib")
-#pragma comment(lib, "glew32.lib")
-
 #include "common_header.h"
 
 #include "OpenGLControl.h"
 
-#include <GL/wglew.h>
 
 GLboolean COpenGLControl::bClassRegistered = false, COpenGLControl::bGlewInitialized = false;
 
@@ -27,49 +22,23 @@ GLboolean COpenGLControl::InitGLEW(GLvoid* hInstance)
 
 	RegisterSimpleOpenGLClass(hInstance);
 
-	GLuint hWndFake = CreateWindow(SIMPLE_OPENGL_CLASS_NAME, "FAKE", WS_OVERLAPPEDWINDOW | WS_MAXIMIZE | WS_CLIPCHILDREN,
-		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
-		NULL, hInstance, NULL);
-
-	hDC = GetDC(hWndFake);
-
-	// First, choose false pixel format
-	
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfd.nSize		= sizeof(PIXELFORMATDESCRIPTOR);
-	pfd.nVersion   = 1;
-	pfd.dwFlags    = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 32;
-	pfd.cDepthBits = 32;
-	pfd.iLayerType = PFD_MAIN_PLANE;
- 
-	GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
-	if (iPixelFormat == 0)return false;
-
-	if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
-
-	// Create the false, old style context (OpenGL 2.1 and before)
-
-	HGLRC hRCFake = wglCreateContext(hDC);
-	wglMakeCurrent(hDC, hRCFake);
+	glfwMakeContextCurrent(hWnd);
 
 	GLboolean bResult = true;
 
+	glewExperimental=true;
 	if(!bGlewInitialized)
 	{
-		if(glewInit() != GLEW_OK)
+		GLint err= glewInit();
+		if(err != GLEW_OK)
 		{
 			MessageBox(*hWnd, "Couldn't initialize GLEW!", "Fatal Error", MB_ICONERROR);
 			bResult = false;
+
 		}
 		bGlewInitialized = true;
 	}
-
-	wglMakeCurrent(NULL, NULL);
-	wglDeleteContext(hRCFake);
-	DestroyWindow(hWndFake);
+	if(!bResult) glfwDestroyWindow(hWnd);
 
 	return bResult;
 }
@@ -93,71 +62,42 @@ Result:	Initializes OpenGL rendering context
 
 /*---------------------------------------------*/
 
-GLboolean COpenGLControl::InitOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_ReleaseScene)(GLvoid*), GLvoid* lpParam)
-{
-	if(!InitGLEW(hInstance))return false;
+GLboolean COpenGLControl::InitOpenGL(GLvoid* hInstance, GLFWwindow* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_ReleaseScene)(GLvoid*), GLvoid* lpParam)
+{	
 
 	hWnd = a_hWnd;
-	hDC = GetDC(*hWnd);
 
 	GLboolean bError = false;
-	PIXELFORMATDESCRIPTOR pfd;
 
-	if(iMajorVersion <= 2)
+	if(iMajorVersion <= 2 && iMinorVersion <= 2)
 	{
-		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-		pfd.nSize		= sizeof(PIXELFORMATDESCRIPTOR);
-		pfd.nVersion   = 1;
-		pfd.dwFlags    = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_DRAW_TO_WINDOW;
-		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.cColorBits = 32;
-		pfd.cDepthBits = 32;
-		pfd.iLayerType = PFD_MAIN_PLANE;
- 
-		GLint iPixelFormat = ChoosePixelFormat(hDC, &pfd);
-		if (iPixelFormat == 0)return false;
-
-		if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
-
-		// Create the old style context (OpenGL 2.1 and before)
-		hRC = wglCreateContext(hDC);
-		if(hRC)wglMakeCurrent(hDC, hRC);
-		else bError = true;
+		bError = true;
 	}
-	else if(WGLEW_ARB_create_context && WGLEW_ARB_pixel_format)
+	else 
 	{
-		const GLint iPixelFormatAttribList[] =
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, iMajorVersion); // We want OpenGL 3.3
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, iMinorVersion);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
+		glfwWindowHint(GLFW_RED_BITS, 8);
+		glfwWindowHint(GLFW_GREEN_BITS, 8);
+		glfwWindowHint(GLFW_BLUE_BITS, 8);
+		glfwWindowHint(GLFW_ALPHA_BITS, 8);
+		glfwWindowHint(GLFW_DEPTH_BITS, 32);
+		glfwWindowHint(GLFW_STENCIL_BITS, 8);
+		glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
+		if(hWnd==NULL)
 		{
-			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-			WGL_COLOR_BITS_ARB, 32,
-			WGL_DEPTH_BITS_ARB, 24,
-			WGL_STENCIL_BITS_ARB, 8,
-			0 // End of attributes list
-		};
-		GLint iContextAttribs[] =
-		{
-			WGL_CONTEXT_MAJOR_VERSION_ARB, iMajorVersion,
-			WGL_CONTEXT_MINOR_VERSION_ARB, iMinorVersion,
-			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-			0 // End of attributes list
-		};
+			MessageBox(*hWnd, "Failed to Create Window: \
+					Double Buffer:OpenGL3.3:32c:32d:800x600", "Fatal Error", MB_ICONERROR);
+			return false;
+		}
 
-		GLint iPixelFormat, iNumFormats;
-		wglChoosePixelFormatARB(hDC, iPixelFormatAttribList, NULL, 1, &iPixelFormat, (GLuint*)&iNumFormats);
-
-		// PFD seems to be only redundant parameter now
-		if(!SetPixelFormat(hDC, iPixelFormat, &pfd))return false;
-
-		hRC = wglCreateContextAttribsARB(hDC, 0, iContextAttribs);
-		// If everything went OK
-		if(hRC) wglMakeCurrent(hDC, hRC);
-		else bError = true;
-
+		if(!InitGLEW(hInstance))return false;
 	}
-	else bError = true;
 	
 	if(bError)
 	{
@@ -192,8 +132,9 @@ Result:	Resizes viewport to full window with perspective
 GLvoid COpenGLControl::ResizeOpenGLViewportFull()
 {
 	if(hWnd == NULL)return;
-	RECT rRect; GetClientRect(*hWnd, &rRect);
-	glViewport(0, 0, rRect.right, rRect.bottom);
+	GLint width, height;
+	glfwGetFramebufferSize(hWnd,&width,&height);
+	glViewport(0, 0, width, height);
 }
 
 /*-----------------------------------------------
@@ -209,22 +150,6 @@ Result:	Registers simple OpenGL window class.
 GLvoid COpenGLControl::RegisterSimpleOpenGLClass(GLvoid* hInstance)
 {
 	if(bClassRegistered)return;
-	WNDCLASSEX wc;
-
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style =  CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-	wc.lpfnWndProc = (WNDPROC)MsgHandlerSimpleOpenGLClass;
-	wc.cbClsExtra = 0; wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
-	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_MENUBAR+1);
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = SIMPLE_OPENGL_CLASS_NAME;
-
-	RegisterClassEx(&wc);
-
 	bClassRegistered = true;
 }
 
@@ -242,36 +167,8 @@ GLvoid COpenGLControl::UnregisterSimpleOpenGLClass(GLvoid* hInstance)
 {
 	if(bClassRegistered)
 	{
-		UnregisterClass(SIMPLE_OPENGL_CLASS_NAME, hInstance);
 		bClassRegistered = false;
 	}
-}
-
-/*-----------------------------------------------
-
-Name:	MsgHandlerSimpleOpenGLClass
-
-Params:	windows messages stuff
-
-Result:	Handles messages from windows that use
-		simple OpenGL class.
-
-/*---------------------------------------------*/
-
-long CALLBACK MsgHandlerSimpleOpenGLClass(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
-{
-	PAINTSTRUCT ps;
-	switch(uiMsg)
-	{
-		case WM_PAINT:									
-			BeginPaint(hWnd, &ps);							
-			EndPaint(hWnd, &ps);					
-			break;
-
-		default:
-			return DefWindowProc(hWnd, uiMsg, wParam, lParam); // Default window procedure
-	}
-	return 0;
 }
 
 /*-----------------------------------------------
@@ -286,7 +183,7 @@ Result:	Swaps back and front buffer.
 
 GLvoid COpenGLControl::SwapBuffersM()
 {
-	SwapBuffers(hDC);
+	glfwSwapBuffers(hWnd);
 }
 
 /*-----------------------------------------------
@@ -303,7 +200,7 @@ Result:	Makes current device and OpenGL rendering
 
 GLvoid COpenGLControl::MakeCurrent()
 {
-	wglMakeCurrent(hDC, hRC);
+	glfwMakeContextCurrent(hWnd);
 }
 
 /*-----------------------------------------------
@@ -335,10 +232,4 @@ Result:	Calls previously set release function
 GLvoid COpenGLControl::ReleaseOpenGLControl(GLvoid* lpParam)
 {
 	if(ReleaseScene)ReleaseScene(lpParam);
-
-	wglMakeCurrent(NULL, NULL);
-	wglDeleteContext(hRC);
-	ReleaseDC(*hWnd, hDC);
-
-	hWnd = NULL;
 }

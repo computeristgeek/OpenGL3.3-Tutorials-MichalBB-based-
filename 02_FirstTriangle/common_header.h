@@ -1,6 +1,6 @@
 // Header files of frequent usage
-
-#include <windows.h>
+#include <cstdio>
+#include <iostream>
 
 #include <algorithm>
 #include <cmath>
@@ -14,6 +14,7 @@
 using namespace std;
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 // Some useful defines
 
@@ -23,3 +24,5 @@ using namespace std;
 #define RSFOR(q,s,e) for(GLint q=s;q>=e;q--)
 
 #define ESZ(elem) (int)elem.size()
+
+#define MessageBox(hWnd,msg,msgTitle,icon) cerr<<msgTitle<<":"<<msg<<endl;
