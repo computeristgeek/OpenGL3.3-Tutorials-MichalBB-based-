@@ -68,12 +68,6 @@ GLboolean COpenGLWinApp::InitializeApp(string a_sAppName)
 {
 	sAppName = a_sAppName;
 	glfwInit();
-////////hMutex = CreateMutex(NULL, 1, sAppName.c_str());
-////////if(GetLastError() == ERROR_ALREADY_EXISTS)
-////////{
-////////	MessageBox(NULL, "This application already runs!", "Multiple Instances Found.", MB_ICONINFORMATION | MB_OK);
-////////	return 0;
-////////}
 	return 1;
 }
 
@@ -166,7 +160,6 @@ GLvoid COpenGLWinApp::Shutdown()
 
 	glfwDestroyWindow(hWnd);
 	COpenGLControl::UnregisterSimpleOpenGLClass(hInstance);
-	//ReleaseMutex(hMutex);
 	glfwTerminate();
 }
 
