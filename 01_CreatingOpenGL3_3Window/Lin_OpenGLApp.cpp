@@ -4,41 +4,6 @@
 
 COpenGLWinApp appMain;
 
-GLchar Keys::kp[256] = {0};
-
-/*-----------------------------------------------
-
-Name:	Key
-
-Params:	iKey - virtual key code
-
-Result:	Return true if key is pressed.
-
-
-GLint Keys::Key(GLint iKey)
-{
-	return (GetAsyncKeyState(iKey)>>15)&1;
-}
-/*---------------------------------------------*/
-
-/*-----------------------------------------------
-
-Name:	Onekey
-
-Params:	iKey - virtual key code
-
-Result:	Return true if key was pressed, but only
-		once (the key must be released).
-
-
-GLint Keys::Onekey(GLint iKey)
-{
-	if(Key(iKey) && !kp[iKey]){kp[iKey] = 1; return 1;}
-	if(!Key(iKey))kp[iKey] = 0;
-	return 0;
-}
-/*---------------------------------------------*/
-
 /*-----------------------------------------------
 
 Name:	ResetTimer

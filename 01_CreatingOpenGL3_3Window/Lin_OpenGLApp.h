@@ -33,13 +33,6 @@ private:
 	GLfloat fFrameInterval;
 };
 
-namespace Keys
-{
-	GLint Key(GLint iKey);
-	GLint Onekey(GLint iKey);
-	extern GLchar kp[256];
-}
-
 extern COpenGLWinApp appMain;
 
 GLvoid InitScene(GLvoid*), RenderScene(GLvoid*);
