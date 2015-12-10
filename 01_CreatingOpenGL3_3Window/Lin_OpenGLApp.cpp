@@ -67,8 +67,15 @@ Result:	Initializes app with specified (unique)
 GLboolean COpenGLWinApp::InitializeApp(string a_sAppName)
 {
 	sAppName = a_sAppName;
-	glfwInit();
-	return 1;
+
+	glfwSetErrorCallback(error_CB);
+
+	if(!glfwInit())
+	{
+		MessageBox(hWnd,"Failed to Initialize GLFW","glfwInit Failure",NULL);
+		return GL_FALSE;
+	}
+	return GL_TRUE;
 }
 
 /*-----------------------------------------------
@@ -123,17 +130,16 @@ GLvoid COpenGLWinApp::AppBody()
 {
 	while(!glfwWindowShouldClose(hWnd))
 	{
-		if(glfwGetKey(hWnd, GLFW_KEY_ESCAPE ) == GLFW_PRESS)
-		{
-			MessageBox(hWnd,"ESC PRESSED","Normal Exit",NULL);
-			return;
-		}
-		else 
+		bAppActive = glfwGetWindowAttrib(hWnd, GLFW_FOCUSED);
+		if(bAppActive)
 		{
 			UpdateTimer();
 			oglControl.Render(&oglControl);
 		}
-		//else Sleep(200); // Do not consume processor power if application isn't active
+		else 
+		{
+			//else Sleep(200); // Do not consume processor power if application isn't active
+		}
 		glfwPollEvents();
 	}
 }
@@ -155,7 +161,6 @@ GLvoid COpenGLWinApp::Shutdown()
 
 	glfwDestroyWindow(hWnd);
 	COpenGLControl::UnregisterSimpleOpenGLClass(hInstance);
-	glfwTerminate();
 }
 
 /*-----------------------------------------------
@@ -183,20 +188,22 @@ Result:	Application messages handler.
 
 /*---------------------------------------------*/
 
-//GLint main(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
 int main(int argc, char** argv)
 {
 	if(!appMain.InitializeApp("01_opengl_3_3"))
-		return 0;
+		return 1;
 	appMain.RegisterAppClass(&appMain);
 
 	if(!appMain.CreateAppWindow("01.) Creating OpenGL 3.3 Window - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
-		return 0;
+		return 1;
 	appMain.ResetTimer();
+	glfwSetKeyCallback(appMain.hWnd,key_CB);
+	glfwSetFramebufferSizeCallback(appMain.hWnd,framebuffer_CB);
 
 	appMain.AppBody();
 	appMain.Shutdown();
 
+	glfwTerminate();
 	return 0;
 }
 

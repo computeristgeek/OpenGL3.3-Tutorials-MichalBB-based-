@@ -232,8 +232,4 @@ Result:	Calls previously set release function
 GLvoid COpenGLControl::ReleaseOpenGLControl(GLvoid* lpParam)
 {
 	if(ReleaseScene)ReleaseScene(lpParam);
-
-	glfwDestroyWindow(hWnd);
-	hWnd = NULL;
-	glfwTerminate();
 }
