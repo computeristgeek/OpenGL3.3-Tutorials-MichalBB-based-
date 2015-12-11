@@ -277,6 +277,17 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 				glfwSetWindowShouldClose(hWnd, GL_TRUE);
 			}
 			break;
+		case 'W':
+			cCamera.move(appMain.sof(cCamera.getfSpeed()));
+			break;
+		case 'S':
+			cCamera.move(appMain.sof(-cCamera.getfSpeed()));
+			break;
+		case 'A':
+			cCamera.rotateViewY(appMain.sof(90.0f));
+			break;
+		case 'D':
+			cCamera.rotateViewY(appMain.sof(-90.0f));
 			break;
 	}
 }
