@@ -262,7 +262,7 @@ Result:	Frame Buffer Size Callback
 GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
 {
 	glfwMakeContextCurrent(hWnd);
-	glViewport(0,0,width,height);
+	appMain.oglControl.ResizeOpenGLViewportFull();
 	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.001f, 1000.0f);
 }
 
