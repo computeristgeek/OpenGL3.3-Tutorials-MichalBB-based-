@@ -1,6 +1,6 @@
 #pragma once
 
-#define SIMPLE_OPENGL_CLASS_NAME "simple_openGL_class_name"
+#define SIMPLE_OPENGL_CLASS_NAME "Simple_openGL_class"
 
 /********************************
 
@@ -11,48 +11,47 @@ Purpose:	Provides convenient usage
 
 ********************************/
 
+#include <GLFW/glfw3.h>
+
 class COpenGLControl
 {
 public:
-	GLboolean initOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_renderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam);
+	GLboolean InitOpenGL(GLvoid* hInstance, GLFWwindow* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_InitScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_ReleaseScene)(GLvoid*), GLvoid* lpParam);
 	
-	GLvoid resizeOpenGLViewportFull();
-	GLvoid setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
+	GLvoid ResizeOpenGLViewportFull();
+	void setProjection3D(float fFOV, float fAspectRatio, float fNear, float fFar);
 	glm::mat4* getProjectionMatrix();
 
-	GLvoid render(GLvoid* lpParam);
-	GLvoid releaseOpenGLControl(GLvoid* lpParam);
+	GLvoid Render(GLvoid* lpParam);
+	GLvoid ReleaseOpenGLControl(GLvoid* lpParam);
 
-	static GLvoid registerSimpleOpenGLClass(GLvoid* hInstance);
-	static GLvoid unregisterSimpleOpenGLClass(GLvoid* hInstance);
+	static GLvoid RegisterSimpleOpenGLClass(GLvoid* hInstance);
+	static GLvoid UnregisterSimpleOpenGLClass(GLvoid* hInstance);
 
-	GLvoid makeCurrent();
-	GLvoid swapBuffers();
+	GLvoid MakeCurrent();
+	GLvoid SwapBuffersM();
 
-	GLboolean setVerticalSynchronization(GLboolean bEnabled);
+	bool setVerticalSynchronization(bool bEnabled);
 
-	GLint getFPS();
+	int getFPS();
 
 	COpenGLControl();
 
 private:
-	GLboolean initGLEW(GLvoid* hInstance);
+	GLboolean InitGLEW(GLvoid* hInstance);
 
 	GLvoid* hDC;
-	GLuint* hWnd;
-	HGLRC hRC;
+	GLFWwindow* hWnd;
 	static GLboolean bClassRegistered;
 	static GLboolean bGlewInitialized;
 	GLint iMajorVersion, iMinorVersion;
 
 	// Used for FPS calculation
-	GLint iFPSCount, iCurrentFPS;
+	int iFPSCount, iCurrentFPS;
 	clock_t tLastSecond;
 
 	// Matrix for perspective projection
 	glm::mat4 mProjection;
 
-	GLvoid (*initScene)(GLvoid* lpParam), (*renderScene)(GLvoid* lpParam), (*releaseScene)(GLvoid* lpParam);
+	GLvoid (*InitScene)(GLvoid* lpParam), (*RenderScene)(GLvoid* lpParam), (*ReleaseScene)(GLvoid* lpParam);
 };
-
-long CALLBACK msgHandlerSimpleOpenGLClass(GLuint, GLuint, GLuint, long);

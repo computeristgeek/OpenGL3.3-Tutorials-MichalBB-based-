@@ -12,11 +12,11 @@ Purpose:	Wraps OpenGL shader loading
 class CShader
 {
 public:
-	GLboolean loadShader(string sFile, GLint a_iType);
-	GLvoid deleteShader();
+	GLboolean LoadShader(string sFile, GLint a_iType);
+	GLvoid DeleteShader();
 
-	GLboolean isLoaded();
-	GLuint getShaderID();
+	GLboolean IsLoaded();
+	GLuint GetShaderID();
 
 	CShader();
 
@@ -30,23 +30,23 @@ private:
 
 Class:	CShaderProgram
 
-Purpose:	Wraps OpenGL shader program
-			and make its usage easy.
+Purpose: Wraps OpenGL shader program
+		and make its usage easy.
 
 ********************************/
 
 class CShaderProgram
 {
 public:
-	GLvoid createProgram();
-	GLvoid deleteProgram();
+	GLvoid CreateProgram();
+	GLvoid DeleteProgram();
 
-	GLboolean addShaderToProgram(CShader* shShader);
-	GLboolean linkProgram();
+	GLboolean AddShaderToProgram(CShader* shShader);
+	GLboolean LinkProgram();
 
-	GLvoid useProgram();
+	GLvoid UseProgram();
 
-	GLuint getProgramID();
+	GLuint GetProgramID();
 
 	CShaderProgram();
 
