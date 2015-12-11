@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 #include "shaders.h"
 #include "texture.h"
@@ -25,21 +25,25 @@ CTexture tBlueIce, tBox;
 
 CWalkingCamera cCamera;
 
+/*---------------------------------------------*/
+
 /*-----------------------------------------------
 
-Name:		initScene
+Name:	InitScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Initializes OpenGL features that will
-			be used.
+		be used.
 
 /*---------------------------------------------*/
 
 #include "static_geometry.h"
 
-GLvoid initScene(GLvoid* lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
+	// For now, we just clear color to light blue,
+	// to see if OpenGL context is working
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	vboSceneObjects.createVBO();
@@ -83,25 +87,25 @@ GLvoid initScene(GLvoid* lpParam)
 
 	// Load shaders and create shader programs
 
-	shVertexTex.loadShader("data\\shaders\\shaderTex.vert", GL_VERTEX_SHADER);
-	shFragmentTex.loadShader("data\\shaders\\shaderTex.frag", GL_FRAGMENT_SHADER);
-	shVertexCol.loadShader("data\\shaders\\shaderCol.vert", GL_VERTEX_SHADER);
-	shFragmentCol.loadShader("data\\shaders\\shaderCol.frag", GL_FRAGMENT_SHADER);
+	shVertexTex.LoadShader("data/shaders/shaderTex.vert", GL_VERTEX_SHADER);
+	shFragmentTex.LoadShader("data/shaders/shaderTex.frag", GL_FRAGMENT_SHADER);
+	shVertexCol.LoadShader("data/shaders/shaderCol.vert", GL_VERTEX_SHADER);
+	shFragmentCol.LoadShader("data/shaders/shaderCol.frag", GL_FRAGMENT_SHADER);
 
-	spTextured.createProgram();
-	spTextured.addShaderToProgram(&shVertexTex);
-	spTextured.addShaderToProgram(&shFragmentTex);
-	spTextured.linkProgram();
+	spTextured.CreateProgram();
+	spTextured.AddShaderToProgram(&shVertexTex);
+	spTextured.AddShaderToProgram(&shFragmentTex);
+	spTextured.LinkProgram();
 
-	spColored.createProgram();
-	spColored.addShaderToProgram(&shVertexCol);
-	spColored.addShaderToProgram(&shFragmentCol);
-	spColored.linkProgram();
+	spColored.CreateProgram();
+	spColored.AddShaderToProgram(&shVertexCol);
+	spColored.AddShaderToProgram(&shFragmentCol);
+	spColored.LinkProgram();
 
-	tBlueIce.loadTexture2D("data\\textures\\blueice.jpg", true);
+	tBlueIce.loadTexture2D("data/textures/blueice.jpg", true);
 	tBlueIce.setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 
-	tBox.loadTexture2D("data\\textures\\box.jpg", true);
+	tBox.loadTexture2D("data/textures/box.jpg", true);
 	tBox.setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 
 	glEnable(GL_DEPTH_TEST);
@@ -113,9 +117,9 @@ GLvoid initScene(GLvoid* lpParam)
 
 /*-----------------------------------------------
 
-Name:		renderScene
+Name:	RenderScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Renders whole scene.
 
@@ -132,22 +136,24 @@ glm::vec4 vBoxColors[] =
 	glm::vec4(1.0f, 0.5f, 0.0f, 0.47f), // Orange
 };
 
-GLvoid renderScene(GLvoid* lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+
+	oglControl->MakeCurrent();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// First render textured objects
 
 	glEnable(GL_TEXTURE_2D);
-	spTextured.useProgram();
+	spTextured.UseProgram();
 	glBindVertexArray(uiVAOs[0]);
 
-	GLint iModelViewLoc = glGetUniformLocation(spTextured.getProgramID(), "modelViewMatrix");
-	GLint iProjectionLoc = glGetUniformLocation(spTextured.getProgramID(), "projectionMatrix");
-	GLint iColorLoc = glGetUniformLocation(spTextured.getProgramID(), "color");
+	GLint iModelViewLoc = glGetUniformLocation(spTextured.GetProgramID(), "modelViewMatrix");
+	GLint iProjectionLoc = glGetUniformLocation(spTextured.GetProgramID(), "projectionMatrix");
+	GLint iColorLoc = glGetUniformLocation(spTextured.GetProgramID(), "color");
 
 	glm::vec4 vWhiteColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glUniform4fv(iColorLoc, 1, glm::value_ptr(vWhiteColor)); // Set white for textures
@@ -181,12 +187,12 @@ GLvoid renderScene(GLvoid* lpParam)
 	// Now switch to only colored rendering
 
 	glDisable(GL_TEXTURE_2D);
-	spColored.useProgram();
+	spColored.UseProgram();
 	glBindVertexArray(uiVAOs[1]);
 
-	iModelViewLoc = glGetUniformLocation(spColored.getProgramID(), "modelViewMatrix");
-	iProjectionLoc = glGetUniformLocation(spColored.getProgramID(), "projectionMatrix");
-	iColorLoc = glGetUniformLocation(spColored.getProgramID(), "color");
+	iModelViewLoc = glGetUniformLocation(spColored.GetProgramID(), "modelViewMatrix");
+	iProjectionLoc = glGetUniformLocation(spColored.GetProgramID(), "projectionMatrix");
+	iColorLoc = glGetUniformLocation(spColored.GetProgramID(), "color");
 	glUniformMatrix4fv(iProjectionLoc, 1, GL_FALSE, glm::value_ptr(*oglControl->getProjectionMatrix()));
 
 	// Render 5 transparent boxes
@@ -212,12 +218,12 @@ GLvoid renderScene(GLvoid* lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	oglControl->swapBuffers();
+	oglControl->SwapBuffersM();
 }
 
 /*-----------------------------------------------
 
-Name:	releaseScene
+Name:	ReleaseScene
 
 Params:	lpParam - Pointer to anything you want.
 
@@ -225,18 +231,87 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(GLvoid* lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
-	spTextured.deleteProgram();
-	spColored.deleteProgram();
+	spTextured.DeleteProgram();
+	spColored.DeleteProgram();
 
-	shFragmentTex.deleteShader();
-	shFragmentCol.deleteShader();
-	shVertexTex.deleteShader();
-	shVertexCol.deleteShader();
-	
+	shFragmentTex.DeleteShader();
+	shFragmentCol.DeleteShader();
+	shVertexTex.DeleteShader();
+	shVertexCol.DeleteShader();
+
 	glDeleteVertexArrays(2, uiVAOs);
 	vboSceneObjects.releaseVBO();
 	tBox.releaseTexture();
 	tBlueIce.releaseTexture();
+}
+
+/*-----------------------------------------------
+
+Name:	key_CB
+
+Params:	[in]	window	The window that received the event.
+	[in]	key	The keyboard key that was pressed or released.
+	[in]	scancode	The system-specific scancode of the key.
+	[in]	action	GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+	[in]	mods	Bit field describing which modifier keys were held down
+
+Result:	Keyboard Callback
+
+/*---------------------------------------------*/
+
+GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
+{
+	glfwMakeContextCurrent(hWnd);
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			cout<<"Normal Exit:ESC Pressed"<<endl;
+			glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			break;
+		case 'C':
+			if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+			{
+				cout<<"Normal Exit:^C Pressed"<<endl;
+				glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			}
+			break;
+			break;
+	}
+}
+
+/*-----------------------------------------------
+
+Name:	framebuffer_CB
+
+Params:	[in]	window	The window whose framebuffer was resized.
+	[in]	width	The new width, in pixels, of the framebuffer.
+	[in]	height	The new height, in pixels, of the framebuffer.
+
+Result:	Frame Buffer Size Callback
+
+/*---------------------------------------------*/
+
+GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
+{
+	glfwMakeContextCurrent(hWnd);
+	appMain.oglControl.ResizeOpenGLViewportFull();
+	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.001f, 1000.0f);
+}
+
+/*-----------------------------------------------
+
+Name:	error_CB
+
+Params:	[in]	error	An error code.
+	[in]	description	A UTF-8 encoded string describing the error.
+
+Result:	Error Callback
+
+/*---------------------------------------------*/
+
+void error_CB(int error, const char* description)
+{
+	cerr<<"Error "<<hex<<error<<":"<<description<<endl;
 }
