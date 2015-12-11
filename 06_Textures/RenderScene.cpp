@@ -196,10 +196,10 @@ GLvoid RenderScene(GLvoid* lpParam)
 
 	// A little interaction for user
 
-	if(glfwGetKey(appMain.hWnd,GLFW_KEY_UP))fCubeRotationSpeed -= appMain.sof(60.0f);
-	if(glfwGetKey(appMain.hWnd,GLFW_KEY_DOWN))fCubeRotationSpeed += appMain.sof(60.0f);
-	if(glfwGetKey(appMain.hWnd,GLFW_KEY_RIGHT))fPyramidRotationSpeed += appMain.sof(60.0f);
-	if(glfwGetKey(appMain.hWnd,GLFW_KEY_LEFT))fPyramidRotationSpeed -= appMain.sof(60.0f);
+////////if(glfwGetKey(appMain.hWnd,GLFW_KEY_UP))fCubeRotationSpeed -= appMain.sof(60.0f);
+////////if(glfwGetKey(appMain.hWnd,GLFW_KEY_DOWN))fCubeRotationSpeed += appMain.sof(60.0f);
+////////if(glfwGetKey(appMain.hWnd,GLFW_KEY_RIGHT))fPyramidRotationSpeed += appMain.sof(60.0f);
+////////if(glfwGetKey(appMain.hWnd,GLFW_KEY_LEFT))fPyramidRotationSpeed -= appMain.sof(60.0f);
 
 	fRotationAngleCube += appMain.sof(fCubeRotationSpeed);
 	fRotationAnglePyramid += appMain.sof(fPyramidRotationSpeed);
@@ -294,6 +294,18 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 				tGold.setFiltering(tGold.getMagnificationFilter(), iNewMinFilter);
 				displayTextureFiltersInfo();
 			}
+			break;
+		case GLFW_KEY_UP:
+			fCubeRotationSpeed -= appMain.sof(60.0f);
+			break;
+		case GLFW_KEY_DOWN:
+			fCubeRotationSpeed += appMain.sof(60.0f);
+			break;
+		case GLFW_KEY_RIGHT:
+			fPyramidRotationSpeed += appMain.sof(60.0f);
+			break;
+		case GLFW_KEY_LEFT:
+			fPyramidRotationSpeed -= appMain.sof(60.0f);
 			break;
 	}
 }
