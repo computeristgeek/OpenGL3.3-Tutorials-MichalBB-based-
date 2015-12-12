@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "FreeTypeFont.h"
+#include "freeTypeFont.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -96,7 +96,7 @@ Result:	Loads whole font.
 
 GLboolean CFreeTypeFont::loadFont(string sFile, GLint iPXSize)
 {
-	BOOL bError = FT_Init_FreeType(&ftLib);
+	bool bError = FT_Init_FreeType(&ftLib);
 	
 	bError = FT_New_Face(ftLib, sFile.c_str(), 0, &ftFace);
 	if(bError)return false;
@@ -136,9 +136,13 @@ Result:	Loads system font (from system Fonts
 
 GLboolean CFreeTypeFont::loadSystemFont(string sName, GLint iPXSize)
 {
+#ifdef __WIN32__ || __WIN64__
 	GLchar buf[512]; GetWindowsDirectory(buf, 512);
 	string sPath = buf;
-	sPath += "\\Fonts\\";
+	sPath += "/Fonts/";
+#else
+	string sPath="/usr/share/fonts/truetype/msttcorefonts/";
+#endif
 	sPath += sName;
 
 	return loadFont(sPath, iPXSize);

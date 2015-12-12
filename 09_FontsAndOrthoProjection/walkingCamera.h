@@ -14,6 +14,7 @@ class CWalkingCamera
 public:
 	glm::mat4 look();
 	GLvoid update();
+	GLfloat getfSpeed();
 
 	GLvoid rotateViewY(GLfloat fAngle);
 	GLvoid move(GLfloat fBy);

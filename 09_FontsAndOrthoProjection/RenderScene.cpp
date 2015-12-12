@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 #include "shaders.h"
 #include "texture.h"
@@ -34,12 +34,12 @@ CFreeTypeFont ftFont;
 
 /*-----------------------------------------------
 
-Name:		initScene
+Name:	InitScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Initializes OpenGL features that will
-			be used.
+		be used.
 
 /*---------------------------------------------*/
 
@@ -47,8 +47,10 @@ Result:	Initializes OpenGL features that will
 
 GLint iTorusFaces;
 
-GLvoid initScene(GLvoid* lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
+	// For now, we just clear color to light blue,
+	// to see if OpenGL context is working
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	vboSceneObjects.createVBO();
@@ -71,26 +73,26 @@ GLvoid initScene(GLvoid* lpParam)
 
 	// Load shaders and create shader programs
 
-	shShaders[0].loadShader("data\\shaders\\shader.vert", GL_VERTEX_SHADER);
-	shShaders[1].loadShader("data\\shaders\\shader.frag", GL_FRAGMENT_SHADER);
-	shShaders[2].loadShader("data\\shaders\\ortho2D.vert", GL_VERTEX_SHADER);
-	shShaders[3].loadShader("data\\shaders\\ortho2D.frag", GL_FRAGMENT_SHADER);
-	shShaders[4].loadShader("data\\shaders\\font2D.frag", GL_FRAGMENT_SHADER);
+	shShaders[0].LoadShader("data/shaders/shader.vert", GL_VERTEX_SHADER);
+	shShaders[1].LoadShader("data/shaders/shader.frag", GL_FRAGMENT_SHADER);
+	shShaders[2].LoadShader("data/shaders/ortho2D.vert", GL_VERTEX_SHADER);
+	shShaders[3].LoadShader("data/shaders/ortho2D.frag", GL_FRAGMENT_SHADER);
+	shShaders[4].LoadShader("data/shaders/font2D.frag", GL_FRAGMENT_SHADER);
+	
+	spDirectionalLight.CreateProgram();
+	spDirectionalLight.AddShaderToProgram(&shShaders[0]);
+	spDirectionalLight.AddShaderToProgram(&shShaders[1]);
+	spDirectionalLight.LinkProgram();
 
-	spDirectionalLight.createProgram();
-	spDirectionalLight.addShaderToProgram(&shShaders[0]);
-	spDirectionalLight.addShaderToProgram(&shShaders[1]);
-	spDirectionalLight.linkProgram();
+	spOrtho2D.CreateProgram();
+	spOrtho2D.AddShaderToProgram(&shShaders[2]);
+	spOrtho2D.AddShaderToProgram(&shShaders[3]);
+	spOrtho2D.LinkProgram();
 
-	spOrtho2D.createProgram();
-	spOrtho2D.addShaderToProgram(&shShaders[2]);
-	spOrtho2D.addShaderToProgram(&shShaders[3]);
-	spOrtho2D.linkProgram();
-
-	spFont2D.createProgram();
-	spFont2D.addShaderToProgram(&shShaders[2]);
-	spFont2D.addShaderToProgram(&shShaders[4]);
-	spFont2D.linkProgram();
+	spFont2D.CreateProgram();
+	spFont2D.AddShaderToProgram(&shShaders[2]);
+	spFont2D.AddShaderToProgram(&shShaders[4]);
+	spFont2D.LinkProgram();
 
 	// Load textures
 
@@ -98,7 +100,7 @@ GLvoid initScene(GLvoid* lpParam)
 
 	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
 	{
-		tTextures[i].loadTexture2D("data\\textures\\"+sTextureNames[i], true);
+		tTextures[i].loadTexture2D("data/textures/"+sTextureNames[i], true);
 		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 	}
 
@@ -114,9 +116,9 @@ GLvoid initScene(GLvoid* lpParam)
 
 /*-----------------------------------------------
 
-Name:	renderScene
+Name:	RenderScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Renders whole scene.
 
@@ -126,15 +128,17 @@ GLfloat fGlobalAngle;
 
 GLint iFontSize = 24; // This is default printed font size
 
-GLvoid renderScene(GLvoid* lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
+	oglControl->MakeCurrent();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
-	spDirectionalLight.useProgram();
+	spDirectionalLight.UseProgram();
 	glBindVertexArray(uiVAOs[0]);
 
 	// Set some lighting parameters
@@ -161,7 +165,7 @@ GLvoid renderScene(GLvoid* lpParam)
 	glDisable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);
 	
-	spFont2D.useProgram();
+	spFont2D.UseProgram();
 	// Font color, you can even change transparency of font with alpha parameter
 	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
@@ -178,16 +182,12 @@ GLvoid renderScene(GLvoid* lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	if(Keys::onekey(VK_UP))iFontSize++;
-	if(Keys::onekey(VK_DOWN))iFontSize--;
-	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
-
-	oglControl->swapBuffers();
+	oglControl->SwapBuffersM();
 }
 
 /*-----------------------------------------------
 
-Name:	releaseScene
+Name:	ReleaseScene
 
 Params:	lpParam - Pointer to anything you want.
 
@@ -195,16 +195,103 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(GLvoid* lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 
-	spDirectionalLight.deleteProgram();
-	spOrtho2D.deleteProgram();
-	spFont2D.deleteProgram();
-	FOR(i, 5)shShaders[i].deleteShader();
+	spDirectionalLight.DeleteProgram();
+	spOrtho2D.DeleteProgram();
+	spFont2D.DeleteProgram();
+	FOR(i, 5)shShaders[i].DeleteShader();
 	ftFont.releaseFont();
 
 	glDeleteVertexArrays(1, uiVAOs);
 	vboSceneObjects.releaseVBO();
+}
+
+/*-----------------------------------------------
+
+Name:	key_CB
+
+Params:	[in]	window	The window that received the event.
+	[in]	key	The keyboard key that was pressed or released.
+	[in]	scancode	The system-specific scancode of the key.
+	[in]	action	GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+	[in]	mods	Bit field describing which modifier keys were held down
+
+Result:	Keyboard Callback
+
+/*---------------------------------------------*/
+
+GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
+{
+	glfwMakeContextCurrent(hWnd);
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			cout<<"Normal Exit:ESC Pressed"<<endl;
+			glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			break;
+		case 'C':
+			if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+			{
+				cout<<"Normal Exit:^C Pressed"<<endl;
+				glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			}
+			break;
+		case 'W':
+			cCamera.move(appMain.sof(cCamera.getfSpeed()));
+			break;
+		case 'S':
+			cCamera.move(appMain.sof(-cCamera.getfSpeed()));
+			break;
+		case 'A':
+			cCamera.rotateViewY(appMain.sof(90.0f));
+			break;
+		case 'D':
+			cCamera.rotateViewY(appMain.sof(-90.0f));
+			break;
+		case GLFW_KEY_UP:
+			iFontSize++;
+			break;
+		case GLFW_KEY_DOWN:
+			iFontSize--;
+			break;
+	}
+}
+
+/*-----------------------------------------------
+
+Name:	framebuffer_CB
+
+Params:	[in]	window	The window whose framebuffer was resized.
+	[in]	width	The new width, in pixels, of the framebuffer.
+	[in]	height	The new height, in pixels, of the framebuffer.
+
+Result:	Frame Buffer Size Callback
+
+/*---------------------------------------------*/
+
+GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
+{
+	glfwMakeContextCurrent(hWnd);
+	appMain.oglControl.ResizeOpenGLViewportFull();
+	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.001f, 1000.0f);
+	appMain.oglControl.setOrtho2D(width, height);
+}
+
+/*-----------------------------------------------
+
+Name:	error_CB
+
+Params:	[in]	error	An error code.
+	[in]	description	A UTF-8 encoded string describing the error.
+
+Result:	Error Callback
+
+/*---------------------------------------------*/
+
+void error_CB(int error, const char* description)
+{
+	cerr<<"Error "<<hex<<error<<":"<<description<<endl;
 }
