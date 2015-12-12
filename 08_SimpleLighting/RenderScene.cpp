@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 #include "shaders.h"
 #include "texture.h"
@@ -26,14 +26,16 @@ CTexture tTextures[4];
 
 CWalkingCamera cCamera;
 
+/*---------------------------------------------*/
+
 /*-----------------------------------------------
 
-Name:		initScene
+Name:	InitScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Initializes OpenGL features that will
-			be used.
+		be used.
 
 /*---------------------------------------------*/
 
@@ -41,8 +43,10 @@ Result:	Initializes OpenGL features that will
 
 GLint iTorusFaces1, iTorusFaces2;
 
-GLvoid initScene(GLvoid* lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
+	// For now, we just clear color to light blue,
+	// to see if OpenGL context is working
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	vboSceneObjects.createVBO();
@@ -90,13 +94,13 @@ GLvoid initScene(GLvoid* lpParam)
 
 	// Load shaders and create shader programs
 
-	shVertex.loadShader("data\\shaders\\shader.vert", GL_VERTEX_SHADER);
-	shFragment.loadShader("data\\shaders\\shader.frag", GL_FRAGMENT_SHADER);
+	shVertex.LoadShader("data/shaders/shader.vert", GL_VERTEX_SHADER);
+	shFragment.LoadShader("data/shaders/shader.frag", GL_FRAGMENT_SHADER);
 	
-	spDirectionalLight.createProgram();
-	spDirectionalLight.addShaderToProgram(&shVertex);
-	spDirectionalLight.addShaderToProgram(&shFragment);
-	spDirectionalLight.linkProgram();
+	spDirectionalLight.CreateProgram();
+	spDirectionalLight.AddShaderToProgram(&shVertex);
+	spDirectionalLight.AddShaderToProgram(&shFragment);
+	spDirectionalLight.LinkProgram();
 
 	// Load textures
 
@@ -104,22 +108,21 @@ GLvoid initScene(GLvoid* lpParam)
 
 	FOR(i, 4)
 	{
-		tTextures[i].loadTexture2D("data\\textures\\"+sTextureNames[i], true);
+		tTextures[i].loadTexture2D("data/textures/"+sTextureNames[i], true);
 		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 	}
 
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 	
-	
 	cCamera = CWalkingCamera(glm::vec3(0.0f, 3.0f, -20.0f), glm::vec3(0.0f, 3.0f, -19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 35.0f);
 }
 
 /*-----------------------------------------------
 
-Name:		renderScene
+Name:	RenderScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Renders whole scene.
 
@@ -128,15 +131,17 @@ Result:	Renders whole scene.
 GLfloat fGlobalAngle;
 GLfloat fSunAngle = 45.0f;
 
-GLvoid renderScene(GLvoid* lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
+	oglControl->MakeCurrent();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
-	spDirectionalLight.useProgram();
+	spDirectionalLight.UseProgram();
 	glBindVertexArray(uiVAOs[0]);
 
 	// Set light properties
@@ -211,17 +216,12 @@ GLvoid renderScene(GLvoid* lpParam)
 	fGlobalAngle += appMain.sof(100.0f);
 	cCamera.update();
 
-	if(Keys::key(VK_LEFT))fSunAngle -= appMain.sof(45.0f);
-	if(Keys::key(VK_RIGHT))fSunAngle += appMain.sof(45.0f);
-
-	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
-
-	oglControl->swapBuffers();
+	oglControl->SwapBuffersM();
 }
 
 /*-----------------------------------------------
 
-Name:		releaseScene
+Name:	ReleaseScene
 
 Params:	lpParam - Pointer to anything you want.
 
@@ -229,15 +229,101 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(GLvoid* lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, 4)tTextures[i].releaseTexture();
 
-	spDirectionalLight.deleteProgram();
+	spDirectionalLight.DeleteProgram();
 
-	shFragment.deleteShader();
-	shVertex.deleteShader();
-	
+	shFragment.DeleteShader();
+	shVertex.DeleteShader();
+
 	glDeleteVertexArrays(1, uiVAOs);
 	vboSceneObjects.releaseVBO();
+}
+
+/*-----------------------------------------------
+
+Name:	key_CB
+
+Params:	[in]	window	The window that received the event.
+	[in]	key	The keyboard key that was pressed or released.
+	[in]	scancode	The system-specific scancode of the key.
+	[in]	action	GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+	[in]	mods	Bit field describing which modifier keys were held down
+
+Result:	Keyboard Callback
+
+/*---------------------------------------------*/
+
+GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
+{
+	glfwMakeContextCurrent(hWnd);
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			cout<<"Normal Exit:ESC Pressed"<<endl;
+			glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			break;
+		case 'C':
+			if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+			{
+				cout<<"Normal Exit:^C Pressed"<<endl;
+				glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			}
+			break;
+		case 'W':
+			cCamera.move(appMain.sof(cCamera.getfSpeed()));
+			break;
+		case 'S':
+			cCamera.move(appMain.sof(-cCamera.getfSpeed()));
+			break;
+		case 'A':
+			cCamera.rotateViewY(appMain.sof(90.0f));
+			break;
+		case 'D':
+			cCamera.rotateViewY(appMain.sof(-90.0f));
+			break;
+		case GLFW_KEY_LEFT:
+			fSunAngle -= appMain.sof(45.0f);
+			break;
+		case GLFW_KEY_RIGHT:
+			fSunAngle += appMain.sof(45.0f);
+			break;
+	}
+}
+
+/*-----------------------------------------------
+
+Name:	framebuffer_CB
+
+Params:	[in]	window	The window whose framebuffer was resized.
+	[in]	width	The new width, in pixels, of the framebuffer.
+	[in]	height	The new height, in pixels, of the framebuffer.
+
+Result:	Frame Buffer Size Callback
+
+/*---------------------------------------------*/
+
+GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
+{
+	glfwMakeContextCurrent(hWnd);
+	appMain.oglControl.ResizeOpenGLViewportFull();
+	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.001f, 1000.0f);
+}
+
+/*-----------------------------------------------
+
+Name:	error_CB
+
+Params:	[in]	error	An error code.
+	[in]	description	A UTF-8 encoded string describing the error.
+
+Result:	Error Callback
+
+/*---------------------------------------------*/
+
+void error_CB(int error, const char* description)
+{
+	cerr<<"Error "<<hex<<error<<":"<<description<<endl;
 }

@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 #include "walkingCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -81,8 +81,23 @@ Result:	Handles keys and updates camera.
 
 GLvoid CWalkingCamera::update()
 {
-	if(Keys::key('W'))move(appMain.sof(fSpeed));
-	if(Keys::key('S'))move(appMain.sof(-fSpeed));
-	if(Keys::key('A'))rotateViewY(appMain.sof(90.0f));
-	if(Keys::key('D'))rotateViewY(appMain.sof(-90.0f));
+	//Moved to RenderScene's key_CB
+////////if(glfwGetKey(appMain.hWnd,'W'))move(appMain.sof(fSpeed));
+////////if(glfwGetKey(appMain.hWnd,'S'))move(appMain.sof(-fSpeed));
+////////if(glfwGetKey(appMain.hWnd,'A'))rotateViewY(appMain.sof(90.0f));
+////////if(glfwGetKey(appMain.hWnd,'D'))rotateViewY(appMain.sof(-90.0f));
+}
+/*-----------------------------------------------
+
+Name:		getfSpeed
+
+Params:	none
+
+Result:	Returns fSpeed (for key_CB's move using fSpeed).
+
+/*---------------------------------------------*/
+
+GLfloat CWalkingCamera::getfSpeed()
+{
+	return fSpeed;
 }
