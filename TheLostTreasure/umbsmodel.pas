@@ -34,15 +34,15 @@ end;
 type CMaterial = object
 	iTex:integer;
 	fAmbient, fDiffuse, fSpecular, fEmmisive : array[1..4] of real;
-	bShininess : BYTE;
+	bShininess : GL_UNSIGNED_BYTE;
 end;
 
 type CAnimation = object
 	bNumKF : byte;
    sName : string;
 	fDelay : array of single;
-	bGBF : array of array of BYTE; // Animated groups bitfield (double pointer)
-   bFBF : array of array of array of BYTE; // Animated faces bitfield (triple pointer)
+	bGBF : array of array of GL_UNSIGNED_BYTE; // Animated groups bitfield (double pointer)
+   bFBF : array of array of array of GL_UNSIGNED_BYTE; // Animated faces bitfield (triple pointer)
    iOffSet : array of array of integer;
 
 	viGrAnim : array of boolean; // Indices of groups affected by this animation
@@ -147,7 +147,7 @@ begin;
 		aAnims[i].sName := '';
 		while true do begin; memstream.read(s[1], 1); if(ord(s[1])<15)then break; appendSTR(aAnims[i].sName, s); end;
      // ShowMessage(aAnims[i].sname);
-      memStream.read(aAnims[i].bNumKF, sizeof(BYTE));
+      memStream.read(aAnims[i].bNumKF, sizeof(GL_UNSIGNED_BYTE));
       SetLength(aAnims[i].fDelay, aAnims[i].bNumKF);
 		SetLength(aAnims[i].bGBF, aAnims[i].bNumKF);
       SetLength(aAnims[i].bFBF, aAnims[i].bNumKF);
@@ -163,14 +163,14 @@ begin;
          SetLength(aAnims[i].iOffSet[j], mbsmHeader.nGroups);
          SetLength(aAnims[i].bGBF[j], iNGBF);
 			SetLength(aAnims[i].bFBF[j], mbsmHeader.nGroups);
-			for k:=0 to iNGBF-1 do MemStream.read(aAnims[i].bGBF[j][k], sizeof(BYTE));
+			for k:=0 to iNGBF-1 do MemStream.read(aAnims[i].bGBF[j][k], sizeof(GL_UNSIGNED_BYTE));
 			for k:=0 to mbsmHeader.nGroups-1 do
 			begin;
 				aAnims[i].gGroups[j][k].cFaceNorm := gGroups[k].cFaceNorm; // It doesn't matter
 				aAnims[i].gGroups[j][k].iNFaces := gGroups[k].iNFaces;
 				memStream.read(aAnims[i].gGroups[j][k].cMat, sizeof(char));
 				iNFBF := (gGroups[k].iNFaces+7) div 8; // Number of face bitfield
-				SetLength(aAnims[i].bFBF[j][k], sizeof(BYTE)*iNFBF);
+				SetLength(aAnims[i].bFBF[j][k], sizeof(GL_UNSIGNED_BYTE)*iNFBF);
 				// Is k-th group animated?
 				if((aAnims[i].bGBF[j][k div 8] and (1 shl (k mod 8))) = 0)then
 				begin;

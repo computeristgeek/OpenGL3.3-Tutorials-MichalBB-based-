@@ -28,7 +28,7 @@ GLvoid renderAllParticles(vector<CParticle> &pParts, GLint iFade)
 	glBegin(GL_QUADS);
 	FOR(i, ESZ(pParts))
 	{
-		glColor4ub(pParts[i].bColor[0], pParts[i].bColor[1], pParts[i].bColor[2], iFade ? (BYTE)(min(1.0f, pParts[i].fFade)*255) : 255);
+		glColor4ub(pParts[i].bColor[0], pParts[i].bColor[1], pParts[i].bColor[2], iFade ? (GL_UNSIGNED_BYTE)(min(1.0f, pParts[i].fFade)*255) : 255);
 		CVector3 vVertex = pParts[i].vPos-vDirs.first+vDirs.second;
 		glTexCoord2f(0.0f, 1.0f); glVertex3fv(vVertex.v);
 		vVertex = pParts[i].vPos+vDirs.first+vDirs.second;
@@ -59,7 +59,7 @@ GLfloat randValue(GLfloat fMin, GLfloat fMax)
 
 //====================
 
-GLvoid createParticles(CVector3 vPos, GLfloat fMaxSpeed, GLint iCount, BYTE* bColor)
+GLvoid createParticles(CVector3 vPos, GLfloat fMaxSpeed, GLint iCount, GL_UNSIGNED_BYTE* bColor)
 {
 	FOR(i, iCount)
 	{

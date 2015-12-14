@@ -33,7 +33,7 @@ private:
 	GLuint uiBuffer;
 	GLint iSize;
 	GLint iBufferType;
-	vector<BYTE> data;
+	vector<GL_UNSIGNED_BYTE> data;
 
 	GLboolean bDataUploaded;
 };

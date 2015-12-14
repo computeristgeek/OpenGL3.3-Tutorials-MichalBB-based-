@@ -51,7 +51,7 @@ GLboolean CMultiLayeredHeightmap::LoadHeightMapFromImage(string sImagePath)
 	if(!dib)
 		return false;
 
-	BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
+	GL_UNSIGNED_BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
 	iRows = FreeImage_GetHeight(dib);
 	iCols = FreeImage_GetWidth(dib);
 

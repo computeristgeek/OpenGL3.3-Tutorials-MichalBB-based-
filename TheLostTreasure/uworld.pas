@@ -34,7 +34,7 @@ var iDamages : array[0..6] of integer;
 var iLastHit : integer;
 var sEnemyNames : array[0..6] of string;
 var sLevelNames : array[0..2] of String;
-var cR, cB, cG : array[0..6] of BYTE;
+var cR, cB, cG : array[0..6] of GL_UNSIGNED_BYTE;
 
 type CEnemy = object
 vPos : CVector3;
@@ -177,7 +177,7 @@ begin;
 	line := 'data\worlds\textures\';s := 'a';
 	while true do begin; stream.read(s[1], 1); if(ord(s[1])<15)then break; appendSTR(line, s); end;
 	tLocalTextures[i].loadBMP(line, 2);
-	stream.read(tLocalTextures[i].bLiquid, sizeof(BYTE));
+	stream.read(tLocalTextures[i].bLiquid, sizeof(GL_UNSIGNED_BYTE));
    stream.read(tLocalTextures[i].fAddU, sizeof(single));
    stream.read(tLocalTextures[i].fAddV, sizeof(single));
 	tLocalTextures[i].fCurAn := 0.0;

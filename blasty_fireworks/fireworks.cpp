@@ -26,7 +26,7 @@ GLvoid CRomanLighter::renderAndUpdate()
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4ub(255, 255, 255, (BYTE)(fFade*255.0f));
+		glColor4ub(255, 255, 255, (GL_UNSIGNED_BYTE)(fFade*255.0f));
 		fFade -= glAp.sof(1.0f);
 	}
 	mRomanLighter.renderModel();
@@ -57,7 +57,7 @@ GLvoid CRomanLighter::renderAndUpdate()
 	{
 		if(pBombs[i].fFade-glAp.sof(1.0f) <= 0.0f)
 		{
-			BYTE bColor[3]; bColor[0] = bColor[1] = bColor[2] = pBombs[i].bColor[0];
+			GL_UNSIGNED_BYTE bColor[3]; bColor[0] = bColor[1] = bColor[2] = pBombs[i].bColor[0];
 			createParticles(pBombs[i].vPos, 10.0f, 20, bColor);
 		}
 	}
@@ -75,7 +75,7 @@ GLvoid CBlastyBlaster::renderAndUpdate()
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4ub(255, 255, 255, (BYTE)(fFade*255.0f));
+		glColor4ub(255, 255, 255, (GL_UNSIGNED_BYTE)(fFade*255.0f));
 		fFade -= glAp.sof(1.0f);
 	}
 	mBlastyBlaster.renderModel();
@@ -109,7 +109,7 @@ GLvoid CBlastyBlaster::renderAndUpdate()
 	{
 		if(pBombs[i].fFade-glAp.sof(1.0f) <= 0.0f)
 		{
-			BYTE bColor[3]; FOR(j, 3)bColor[j] = pBombs[i].bColor[j];
+			GL_UNSIGNED_BYTE bColor[3]; FOR(j, 3)bColor[j] = pBombs[i].bColor[j];
 			createParticles(pBombs[i].vPos, 10.0f, 20, bColor);
 		}
 	}
@@ -127,7 +127,7 @@ GLvoid CVolcano::renderAndUpdate()
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4ub(255, 255, 255, (BYTE)(fFade*255.0f));
+		glColor4ub(255, 255, 255, (GL_UNSIGNED_BYTE)(fFade*255.0f));
 		fFade -= glAp.sof(1.0f);
 	}
 	mVolcano.renderModel();

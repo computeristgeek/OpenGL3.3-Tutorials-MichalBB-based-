@@ -32,7 +32,7 @@ GLvoid CDoubleUzi::renderAmmo()
 	glBegin(GL_LINES);
 	FOR(i, ESZ(bBullets))
 	{
-		glColor4ub(128, 128, 128, (BYTE)(bBullets[i].fLife * 255));
+		glColor4ub(128, 128, 128, (GL_UNSIGNED_BYTE)(bBullets[i].fLife * 255));
 		glVertex3f(bBullets[i].vPos.x, bBullets[i].vPos.y, bBullets[i].vPos.z);
 		CVector3 vPos2 = bBullets[i].vEnd;
 		glColor3ub(220, 220, 220);

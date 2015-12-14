@@ -56,7 +56,7 @@ GLint GetPickedColorIndexUnderMouse()
 	ScreenToClient(appMain.hWnd, &mp);
 	RECT rect; GetClientRect(appMain.hWnd, &rect);
 	mp.y = rect.bottom-mp.y;
-	BYTE bArray[4];
+	GL_UNSIGNED_BYTE bArray[4];
 	glReadPixels(mp.x, mp.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, bArray);
 	GLint iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]) - 1;
 

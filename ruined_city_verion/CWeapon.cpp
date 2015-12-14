@@ -204,7 +204,7 @@ GLvoid renderWeaponsOrtho()
 	
 	if(fPrintName > 0.0f)
 	{
-		glColor4ub(wWeapons[iCurWeapon]->bR, wWeapons[iCurWeapon]->bG, wWeapons[iCurWeapon]->bB, (BYTE)(255.0f * min(1.0f, fPrintName)));
+		glColor4ub(wWeapons[iCurWeapon]->bR, wWeapons[iCurWeapon]->bG, wWeapons[iCurWeapon]->bB, (GL_UNSIGNED_BYTE)(255.0f * min(1.0f, fPrintName)));
 		ft.print(CFData(35, ft.getcenterx(ft.getxsize(FT((char*)wWeapons[iCurWeapon]->strName.c_str()), 35), 0, glAp.scrX), 50), (char*)wWeapons[iCurWeapon]->strName.c_str());
 		fPrintName -= glAp.sof(1.0f);
 	}

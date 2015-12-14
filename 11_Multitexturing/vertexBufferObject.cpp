@@ -140,7 +140,7 @@ Result:	Adds arbitrary data to VBO.
 
 GLvoid CVertexBufferObject::addData(void* ptrData, GLuint uiDataSize)
 {
-	data.insert(data.end(), (BYTE*)ptrData, (BYTE*)ptrData+uiDataSize);
+	data.insert(data.end(), (GL_UNSIGNED_BYTE*)ptrData, (GL_UNSIGNED_BYTE*)ptrData+uiDataSize);
 }
 
 /*-----------------------------------------------

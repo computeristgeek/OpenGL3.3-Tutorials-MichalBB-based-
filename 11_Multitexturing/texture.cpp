@@ -23,7 +23,7 @@ Result:	Creates texture from provided data.
 
 /*---------------------------------------------*/
 
-GLvoid CTexture::createFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
+GLvoid CTexture::createFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
 {
 	// Generate an OpenGL texture ID for this texture
 	glGenTextures(1, &uiTexture);
@@ -79,7 +79,7 @@ GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 	if(!dib)
 		return false;
 
-	BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
+	GL_UNSIGNED_BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
 
 	// If somehow one of these failed (they shouldn't), return failure
 	if(bDataPointer == NULL || FreeImage_GetWidth(dib) == 0 || FreeImage_GetHeight(dib) == 0)

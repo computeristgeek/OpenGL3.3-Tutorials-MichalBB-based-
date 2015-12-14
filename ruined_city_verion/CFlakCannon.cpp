@@ -30,22 +30,22 @@ GLvoid CFlakCannon::renderAmmo()
 	FOR(i, ESZ(fShells))
 	{
 		GLint j = 1 - fShells[i].iCurNode % 2;
-		glColor4ub(ubColor[j][0], ubColor[j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
+		glColor4ub(ubColor[j][0], ubColor[j][1], 0, fShells[i].fLife > 1.0f ? 255 : (GL_UNSIGNED_BYTE)(fShells[i].fLife * 255));
 		glVertex3f(fShells[i].vPos.x, fShells[i].vPos.y, fShells[i].vPos.z);
 
 		CVector3 vPos2 = fShells[i].vPos + fShells[i].vDir[fShells[i].iCurNode] * FLAKLENGTH;
 		GLfloat fDist = vecDist(fShells[i].vPos, fShells[i].vNodes[fShells[i].iCurNode]);
 		if(fDist < FLAKLENGTH)vPos2 = fShells[i].vNodes[fShells[i].iCurNode];
-		glColor4ub(ubColor[1 - j][0], ubColor[1 - j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
+		glColor4ub(ubColor[1 - j][0], ubColor[1 - j][1], 0, fShells[i].fLife > 1.0f ? 255 : (GL_UNSIGNED_BYTE)(fShells[i].fLife * 255));
 		glVertex3f(vPos2.x, vPos2.y, vPos2.z);
 		if(fDist < FLAKLENGTH && fShells[i].iCurNode + 1 != fShells[i].iAllNodes)
 		{
 			GLfloat fLen = FLAKLENGTH - fDist;
 			j = fShells[i].iCurNode % 2;
-			glColor4ub(ubColor[j][0], ubColor[j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
+			glColor4ub(ubColor[j][0], ubColor[j][1], 0, fShells[i].fLife > 1.0f ? 255 : (GL_UNSIGNED_BYTE)(fShells[i].fLife * 255));
 			glVertex3f(vPos2.x, vPos2.y, vPos2.z);
 			vPos2 += fShells[i].vDir[fShells[i].iCurNode + 1] * fLen;
-			glColor4ub(ubColor[1 - j][0], ubColor[1 - j][1], 0, fShells[i].fLife > 1.0f ? 255 : (BYTE)(fShells[i].fLife * 255));
+			glColor4ub(ubColor[1 - j][0], ubColor[1 - j][1], 0, fShells[i].fLife > 1.0f ? 255 : (GL_UNSIGNED_BYTE)(fShells[i].fLife * 255));
 			glVertex3f(vPos2.x, vPos2.y, vPos2.z);
 		}
 

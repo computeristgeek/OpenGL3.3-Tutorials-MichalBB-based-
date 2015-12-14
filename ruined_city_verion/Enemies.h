@@ -18,7 +18,7 @@ public:
 	GLfloat fAngle, fTime, fTime2;
 	GLboolean bRotating, bPlaySnd;
 	GLvoid render();
-	struct CSmoke{CVector3 vPos; BYTE bColor; GLfloat fLife;};
+	struct CSmoke{CVector3 vPos; GL_UNSIGNED_BYTE bColor; GLfloat fLife;};
 	vector<CSmoke> sSmoke;
 	GLvoid renderSmoke();
 	CTower(){fAngle = 0.0f; bRotating = false; bPlaySnd = true; fTime = (float)(rand() % 31) * 0.1f; fTime2 = 0.0f;}

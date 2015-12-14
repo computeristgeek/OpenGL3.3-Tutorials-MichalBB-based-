@@ -6,7 +6,7 @@ struct CParticle
 {
 	CVector3 vPos, vDir;
 	GLfloat fFade;
-	BYTE bColor[3];
+	GL_UNSIGNED_BYTE bColor[3];
 };
 
 //====================

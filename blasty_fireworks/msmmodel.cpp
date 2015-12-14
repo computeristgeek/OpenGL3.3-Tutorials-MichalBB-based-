@@ -51,16 +51,16 @@ GLvoid CMSMModel::loadModel(char* strFile)
 		readline(fp); // Ignore material name
 		GLchar cTex; fread(&cTex, sizeof(char), 1, fp);
 		mMats[i].iTexture = cTex != -1 ? tIndices[cTex] : -1;
-		BYTE bArray[4]; GLfloat fArray[4];
-		fread(bArray, 4, sizeof(BYTE), fp);
+		GL_UNSIGNED_BYTE bArray[4]; GLfloat fArray[4];
+		fread(bArray, 4, sizeof(GL_UNSIGNED_BYTE), fp);
 		FOR(j, 4)fArray[j] = (float)bArray[j]/255.0f; FOR(j, 4)mMats[i].fAmbient[j] = fArray[j];
-		fread(bArray, 4, sizeof(BYTE), fp);
+		fread(bArray, 4, sizeof(GL_UNSIGNED_BYTE), fp);
 		FOR(j, 4)fArray[j] = (float)bArray[j]/255.0f; FOR(j, 4)mMats[i].fDiffuse[j] = fArray[j];
-		fread(bArray, 4, sizeof(BYTE), fp);
+		fread(bArray, 4, sizeof(GL_UNSIGNED_BYTE), fp);
 		FOR(j, 4)fArray[j] = (float)bArray[j]/255.0f; FOR(j, 4)mMats[i].fSpecular[j] = fArray[j];
-		fread(bArray, 4, sizeof(BYTE), fp);
+		fread(bArray, 4, sizeof(GL_UNSIGNED_BYTE), fp);
 		FOR(j, 4)fArray[j] = (float)bArray[j]/255.0f; FOR(j, 4)mMats[i].fEmmisive[j] = fArray[j];
-		fread(&mMats[i].bShininess, sizeof(BYTE), 1, fp);
+		fread(&mMats[i].bShininess, sizeof(GL_UNSIGNED_BYTE), 1, fp);
 	}
 	fclose(fp);
 }

@@ -36,7 +36,7 @@ GLvoid glInit()
 	{
 		fgets(strLine, 255, fp); // Name of group, just ignore
 		GLchar cMIndex; fread(&cMIndex, sizeof(char), 1, fp);
-		BYTE bBlend; fread(&bBlend, sizeof(BYTE), 1, fp);
+		GL_UNSIGNED_BYTE bBlend; fread(&bBlend, sizeof(GL_UNSIGNED_BYTE), 1, fp);
 		WORD wNFaces; fread(&wNFaces, sizeof(WORD), 1, fp);
 		FOR(j, wNFaces)
 		{

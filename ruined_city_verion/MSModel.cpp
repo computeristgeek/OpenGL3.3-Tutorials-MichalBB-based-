@@ -34,7 +34,7 @@ GLvoid CMSModel::loadModelData(char* strFile)
 	{
 		fgets(strLine, 255, fp); // Name of group, just ignore
 		fread(&gGroups[i].cMIndex, sizeof(char), 1, fp);
-		fread(&gGroups[i].bBlend, sizeof(BYTE), 1, fp);
+		fread(&gGroups[i].bBlend, sizeof(GL_UNSIGNED_BYTE), 1, fp);
 		fread(&gGroups[i].wNFaces, sizeof(WORD), 1, fp);
 		gGroups[i].vVerts = new CVector3[gGroups[i].wNFaces * 3];
 		gGroups[i].vCoords = new CVector2[gGroups[i].wNFaces * 3];
@@ -84,13 +84,13 @@ GLvoid CMSModel::loadModelData(char* strFile)
 	{
 		fgets(strLine, 255, fp); aAnims[i].strName = strLine;
 		aAnims[i].strName = aAnims[i].strName.substr(0, aAnims[i].strName.length() - 1);
-		fread(&aAnims[i].bData, sizeof(BYTE), 1, fp);
-		fread(&aAnims[i].bNumKF, sizeof(BYTE), 1, fp);
+		fread(&aAnims[i].bData, sizeof(GL_UNSIGNED_BYTE), 1, fp);
+		fread(&aAnims[i].bNumKF, sizeof(GL_UNSIGNED_BYTE), 1, fp);
 		aAnims[i].vVerts = new CVector3**[aAnims[i].bNumKF];
 		aAnims[i].vCoords = new CVector2**[aAnims[i].bNumKF];
 		aAnims[i].vNorms = new CVector3**[aAnims[i].bNumKF];
-		aAnims[i].bKFData = new BYTE[aAnims[i].bNumKF];
-		aAnims[i].bBitFld = new BYTE*[aAnims[i].bNumKF];
+		aAnims[i].bKFData = new GL_UNSIGNED_BYTE[aAnims[i].bNumKF];
+		aAnims[i].bBitFld = new GL_UNSIGNED_BYTE*[aAnims[i].bNumKF];
 		aAnims[i].fTime = new float[aAnims[i].bNumKF];
 		aAnims[i].fBlend = new float*[aAnims[i].bNumKF];
 		aAnims[i].cTexture = new char*[aAnims[i].bNumKF];
@@ -108,13 +108,13 @@ GLvoid CMSModel::loadModelData(char* strFile)
 				aAnims[i].cTexture[j][k] = gGroups[k].cMIndex;
 				aAnims[i].fBlend[j][k] = (float)gGroups[k].bBlend / 255.0f;
 			}
-			aAnims[i].bBitFld[j] = new BYTE(1 + wNGroups / 8);
+			aAnims[i].bBitFld[j] = new GL_UNSIGNED_BYTE(1 + wNGroups / 8);
 
 			unsigned long dwTime; fread(&dwTime, sizeof(unsigned long), 1, fp);
 			aAnims[i].fTime[j] = (float)dwTime;
-			fread(&aAnims[i].bKFData[j], sizeof(BYTE), 1, fp);
+			fread(&aAnims[i].bKFData[j], sizeof(GL_UNSIGNED_BYTE), 1, fp);
 
-			FOR(k, 1 + wNGroups / 8)fread(&aAnims[i].bBitFld[j][k], sizeof(BYTE), 1, fp);
+			FOR(k, 1 + wNGroups / 8)fread(&aAnims[i].bBitFld[j][k], sizeof(GL_UNSIGNED_BYTE), 1, fp);
 			
 			FOR(k, wNGroups)
 			{
@@ -123,7 +123,7 @@ GLvoid CMSModel::loadModelData(char* strFile)
 					GLchar cTexture; fread(&cTexture, sizeof(char), 1, fp);
 					if(cTexture != -1)aAnims[i].cTexture[j][k] = mInd[cTexture];
 					else aAnims[i].cTexture[j][k] = -1;
-					BYTE bBlend; fread(&bBlend, sizeof(BYTE), 1, fp);
+					GL_UNSIGNED_BYTE bBlend; fread(&bBlend, sizeof(GL_UNSIGNED_BYTE), 1, fp);
 					aAnims[i].fBlend[j][k] = (float)bBlend / 255.0f;
 					if(aAnims[i].bKFData[j] & 2) // If animating vertices
 					{
@@ -295,7 +295,7 @@ GLvoid CMSModel::renderModel(CAnimData* aData)
 			}
 			else glDisable(GL_TEXTURE_2D);
 			// Set blending
-			BYTE bFinalBlend = (BYTE)((float)gGroups[i].bBlend * fgBlend);
+			GL_UNSIGNED_BYTE bFinalBlend = (GL_UNSIGNED_BYTE)((float)gGroups[i].bBlend * fgBlend);
 			if(bFinalBlend < 255){glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);}
 			else glDisable(GL_BLEND);
 			glColor4ub(255, 255, 255, bFinalBlend);

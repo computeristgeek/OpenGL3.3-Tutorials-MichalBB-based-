@@ -7,7 +7,7 @@ public:
 	GLboolean bShooting;
 
 	string strName;
-	BYTE bR, bG, bB;
+	GL_UNSIGNED_BYTE bR, bG, bB;
 
 	virtual GLvoid renderWeapon() = 0;
 	virtual GLvoid shoot() = 0;

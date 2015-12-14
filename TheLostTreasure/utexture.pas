@@ -13,10 +13,10 @@ Width,Height: longint;
 uiStor:LongWord;
 Data : pointer;
 fAddU, fAddV, fCurU, fCurV, fCurAn : single;
-bLiquid : BYTE;
+bLiquid : GL_UNSIGNED_BYTE;
 
 procedure loadBMP(filename:string; iFilter:integer);
-procedure loadBMPColorKey(filename:string; r, g, b : BYTE);
+procedure loadBMPColorKey(filename:string; r, g, b : GL_UNSIGNED_BYTE);
 procedure bindTexture;
 end;
 
@@ -57,10 +57,10 @@ type
        end;
 
   RGBQUAD = packed record
-          rgbBlue : BYTE;
-          rgbGreen : BYTE;
-          rgbRed : BYTE;
-       //   rgbReserved : BYTE;
+          rgbBlue : GL_UNSIGNED_BYTE;
+          rgbGreen : GL_UNSIGNED_BYTE;
+          rgbRed : GL_UNSIGNED_BYTE;
+       //   rgbReserved : GL_UNSIGNED_BYTE;
        end;
 
   BITMAPINFO = packed record
@@ -176,10 +176,10 @@ type
        end;
 
   RGBQUAD = packed record
-          rgbBlue : BYTE;
-          rgbGreen : BYTE;
-          rgbRed : BYTE;
-       //   rgbReserved : BYTE;
+          rgbBlue : GL_UNSIGNED_BYTE;
+          rgbGreen : GL_UNSIGNED_BYTE;
+          rgbRed : GL_UNSIGNED_BYTE;
+       //   rgbReserved : GL_UNSIGNED_BYTE;
        end;
 
   BITMAPINFO = packed record
@@ -293,7 +293,7 @@ begin;
 	end;
 end;
 
-procedure CTexture.loadBMPColorKey(filename:string; r, g, b : BYTE);
+procedure CTexture.loadBMPColorKey(filename:string; r, g, b : GL_UNSIGNED_BYTE);
 begin;
 	LoadGLTexImage2DFromBitmapFileColorKey(filename, self, r, g, b);
 	glGenTextures(1, @uiStor);

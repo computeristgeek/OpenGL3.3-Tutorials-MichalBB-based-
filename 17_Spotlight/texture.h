@@ -25,7 +25,7 @@ class CTexture
 {
 public:
 	GLvoid CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLenum format);
-	GLvoid CreateFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
+	GLvoid CreateFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
 	
 	GLboolean LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
 	GLvoid BindTexture(GLint iTextureUnit = 0);

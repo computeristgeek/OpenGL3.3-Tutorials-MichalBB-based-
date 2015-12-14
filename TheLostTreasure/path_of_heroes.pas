@@ -197,7 +197,7 @@ begin;
 	glDepthMask(1);
 end;
 
-procedure renderProgressBar(blx, bly, w : integer; r, g, b : BYTE; cur, max : integer);
+procedure renderProgressBar(blx, bly, w : integer; r, g, b : GL_UNSIGNED_BYTE; cur, max : integer);
 var fScale : single;
 begin;
 glColor3ub(255, 255, 255);
@@ -238,14 +238,14 @@ glEnable(GL_TEXTURE_2D);
 end;
 
 
-function getColor(src, dest : integer; iHPCur, iMaximumHP : integer):BYTE;
+function getColor(src, dest : integer; iHPCur, iMaximumHP : integer):GL_UNSIGNED_BYTE;
 var fScale : single;
 var tmp : integer;
 var ok : boolean;
 begin;
 fScale := 1-single(iHPCur)/single(iMaximumHP);
 tmp := src+Round(single(dest-src)*fScale);
-getColor := BYTE(tmp);
+getColor := GL_UNSIGNED_BYTE(tmp);
 end;
 
 procedure TForm1.OpenGLControl1Paint(Sender: TObject);

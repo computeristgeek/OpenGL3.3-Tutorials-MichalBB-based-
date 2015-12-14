@@ -3,7 +3,7 @@ class CGroup
 public:
 	WORD wNFaces;
 	GLchar cMIndex;
-	BYTE bBlend;
+	GL_UNSIGNED_BYTE bBlend;
 	CVector3* vVerts;
 	CVector3* vNorms3;
 	CVector3* vNorms;
@@ -14,10 +14,10 @@ class CAnimation
 {
 public:
 	string strName;
-	BYTE bData, bNumKF;
+	GL_UNSIGNED_BYTE bData, bNumKF;
 	float* fTime;
-	BYTE* bKFData;
-	BYTE** bBitFld;
+	GL_UNSIGNED_BYTE* bKFData;
+	GL_UNSIGNED_BYTE** bBitFld;
 	char** cTexture;
 	float** fBlend;
 	

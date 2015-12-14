@@ -2,7 +2,7 @@
 
 GLvoid CTower::render()
 {
-	BYTE bColor = (BYTE)(255.0f - (255.0f * (fLife / 100.0f)));
+	GL_UNSIGNED_BYTE bColor = (GL_UNSIGNED_BYTE)(255.0f - (255.0f * (fLife / 100.0f)));
 	if(bColor > 128 && fLife > 0.0f)
 	{
 		fTime2 += glAp.sof(1.0f);
@@ -120,7 +120,7 @@ GLvoid CTower::renderSmoke()
 	GLfloat fSize = 2.0f;
 	FOR(i, ESZ(sSmoke))
 	{
-		glColor4ub(sSmoke[i].bColor, sSmoke[i].bColor, sSmoke[i].bColor, (BYTE)((sSmoke[i].fLife / 2.0f) * 255.0f));
+		glColor4ub(sSmoke[i].bColor, sSmoke[i].bColor, sSmoke[i].bColor, (GL_UNSIGNED_BYTE)((sSmoke[i].fLife / 2.0f) * 255.0f));
 		CVector3 vPoints[4];
 		vPoints[0] = sSmoke[i].vPos - cCam.vQuadA * fSize + cCam.vQuadB * fSize;
 		vPoints[1] = sSmoke[i].vPos + cCam.vQuadA * fSize + cCam.vQuadB * fSize;

@@ -401,7 +401,7 @@ Result:  Renders whole scene.
 vector<GLuint> generators;
 vector<float> genTimes;
 
-GLvoid ApplyExplosion(glm::vec3 vPosition, GLfloat fForce, BYTE r, BYTE g, BYTE b)
+GLvoid ApplyExplosion(glm::vec3 vPosition, GLfloat fForce, GL_UNSIGNED_BYTE r, GL_UNSIGNED_BYTE g, GL_UNSIGNED_BYTE b)
 {
 	GLfloat size = 20.0f;
 	GLfloat fCornerVertexA[] = {vPosition.x-size/2, vPosition.y, vPosition.z-size/2};

@@ -108,7 +108,7 @@ GLvoid CShockRifle::renderBlended()
 	glBegin(GL_LINES);
 	FOR(i, ESZ(iImpact))
 	{
-		glColor4ub(128, 0, 255, (BYTE)((10.0f - iImpact[i].fSize) / 10.0f * 255));
+		glColor4ub(128, 0, 255, (GL_UNSIGNED_BYTE)((10.0f - iImpact[i].fSize) / 10.0f * 255));
 		glVertex3f(iImpact[i].vStart.x, iImpact[i].vStart.y, iImpact[i].vStart.z);
 		glVertex3f(iImpact[i].vPos.x, iImpact[i].vPos.y, iImpact[i].vPos.z);
 		iImpact[i].fSize += glAp.sof(20.0f);

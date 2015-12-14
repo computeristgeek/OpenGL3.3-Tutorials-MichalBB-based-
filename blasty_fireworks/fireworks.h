@@ -42,7 +42,7 @@ public:
 
 extern vector<CParticle> pParts;
 
-GLvoid createParticles(CVector3 vPos, GLfloat fMaxSpeed, GLint iCount, BYTE* bColor);
+GLvoid createParticles(CVector3 vPos, GLfloat fMaxSpeed, GLint iCount, GL_UNSIGNED_BYTE* bColor);
 GLfloat randValue(GLfloat fMin, GLfloat fMax);
 GLvoid renderAllParticles(vector<CParticle> &pParts, GLint iFade);
 
