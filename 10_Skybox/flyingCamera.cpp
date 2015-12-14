@@ -179,7 +179,7 @@ GLvoid CFlyingCamera::resetMouse()
 {
 	GLint width, height;
 	glfwGetFramebufferSize(appMain.hWnd,&width,&height);
-	glfwSetCursorPos(appMain.hWnd, 0, 0);
+	glfwSetCursorPos(appMain.hWnd, width, height);
 }
 
 /*-----------------------------------------------

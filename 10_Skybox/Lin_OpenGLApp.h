@@ -32,4 +32,4 @@ private:
 
 extern COpenGLWinApp appMain;
 
-GLvoid InitScene(void*), RenderScene(void*), ReleaseScene(void*),key_CB(GLFWwindow*,int,int,int,int), framebuffer_CB(GLFWwindow*,int,int),error_CB(int,const char*);
+GLvoid InitScene(void*), RenderScene(void*), ReleaseScene(void*),key_CB(GLFWwindow*,int,int,int,int), mousepos_CB(GLFWwindow*,double,double), framebuffer_CB(GLFWwindow*,int,int),error_CB(int,const char*);

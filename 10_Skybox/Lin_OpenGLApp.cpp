@@ -210,6 +210,7 @@ int main(int argc, char** argv)
 	appMain.ResetTimer();
 	glfwSetKeyCallback(appMain.hWnd,key_CB);
 	glfwSetFramebufferSizeCallback(appMain.hWnd,framebuffer_CB);
+	glfwSetCursorPosCallback(appMain.hWnd, mousepos_CB);
 
 	appMain.AppBody();
 	appMain.Shutdown();

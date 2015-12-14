@@ -231,9 +231,8 @@ GLvoid RenderScene(GLvoid* lpParam)
 	spDirectionalLight.setUniform("modelViewMatrix", mModelView*mModelToCamera);
 	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
 
-
 	fGlobalAngle += appMain.sof(100.0f);
-	cCamera.update();
+
 	// PrGLint something over scene
 
 	spFont2D.UseProgram();
@@ -323,6 +322,24 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 			cCamera.vEye += vMoveBy; cCamera.vView += vMoveBy;
 			break;
 	}
+}
+
+/*-----------------------------------------------
+
+Name:	mousepos_CB
+
+Params:	[in]	hWnd	The window that received the event.
+	[in]	xpos	The new x-coordinate, in screen coordinates, of the cursor.
+	[in]	ypos	The new y-coordinate, in screen coordinates, of the cursor.
+
+Result:	Mouse Position Callback
+
+/*---------------------------------------------*/
+
+GLvoid mousepos_CB(GLFWwindow* hWnd, double xpos, double ypos)
+{
+	cCamera.update();
+	RenderScene(&appMain.oglControl);
 }
 
 /*-----------------------------------------------
