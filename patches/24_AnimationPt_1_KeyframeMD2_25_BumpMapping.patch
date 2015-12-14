@@ -1,0 +1,595 @@
+diff -up 24_AnimationPt_1_KeyframeMD2/assimp_model.cpp 25_BumpMapping/assimp_model.cpp
+--- 24_AnimationPt_1_KeyframeMD2/assimp_model.cpp	2015-12-14 14:20:08.060309790 +0200
++++ 25_BumpMapping/assimp_model.cpp	2015-12-14 14:20:08.064309790 +0200
+@@ -11,6 +11,7 @@
+ #include <assimp/postprocess.h>     // Post processing flags
+ 
+ CVertexBufferObject CAssimpModel::vboModelData;
++CVertexBufferObject CAssimpModel::vboBumpMapData;
+ GLuint CAssimpModel::uiVAO;
+ vector<CTexture> CAssimpModel::tTextures;
+ 
+@@ -51,11 +52,17 @@ Result: Loads model using Assimp library
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CAssimpModel::LoadModelFromFile(char* sFilePath)
++inline glm::vec3 aiToGlm(aiVector3D v)
++{
++	return glm::vec3(v.x, v.y, v.z);
++}
++
++GLboolean CAssimpModel::LoadModelFromFile(char* sFilePath, char* sTexturePath, char* sNormalTexturePath)
+ {
+ 	if(vboModelData.GetBufferID() == 0)
+ 	{
+ 		vboModelData.CreateVBO();
++		vboBumpMapData.CreateVBO();
+ 		tTextures.reserve(50);
+ 	}
+ 	Assimp::Importer importer;
+@@ -85,6 +92,34 @@ GLboolean CAssimpModel::LoadModelFromFil
+ 		FOR(j, iMeshFaces)
+ 		{
+ 			const aiFace& face = mesh->mFaces[j];
++
++			glm::vec3 tangent;
++			glm::vec3 bitangent;
++
++			if(sNormalTexturePath)
++			{
++				glm::vec3 & v0 = aiToGlm(mesh->mVertices[face.mIndices[0]]);
++				glm::vec3 & v1 = aiToGlm(mesh->mVertices[face.mIndices[1]]);
++				glm::vec3 & v2 = aiToGlm(mesh->mVertices[face.mIndices[2]]);
++
++				// Shortcuts for UVs
++				glm::vec3 & uv0 = aiToGlm(mesh->mTextureCoords[0][face.mIndices[0]]);
++				glm::vec3 & uv1 = aiToGlm(mesh->mTextureCoords[0][face.mIndices[1]]);
++				glm::vec3 & uv2 = aiToGlm(mesh->mTextureCoords[0][face.mIndices[2]]);
++
++				// Edges of the triangle : position delta
++				glm::vec3 vPosDif1 = v1 - v0;
++				glm::vec3 vPosDif2 = v2 - v0;
++
++				// UV delta
++				glm::vec3 vTexCoordDif1 = uv1 - uv0;
++				glm::vec3 vTexCoordDif2 = uv2 - uv0;
++
++				GLfloat r = 1.0f / (vTexCoordDif1.x * vTexCoordDif2.y - vTexCoordDif1.y * vTexCoordDif2.x);
++				tangent = glm::normalize((vPosDif1 * vTexCoordDif2.y  - vPosDif2 * vTexCoordDif1.y)*r);
++				bitangent = glm::normalize((vPosDif2 * vTexCoordDif1.x  - vPosDif1 * vTexCoordDif2.x)*r);
++			}
++
+ 			FOR(k, 3)
+ 			{
+ 				aiVector3D pos = mesh->mVertices[face.mIndices[k]];
+@@ -93,6 +128,11 @@ GLboolean CAssimpModel::LoadModelFromFil
+ 				vboModelData.AddData(&pos, sizeof(aiVector3D));
+ 				vboModelData.AddData(&uv, sizeof(aiVector2D));
+ 				vboModelData.AddData(&normal, sizeof(aiVector3D));
++				if(sNormalTexturePath)
++				{
++					vboBumpMapData.AddData(&tangent, sizeof(glm::vec3));
++					vboBumpMapData.AddData(&bitangent, sizeof(glm::vec3));
++				}
+ 			}
+ 		}
+ 		GLint iMeshVertices = mesh->mNumVertices;
+@@ -109,22 +149,28 @@ GLboolean CAssimpModel::LoadModelFromFil
+ 		GLint a = 5;
+ 		GLint texIndex = 0;
+ 		aiString path;  // filename
+-		GLboolean ok = material->GetTexture(aiTextureType_DIFFUSE, texIndex, &path) == AI_SUCCESS;
+-		if(!ok)ok = material->GetTexture(aiTextureType_AMBIENT, texIndex, &path) == AI_SUCCESS;
+-		if(!ok)ok = material->GetTexture(aiTextureType_UNKNOWN, texIndex, &path) == AI_SUCCESS;
+-		if(!ok)ok = material->GetTexture(aiTextureType_EMISSIVE, texIndex, &path) == AI_SUCCESS;
+-		if(!ok)
+-		{
+-			string sPutToPath = sFilePath;
+-			sPutToPath = sPutToPath.substr(sPutToPath.find_last_of("//")+1);
+-			sPutToPath = sPutToPath.substr(0, sPutToPath.find_last_of("."));
+-			sPutToPath += ".jpg";
+-			path = sPutToPath.c_str();
+-		}
+ 
+ 		string sDir = GetDirectoryPath(sFilePath);
+-		string sTextureName = path.data;
+-		string sFullPath = sDir+sTextureName;
++		string sFullPath;
++		if(sTexturePath == NULL)
++		{
++			GLboolean ok = material->GetTexture(aiTextureType_DIFFUSE, texIndex, &path) == AI_SUCCESS;
++			if(!ok)ok = material->GetTexture(aiTextureType_AMBIENT, texIndex, &path) == AI_SUCCESS;
++			if(!ok)ok = material->GetTexture(aiTextureType_UNKNOWN, texIndex, &path) == AI_SUCCESS;
++			if(!ok)ok = material->GetTexture(aiTextureType_EMISSIVE, texIndex, &path) == AI_SUCCESS;
++			if(!ok)
++			{
++				string sPutToPath = sFilePath;
++				sPutToPath = sPutToPath.substr(sPutToPath.find_last_of("//")+1);
++				sPutToPath = sPutToPath.substr(0, sPutToPath.find_last_of("."));
++				sPutToPath += ".jpg";
++				path = sPutToPath.c_str();
++			}
++
++			string sTextureName = path.data;
++			sFullPath = sDir+sTextureName;
++		}
++		else sFullPath = sDir + string(sTexturePath);
+ 		GLint iTexFound = -1;
+ 		FOR(j, ESZ(tTextures))if(sFullPath == tTextures[j].GetPath())
+ 		{
+@@ -137,10 +183,19 @@ GLboolean CAssimpModel::LoadModelFromFil
+ 			CTexture tNew;
+ 			tNew.LoadTexture2D(sFullPath, true);
+ 			materialRemap[i] = ESZ(tTextures);
++			tNew.SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
+ 			tTextures.push_back(tNew);
+ 		}
+ 	}
+ 
++	if(sNormalTexturePath)
++	{
++		bHasBumpMap = true;
++		string sDir = GetDirectoryPath(sFilePath);
++		tNormalMap.LoadTexture2D(sDir + string(sNormalTexturePath));
++		tNormalMap.SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_NEAREST);
++	}
++
+ 	FOR(i, ESZ(iMeshSizes))
+ 	{
+ 		GLint iOldIndex = iMaterialIndices[i];
+@@ -150,6 +205,8 @@ GLboolean CAssimpModel::LoadModelFromFil
+ 	return bLoaded = true;
+ }
+ 
++
++
+ /*-----------------------------------------------
+ 
+ Name:	FinalizeVBO
+@@ -176,6 +233,16 @@ GLvoid CAssimpModel::FinalizeVBO()
+ 	// Normal vectors
+ 	glEnableVertexAttribArray(2);
+ 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(aiVector3D)+sizeof(aiVector2D), (void*)(sizeof(aiVector3D)+sizeof(aiVector2D)));
++
++	vboBumpMapData.BindVBO();
++	vboBumpMapData.UploadDataToGPU(GL_STATIC_DRAW);
++
++	// Tangent vector
++	glEnableVertexAttribArray(3);
++	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 2*sizeof(aiVector3D), 0);
++	// Bitangent vector
++	glEnableVertexAttribArray(4);
++	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 2*sizeof(aiVector3D), (void*)(sizeof(aiVector3D)));
+ }
+ 
+ /*-----------------------------------------------
+@@ -210,7 +277,9 @@ GLvoid CAssimpModel::RenderModel(GLenum
+ 	FOR(i, iNumMeshes)
+ 	{
+ 		GLint iMatIndex = iMaterialIndices[i];
+-		tTextures[iMatIndex].BindTexture();
++		tTextures[iMatIndex].BindTexture(0);
++		if(bHasBumpMap)
++			tNormalMap.BindTexture(1);
+ 		glDrawArrays(RenderMode, iMeshStartIndices[i], iMeshSizes[i]);
+ 	}
+ }
+\ No newline at end of file
+diff -up 24_AnimationPt_1_KeyframeMD2/assimp_model.h 25_BumpMapping/assimp_model.h
+--- 24_AnimationPt_1_KeyframeMD2/assimp_model.h	2015-12-14 14:20:08.060309790 +0200
++++ 25_BumpMapping/assimp_model.h	2015-12-14 14:20:08.064309790 +0200
+@@ -7,7 +7,7 @@
+ class CAssimpModel
+ {
+ public:
+-	GLboolean LoadModelFromFile(char* sFilePath);
++	GLboolean LoadModelFromFile(char* sFilePath, char* sTexturePath = NULL, char* sNormalTexturePath = NULL);
+ 
+ 	static GLvoid FinalizeVBO();
+ 	static GLvoid BindModelsVAO();
+@@ -17,10 +17,14 @@ public:
+ private:
+ 	GLboolean bLoaded;
+ 	static CVertexBufferObject vboModelData;
++	static CVertexBufferObject vboBumpMapData;
+ 	static GLuint uiVAO;
+ 	static vector<CTexture> tTextures;
+ 	vector<int> iMeshStartIndices;
+ 	vector<int> iMeshSizes;
+ 	vector<int> iMaterialIndices;
+ 	GLint iNumMaterials;
++
++	GLboolean bHasBumpMap;
++	CTexture tNormalMap;
+ };
+diff -up 24_AnimationPt_1_KeyframeMD2/Lin_OpenGLApp.cpp 25_BumpMapping/Lin_OpenGLApp.cpp
+--- 24_AnimationPt_1_KeyframeMD2/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.060309790 +0200
++++ 25_BumpMapping/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.064309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("24_opengl_3_3"))
++	if(!appMain.InitializeApp("25_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("24.) Animation Pt. 1 - Keyframe MD2 - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("25.) Bump Mapping - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+diff -up 24_AnimationPt_1_KeyframeMD2/particle_system_tf.cpp 25_BumpMapping/particle_system_tf.cpp
+--- 24_AnimationPt_1_KeyframeMD2/particle_system_tf.cpp	2015-12-14 14:20:08.060309790 +0200
++++ 25_BumpMapping/particle_system_tf.cpp	2015-12-14 14:20:08.064309790 +0200
+@@ -253,6 +253,16 @@ GLvoid CParticleSystemTransformFeedback:
+ 	iNumToGenerate = a_iNumToGenerate;
+ }
+ 
++GLvoid CParticleSystemTransformFeedback::SetGeneratorPosition(glm::vec3 a_vGenPosition)
++{
++	vGenPosition = a_vGenPosition;
++}
++
++GLvoid CParticleSystemTransformFeedback::SetNumberToGenerate(GLint a_iNumToGenerate)
++{
++	iNumToGenerate = a_iNumToGenerate;
++}
++
+ /*-----------------------------------------------
+ 
+ Name:	GetNumParticles
+@@ -266,4 +276,29 @@ Result:	Retrieves current number of part
+ GLint CParticleSystemTransformFeedback::GetNumParticles()
+ {
+ 	return iNumParticles;
++}
++
++/*-----------------------------------------------
++
++Name:	ReleaseParticleSystem
++
++Params:	none
++
++Result:	Releases particle system and all its data.
++
++/*---------------------------------------------*/
++
++GLboolean CParticleSystemTransformFeedback::ReleaseParticleSystem()
++{
++	if(!bInitialized)return false;
++
++	spRenderParticles.DeleteProgram();
++	spUpdateParticles.DeleteProgram();
++	glDeleteVertexArrays(2, uiVAO);
++	glDeleteBuffers(2, uiParticleBuffer);
++	glDeleteTransformFeedbacks(1, &uiTransformFeedbackBuffer);
++
++	bInitialized = false;
++
++	return true;
+ }
+\ No newline at end of file
+diff -up 24_AnimationPt_1_KeyframeMD2/particle_system_tf.h 25_BumpMapping/particle_system_tf.h
+--- 24_AnimationPt_1_KeyframeMD2/particle_system_tf.h	2015-12-14 14:20:08.060309790 +0200
++++ 25_BumpMapping/particle_system_tf.h	2015-12-14 14:20:08.064309790 +0200
+@@ -39,14 +39,16 @@ class CParticleSystemTransformFeedback
+ {
+ public:
+ 	GLboolean InitalizeParticleSystem();
++	GLboolean ReleaseParticleSystem();
+ 
+ 	GLvoid RenderParticles();
+ 	GLvoid UpdateParticles(GLfloat fTimePassed);
+ 
+ 	GLvoid SetGeneratorProperties(glm::vec3 a_vGenPosition, glm::vec3 a_vGenVelocityMin, glm::vec3 a_vGenVelocityMax, glm::vec3 a_vGenGravityVector, glm::vec3 a_vGenColor, GLfloat a_fGenLifeMin, GLfloat a_fGenLifeMax, GLfloat a_fGenSize, GLfloat fEvery, GLint a_iNumToGenerate);
++	GLvoid SetGeneratorPosition(glm::vec3 a_vGenPosition);
++	GLvoid SetNumberToGenerate(GLint a_iNumToGenerate);
+ 
+ 	GLvoid ClearAllParticles();
+-	GLboolean ReleaseParticleSystem();
+ 
+ 	GLint GetNumParticles();
+ 
+diff -up 24_AnimationPt_1_KeyframeMD2/RenderScene.cpp 25_BumpMapping/RenderScene.cpp
+--- 24_AnimationPt_1_KeyframeMD2/RenderScene.cpp	2015-12-14 14:20:08.060309790 +0200
++++ 25_BumpMapping/RenderScene.cpp	2015-12-14 14:20:08.064309790 +0200
+@@ -34,7 +34,7 @@ CFlyingCamera cCamera;
+ CDirectionalLight dlSun;
+ 
+ CMaterial matShiny;
+-CAssimpModel amModels[1];
++CAssimpModel amModels[2];
+ 
+ CMultiLayeredHeightmap hmWorld;
+ 
+@@ -43,19 +43,10 @@ GLint iTorusFaces;
+ GLboolean bDisplayNormals = false; // Do not display normals by default
+ 
+ CParticleSystemTransformFeedback psMainParticleSystem;
+-CMD2Model md2Models[4];
++CMD2Model md2Models[1];
+ animState_t animationStateMain;
+-GLint iCurrentModel = 0;
+-string sModelNames[] = 
+-{
+-	"Dr. Freak",
+-	"Blade",
+-	"Samourai",
+-	"HoboGoblin"
+-};
+ 
+-animState_t animationStateArmy[15];
+-glm::vec3 vArmyPosition[15];
++GLint bEnableBumpMap = 1;
+ 
+ /*-----------------------------------------------
+ 
+@@ -107,14 +98,15 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	ftFont.LoadSystemFont("arial.ttf", 32);
+ 	ftFont.SetShaderProgram(&spFont2D);
+ 	
+-	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
++	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 75.0f, 0.1f);
+ 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+ 	sbMainSkybox.LoadSkybox("data/skyboxes/clouds/", "clouds_front.jpg", "clouds_back.jpg", "clouds_right.jpg", "clouds_left.jpg", "clouds_top.jpg", "clouds_top.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f, 0);
+ 
+-	amModels[0].LoadModelFromFile("data/models/treasure_chest_obj/treasure_chest.obj");
++	amModels[0].LoadModelFromFile("data/models/ColRuins/Ruins.obj", "DiffuseMap.tga", "NormalMap.tga");
++	amModels[1].LoadModelFromFile("data/models/StoneWall/stone_wall.obj", "stone_wall.bmp", "stone_wall_normal_map.bmp");
+ 	
+ 	CAssimpModel::FinalizeVBO();
+ 	CMultiLayeredHeightmap::LoadTerrainShaderProgram();
+@@ -130,7 +122,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 		glm::vec3(-10, 0, -10), // Minimal velocity
+ 		glm::vec3(10, 20, 10), // Maximal velocity
+ 		glm::vec3(0, -10, 0), // Gravity force applied to particles
+-		glm::vec3(1.0f, 0.5f, 0.0f), // Color (light blue)
++		glm::vec3(0.0f, 0.5f, 1.0f), // Color (light blue)
+ 		1.5f, // Minimum lifetime in seconds
+ 		3.0f, // Maximum lifetime in seconds
+ 		0.25f, // Rendered size
+@@ -138,19 +130,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 		30); // And spawn 30 particles
+ 
+ 	md2Models[0].LoadModel("data/models/drfreak/drfreak.md2");
+-	md2Models[1].LoadModel("data/models/blade/Blade.md2");
+-	md2Models[2].LoadModel("data/models/samourai/Samourai.md2");
+-	md2Models[3].LoadModel("data/models/HoboGoblin/Model.MD2");
+ 	animationStateMain = md2Models[0].StartAnimation(STAND);
+-
+-	FOR(i, 3)FOR(j, 5)
+-	{
+-		animationStateArmy[i*5 + j] = md2Models[1].StartAnimation(rand()% 2 ? ATTACK : (rand()%2 ? STAND : SALUTE));
+-		animationStateArmy[i*5 + j].curr_time = -(i+j)*0.15f;
+-
+-		vArmyPosition[i*5 + j] = glm::vec3(80.0f + j*15.0f, 0, -110+i*15.0f);
+-		vArmyPosition[i*5 + j].y = hmWorld.GetHeightFromRealVector(vArmyPosition[i*5 + j])+8.0f;
+-	}
+ }
+ 
+ /*-----------------------------------------------
+@@ -198,10 +178,11 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0));
+ 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+ 	// This values set the darkness of whole scene, that's why such name of variable :D
+-	static GLfloat fAngleOfDarkness = 45.0f;
++	static GLfloat fAngleOfDarkness = 189.18f;
+ 	// You can play with direction of light with '+' and '-' key
+ 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
+ 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
++
+ 	// Set the directional vector of light
+ 	dlSun.vDirection = glm::vec3(-sin(fAngleOfDarkness*3.1415f/180.0f), -cos(fAngleOfDarkness*3.1415f/180.0f), 0.0f);
+ 	dlSun.SetUniformData(&spMain, "sunLight");
+@@ -227,35 +208,55 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	spMD2Animation.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 
+-	md2Models[iCurrentModel].RenderModel(&animationStateMain);
+-	md2Models[iCurrentModel].UpdateAnimation(&animationStateMain, appMain.sof(1.0f));
++	md2Models[0].RenderModel(&animationStateMain);
++	md2Models[0].UpdateAnimation(&animationStateMain, appMain.sof(1.0f));
+ 
+-	FOR(i, 3)FOR(j, 5)
+-	{
+-		mModel = glm::translate(glm::mat4(1.0), vArmyPosition[i*5 + j]);
+-		mModel = glm::rotate(mModel, 270.0f, glm::vec3(0, 1, 0));
+-		mModel = glm::rotate(mModel, -90.0f, glm::vec3(1, 0, 0));
++	CAssimpModel::BindModelsVAO();
+ 
+-		mModel = glm::scale(mModel, glm::vec3(0.35f, 0.35f, 0.35f));
++	spMain.UseProgram();
++	
++	// This line enables bump mapping calculations in our main shader program
++	spMain.SetUniform("bEnableBumpMap", bEnableBumpMap);
++	// We just tell the shader, that texture unit 1 has normal map
++	spMain.SetUniform("gNormalMap", 1);
++
++	GLfloat fRuinsScaleFactor = 0.85f;
++
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-150.0f, 0.1f, -150));
++	//mModel = glm::rotate(mModel, fAngleOfDarkness, glm::vec3(0, 1, 0));
++	mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 
+-		spMD2Animation.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++	amModels[0].RenderModel();
+ 
+-		md2Models[1].RenderModel(&animationStateArmy[i*5 + j]);
+-		md2Models[1].UpdateAnimation(&animationStateArmy[i*5 + j], appMain.sof(1.0f));
+-	}
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(150.0f, 0.1f, -150));
++	mModel = glm::rotate(mModel, -90.0f, glm::vec3(0, 1, 0));
++	mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 
+-	CAssimpModel::BindModelsVAO();
++	amModels[0].RenderModel();
+ 
+-	spMain.UseProgram();
+-	
+-	// ... and a treasure chest
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(150.0f, 0.1f, 150));
++	mModel = glm::rotate(mModel, -180.0f, glm::vec3(0, 1, 0));
++	mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++	amModels[0].RenderModel();
+ 
+-	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-120.0f, 25.1f, -33));
+-	mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
+ 
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-150.0f, 0.1f, 150));
++	mModel = glm::rotate(mModel, -270.0f, glm::vec3(0, 1, 0));
++	mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
+ 	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
+ 	amModels[0].RenderModel();
+ 
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(110.0f, 40.1f, -60));
++	mModel = glm::scale(mModel, glm::vec3(3.0f, 2.0f, 2.5f));
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++	amModels[1].RenderModel();
++
+ 	// Now we're going to render terrain
+ 
+ 	CShaderProgram* spTerrain = CMultiLayeredHeightmap::GetShaderProgram();
+@@ -296,10 +297,54 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", hmWorld.GetScaleMatrix());
+ 		hmWorld.RenderHeightmapForNormals();
++
++		CAssimpModel::BindModelsVAO();
++
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-150.0f, 0.1f, -150));
++		//mModel = glm::rotate(mModel, fAngleOfDarkness, glm::vec3(0, 1, 0));
++		mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++		spNormalDisplayer.SetUniform("fNormalLength", 10.0f);
++
++		amModels[0].RenderModel(GL_POINTS);
++
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(150.0f, 0.1f, -150));
++		mModel = glm::rotate(mModel, -90.0f, glm::vec3(0, 1, 0));
++		mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++		amModels[0].RenderModel(GL_POINTS);
++
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(150.0f, 0.1f, 150));
++		mModel = glm::rotate(mModel, -180.0f, glm::vec3(0, 1, 0));
++		mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++		amModels[0].RenderModel(GL_POINTS);
++
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-150.0f, 0.1f, 150));
++		mModel = glm::rotate(mModel, -270.0f, glm::vec3(0, 1, 0));
++		mModel = glm::scale(mModel, glm::vec3(fRuinsScaleFactor, fRuinsScaleFactor, fRuinsScaleFactor));
++		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++		amModels[0].RenderModel(GL_POINTS);
++
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-20.0f, 25.1f, -33));
++		mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
++		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-20.0f, 25.1f, -33));
++		mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
++		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++
++		amModels[1].RenderModel(GL_POINTS);
+ 	}
+ 
+ 	// Render particles
+ 
++	psMainParticleSystem.SetGeneratorPosition(vModelPosition);
++
+ 	tTextures[6].BindTexture(); 
+ 
+ 	psMainParticleSystem.SetMatrices(oglControl->GetProjectionMatrix(), cCamera.vEye, cCamera.vView, cCamera.vUp);
+@@ -322,8 +367,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	ftFont.PrintFormatted(20, h-55, 20, "Particles: %d", psMainParticleSystem.GetNumParticles());
+ 	ftFont.PrintFormatted(20, h-80, 20, "Displaying Normals: %s (Press 'N' to toggle)", bDisplayNormals ? "Yes" : "Nope");
+ 
+-	ftFont.PrintFormatted(20, h-130, 20, "Current Model: %s (Press 'Q' and 'E' to change)", sModelNames[iCurrentModel].c_str());
+-	ftFont.PrintFormatted(20, h-155, 20, "Current Animation: %s (Press 'Z' and 'X' to change)", sMD2AnimationNames[atCurrentAnimation].c_str());
++	ftFont.PrintFormatted(20, h-130, 20, "Bump Mapping: %s (Press 'B' to toggle)", bEnableBumpMap ? "Enabled" : "Disabled");
+ 
+ 	// Handle input
+ 
+@@ -339,7 +383,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 		vModelPosition += vMoveVector*appMain.sof(30.0f);
+ 
+-		if(animationStateMain.type != RUN)animationStateMain = md2Models[iCurrentModel].StartAnimation(RUN);
++		if(animationStateMain.type != RUN)animationStateMain = md2Models[0].StartAnimation(RUN);
+ 		bRunning = true;
+ 	}
+ 	if(Keys::Key(VK_DOWN))
+@@ -351,43 +395,34 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 		vModelPosition -= vMoveVector*appMain.sof(30.0f);
+ 
+-		if(animationStateMain.type != RUN)animationStateMain = md2Models[iCurrentModel].StartAnimation(RUN);
++		if(animationStateMain.type != RUN)animationStateMain = md2Models[0].StartAnimation(RUN);
+ 		bRunning = true;
+ 	}
+ 	if(Keys::Key(VK_LEFT))
+ 		fModelRotation += appMain.sof(135.0f);
+ 	if(Keys::Key(VK_RIGHT))
+ 		fModelRotation -= appMain.sof(135.0f);
+-	if(Keys::Onekey(VK_RCONTROL))animationStateMain = md2Models[iCurrentModel].StartAnimation(ATTACK);
+ 
+ 	vModelPosition.y = hmWorld.GetHeightFromRealVector(vModelPosition)+8.0f;
+ 
+-	if(!bRunning && bLastFrameRunning)animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++	if(!bRunning && bLastFrameRunning)animationStateMain = md2Models[0].StartAnimation(atCurrentAnimation);
+ 	bLastFrameRunning = bRunning;
+ 
++	psMainParticleSystem.SetNumberToGenerate(bRunning ? 30 : 0);
++
+ 	if(Keys::Onekey('Z'))
+ 	{
+ 		atCurrentAnimation = animType_t( (int(atCurrentAnimation) + int(MAX_ANIMATIONS - 1) - 1) % int(MAX_ANIMATIONS - 1));
+-		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++		animationStateMain = md2Models[0].StartAnimation(atCurrentAnimation);
+ 	}
+ 
+ 	if(Keys::Onekey('X'))
+ 	{
+ 		atCurrentAnimation = animType_t( (int(atCurrentAnimation) + 1) % int(MAX_ANIMATIONS - 1));
+-		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++		animationStateMain = md2Models[0].StartAnimation(atCurrentAnimation);
+ 	}
+ 
+-	if(Keys::Onekey('Q'))
+-	{
+-		iCurrentModel = (iCurrentModel + 3)%4;
+-		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
+-	}
+-
+-	if(Keys::Onekey('E'))
+-	{
+-		iCurrentModel = (iCurrentModel + 1)%4;
+-		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
+-	}
++	if(Keys::Onekey('B'))bEnableBumpMap = 1 - bEnableBumpMap;
+ 
+ 	if(Keys::Onekey('N'))bDisplayNormals = !bDisplayNormals;
+ 
+@@ -425,4 +460,6 @@ GLvoid ReleaseScene(GLvoid* lpParam)
+ 
+ 	hmWorld.ReleaseHeightmap();
+ 	CMultiLayeredHeightmap::ReleaseTerrainShaderProgram();
++
++	psMainParticleSystem.ReleaseParticleSystem();
+ }
+\ No newline at end of file

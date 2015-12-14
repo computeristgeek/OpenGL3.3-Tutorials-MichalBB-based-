@@ -1,0 +1,3197 @@
+diff -up 15_OBJModelLoader/dirLight.cpp 16_RenderingToATexture/dirLight.cpp
+--- 15_OBJModelLoader/dirLight.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/dirLight.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -19,7 +19,7 @@ CDirectionalLight::CDirectionalLight(glm
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setUniformData
++Name:	SetUniformData
+ 
+ Params:	spProgram - shader program
+ 		sLightVarName - name of directional light variable
+@@ -28,10 +28,10 @@ Result:	Sets all directional light data.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CDirectionalLight::setUniformData(CShaderProgram *spProgram, std::string sLightVarName)
++GLvoid CDirectionalLight::SetUniformData(CShaderProgram *spProgram, std::string sLightVarName)
+ {
+-	spProgram->setUniform(sLightVarName+".vColor", vColor);
+-	spProgram->setUniform(sLightVarName+".vDirection", vDirection);
++	spProgram->SetUniform(sLightVarName+".vColor", vColor);
++	spProgram->SetUniform(sLightVarName+".vDirection", vDirection);
+ 
+-	spProgram->setUniform(sLightVarName+".fAmbient", fAmbient);
++	spProgram->SetUniform(sLightVarName+".fAmbient", fAmbient);
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/dirLight.h 16_RenderingToATexture/dirLight.h
+--- 15_OBJModelLoader/dirLight.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/dirLight.h	2015-12-14 14:20:08.032309790 +0200
+@@ -4,10 +4,10 @@
+ 
+ /********************************
+ 
+-Class:	CPointLight
++Class:		CPointLight
+ 
+-Purpose: Support class for adding
+-		directional lights to scene.
++Purpose:	Support class for adding
++			directional lights to scene.
+ 
+ ********************************/
+ 
+@@ -19,7 +19,7 @@ public:
+ 
+ 	GLfloat fAmbient;
+ 
+-	GLvoid setUniformData(CShaderProgram* spProgram, string sLightVarName);
++	GLvoid SetUniformData(CShaderProgram* spProgram, string sLightVarName);
+ 
+ 	CDirectionalLight();
+ 	CDirectionalLight(glm::vec3 a_vColor, glm::vec3 a_vDirection, GLfloat a_fAmbient);
+diff -up 15_OBJModelLoader/flyingCamera.cpp 16_RenderingToATexture/flyingCamera.cpp
+--- 15_OBJModelLoader/flyingCamera.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/flyingCamera.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -5,7 +5,7 @@
+ 
+ #include <glm/gtx/rotate_vector.hpp>
+ 
+-const GLfloat PI = atan(1.0)*4.0;
++const GLfloat PI = float(atan(1.0)*4.0);
+ 
+ CFlyingCamera::CFlyingCamera()
+ {
+@@ -34,7 +34,7 @@ Result:	Checks for moving of mouse and r
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFlyingCamera::rotateWithMouse()
++GLvoid CFlyingCamera::RotateWithMouse()
+ {
+ 	GetCursorPos(&pCur);
+ 	RECT rRect; GetWindowRect(appMain.hWnd, &rRect);
+@@ -55,7 +55,7 @@ GLvoid CFlyingCamera::rotateWithMouse()
+ 		glm::vec3 vAxis = glm::cross(vView-vEye, vUp);
+ 		vAxis = glm::normalize(vAxis);
+ 		GLfloat fAngle = deltaY;
+-		GLfloat fNewAngle = fAngle+getAngleX();
++		GLfloat fNewAngle = fAngle+GetAngleX();
+ 		if(fNewAngle > -89.80f && fNewAngle < 89.80f)
+ 		{
+ 			vView -= vEye;
+@@ -68,7 +68,7 @@ GLvoid CFlyingCamera::rotateWithMouse()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getAngleY
++Name:	GetAngleY
+ 
+ Params:	none
+ 
+@@ -77,7 +77,7 @@ Result:	Gets Y angle of camera (head tur
+ 
+ /*---------------------------------------------*/
+ 
+-GLfloat CFlyingCamera::getAngleY()
++GLfloat CFlyingCamera::GetAngleY()
+ {
+ 	glm::vec3 vDir = vView-vEye; vDir.y = 0.0f;
+ 	glm::normalize(vDir);
+@@ -88,16 +88,16 @@ GLfloat CFlyingCamera::getAngleY()
+ 
+ /*-----------------------------------------------
+ 
+-Name:		getAngleX
++Name:	GetAngleX
+ 
+ Params:	none
+ 
+ Result:	Gets X angle of camera (head turning up
+-			and down).
++		and down).
+ 
+ /*---------------------------------------------*/
+ 
+-GLfloat CFlyingCamera::getAngleX()
++GLfloat CFlyingCamera::GetAngleX()
+ {
+ 	glm::vec3 vDir = vView-vEye;
+ 	vDir = glm::normalize(vDir);
+@@ -110,18 +110,18 @@ GLfloat CFlyingCamera::getAngleX()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setMovingKeys
++Name:	SetMovingKeys
+ 
+-Params:	a_iForw - move forward key
+-		a_iBack - move backward key
+-		a_iLeft - strafe left key
+-		a_iRight - strafe right key
++Params:	a_iForw - move forward Key
++		a_iBack - move backward Key
++		a_iLeft - strafe left Key
++		a_iRight - strafe right Key
+ 
+-Result:	Sets keys for moving camera.
++Result:	Sets Keys for moving camera.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFlyingCamera::setMovingKeys(GLint a_iForw, GLint a_iBack, GLint a_iLeft, GLint a_iRight)
++GLvoid CFlyingCamera::SetMovingKeys(GLint a_iForw, GLint a_iBack, GLint a_iLeft, GLint a_iRight)
+ {
+ 	iForw = a_iForw;
+ 	iBack = a_iBack;
+@@ -131,7 +131,7 @@ GLvoid CFlyingCamera::setMovingKeys(GLin
+ 
+ /*-----------------------------------------------
+ 
+-Name:	update
++Name:	Update
+ 
+ Params:	none
+ 
+@@ -140,9 +140,9 @@ Result:	Performs updates of camera - mov
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFlyingCamera::update()
++GLvoid CFlyingCamera::Update()
+ {
+-	rotateWithMouse();
++	RotateWithMouse();
+ 
+ 	// Get view direction
+ 	glm::vec3 vMove = vView-vEye;
+@@ -156,16 +156,16 @@ GLvoid CFlyingCamera::update()
+ 	GLint iMove = 0;
+ 	glm::vec3 vMoveBy;
+ 	// Get vector of move
+-	if(Keys::key(iForw))vMoveBy += vMove*appMain.sof(1.0f);
+-	if(Keys::key(iBack))vMoveBy -= vMove*appMain.sof(1.0f);
+-	if(Keys::key(iLeft))vMoveBy -= vStrafe*appMain.sof(1.0f);
+-	if(Keys::key(iRight))vMoveBy += vStrafe*appMain.sof(1.0f);
++	if(Keys::Key(iForw))vMoveBy += vMove*appMain.sof(1.0f);
++	if(Keys::Key(iBack))vMoveBy -= vMove*appMain.sof(1.0f);
++	if(Keys::Key(iLeft))vMoveBy -= vStrafe*appMain.sof(1.0f);
++	if(Keys::Key(iRight))vMoveBy += vStrafe*appMain.sof(1.0f);
+ 	vEye += vMoveBy; vView += vMoveBy;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	resetMouse
++Name:	ResetMouse
+ 
+ Params:	none
+ 
+@@ -174,7 +174,7 @@ Result:	Sets mouse cursor back to the ce
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFlyingCamera::resetMouse()
++GLvoid CFlyingCamera::ResetMouse()
+ {
+ 	RECT rRect; GetWindowRect(appMain.hWnd, &rRect);
+ 	GLint iCentX = (rRect.left+rRect.right)>>1,
+@@ -184,7 +184,7 @@ GLvoid CFlyingCamera::resetMouse()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	look
++Name:	Look
+ 
+ Params:	none
+ 
+@@ -193,7 +193,7 @@ Result:	Returns proper modelview matrix
+ 
+ /*---------------------------------------------*/
+ 
+-glm::mat4 CFlyingCamera::look()
++glm::mat4 CFlyingCamera::Look()
+ {
+ 	return glm::lookAt(vEye, vView, vUp);
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/flyingCamera.h 16_RenderingToATexture/flyingCamera.h
+--- 15_OBJModelLoader/flyingCamera.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/flyingCamera.h	2015-12-14 14:20:08.032309790 +0200
+@@ -8,15 +8,15 @@ public:
+ 	GLfloat fSensitivity; // How many degrees to rotate per pixel moved by mouse (nice value is 0.10)
+ 
+ 	// Main functions
+-	GLvoid rotateWithMouse();
+-	GLvoid update();
+-	glm::mat4 look();
++	GLvoid RotateWithMouse();
++	GLvoid Update();
++	glm::mat4 Look();
+ 
+-	GLvoid setMovingKeys(GLint a_iForw, GLint a_iBack, GLint a_iLeft, GLint a_iRight);
+-	GLvoid resetMouse();
++	GLvoid SetMovingKeys(GLint a_iForw, GLint a_iBack, GLint a_iLeft, GLint a_iRight);
++	GLvoid ResetMouse();
+ 
+ 	// Functions that get viewing angles
+-	GLfloat getAngleX(), getAngleY();
++	GLfloat GetAngleX(), GetAngleY();
+ 
+ 	// Constructors
+ 	CFlyingCamera();
+diff -up 15_OBJModelLoader/fog.cpp 16_RenderingToATexture/fog.cpp
+--- 15_OBJModelLoader/fog.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/fog.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -26,7 +26,7 @@ CFogParameters::CFogParameters(glm::vec4
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setUniformData
++Name:	SetUniformData
+ 
+ Params:	spProgram - shader program
+ 		sFogVarName - name of fog parameters variable
+@@ -35,13 +35,13 @@ Result:	Sets all fog parameters.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFogParameters::setUniformData(CShaderProgram *spProgram, std::string sFogVarName)
++GLvoid CFogParameters::SetUniformData(CShaderProgram *spProgram, std::string sFogVarName)
+ {
+-	spProgram->setUniform(sFogVarName+".vFogColor", vFogColor);
++	spProgram->SetUniform(sFogVarName+".vFogColor", vFogColor);
+ 
+-	spProgram->setUniform(sFogVarName+".fStart", fStart);
+-	spProgram->setUniform(sFogVarName+".fEnd", fEnd);
+-	spProgram->setUniform(sFogVarName+".fDensity", fDensity);
++	spProgram->SetUniform(sFogVarName+".fStart", fStart);
++	spProgram->SetUniform(sFogVarName+".fEnd", fEnd);
++	spProgram->SetUniform(sFogVarName+".fDensity", fDensity);
+ 
+-	spProgram->setUniform(sFogVarName+".iEquation", iEquation);
++	spProgram->SetUniform(sFogVarName+".iEquation", iEquation);
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/fog.h 16_RenderingToATexture/fog.h
+--- 15_OBJModelLoader/fog.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/fog.h	2015-12-14 14:20:08.032309790 +0200
+@@ -8,10 +8,10 @@
+ 
+ /********************************
+ 
+-Class:	CFogParameters
++Class:		CFogParameters
+ 
+-Purpose: Support class for managing
+-		fog in the scene.
++Purpose:	Support class for managing
++			fog in the scene.
+ 
+ ********************************/
+ 
+@@ -26,7 +26,7 @@ public:
+ 
+ 	GLint iEquation;
+ 
+-	GLvoid setUniformData(CShaderProgram* spProgram, string sFogVarName);
++	GLvoid SetUniformData(CShaderProgram* spProgram, string sFogVarName);
+ 
+ 	CFogParameters();
+ 	CFogParameters(glm::vec4 a_vFogColor, GLfloat a_fStart, GLfloat a_fEnd, GLfloat a_fDensity, GLint a_iEquation);
+Only in 16_RenderingToATexture/: framebuffer.cpp
+Only in 16_RenderingToATexture/: framebuffer.h
+diff -up 15_OBJModelLoader/freeTypeFont.cpp 16_RenderingToATexture/freeTypeFont.cpp
+--- 15_OBJModelLoader/freeTypeFont.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/freeTypeFont.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -19,7 +19,7 @@ CFreeTypeFont::CFreeTypeFont()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	createChar
++Name:	CreateChar
+ 
+ Params:	iIndex - character index in Unicode.
+ 
+@@ -30,7 +30,7 @@ Result:	Creates one single character (it
+ 
+ inline GLint next_p2(GLint n){GLint res = 1; while(res < n)res <<= 1; return res;}
+ 
+-GLvoid CFreeTypeFont::createChar(GLint iIndex)
++GLvoid CFreeTypeFont::CreateChar(GLint iIndex)
+ {
+ 	FT_Load_Glyph(ftFace, FT_Get_Char_Index(ftFace, iIndex), FT_LOAD_DEFAULT);
+ 
+@@ -47,11 +47,11 @@ GLvoid CFreeTypeFont::createChar(GLint i
+  
+ 	// And create a texture from it
+ 
+-	tCharTextures[iIndex].createFromData(bData, iTW, iTH, 8, GL_DEPTH_COMPONENT, false);
+-	tCharTextures[iIndex].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR);
++	tCharTextures[iIndex].CreateFromData(bData, iTW, iTH, 8, GL_DEPTH_COMPONENT, false);
++	tCharTextures[iIndex].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR);
+ 
+-	tCharTextures[iIndex].setSamplerParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+-	tCharTextures[iIndex].setSamplerParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++	tCharTextures[iIndex].SetSamplerParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++	tCharTextures[iIndex].SetSamplerParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 
+ 	// Calculate glyph data
+ 	iAdvX[iIndex] = ftFace->glyph->advance.x>>6;
+@@ -77,15 +77,15 @@ GLvoid CFreeTypeFont::createChar(GLint i
+ 	// Add this GLchar to VBO
+ 	FOR(i, 4)
+ 	{
+-		vboData.addData(&vQuad[i], sizeof(glm::vec2));
+-		vboData.addData(&vTexQuad[i], sizeof(glm::vec2));
++		vboData.AddData(&vQuad[i], sizeof(glm::vec2));
++		vboData.AddData(&vTexQuad[i], sizeof(glm::vec2));
+ 	}
+ 	delete[] bData;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	loadFont
++Name:	LoadFont
+ 
+ Params:	sFile - path to font file
+ 		iPXSize - desired font pixel size
+@@ -94,7 +94,7 @@ Result:	Loads whole font.
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CFreeTypeFont::loadFont(string sFile, GLint iPXSize)
++GLboolean CFreeTypeFont::LoadFont(string sFile, GLint iPXSize)
+ {
+ 	BOOL bError = FT_Init_FreeType(&ftLib);
+ 	
+@@ -105,16 +105,16 @@ GLboolean CFreeTypeFont::loadFont(string
+ 
+ 	glGenVertexArrays(1, &uiVAO);
+ 	glBindVertexArray(uiVAO);
+-	vboData.createVBO();
+-	vboData.bindVBO();
++	vboData.CreateVBO();
++	vboData.BindVBO();
+ 
+-	FOR(i, 128)createChar(i);
++	FOR(i, 128)CreateChar(i);
+ 	bLoaded = true;
+ 
+ 	FT_Done_Face(ftFace);
+ 	FT_Done_FreeType(ftLib);
+ 	
+-	vboData.uploadDataToGPU(GL_STATIC_DRAW);
++	vboData.UploadDataToGPU(GL_STATIC_DRAW);
+ 	glEnableVertexAttribArray(0);
+ 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2)*2, 0);
+ 	glEnableVertexAttribArray(1);
+@@ -124,29 +124,49 @@ GLboolean CFreeTypeFont::loadFont(string
+ 
+ /*-----------------------------------------------
+ 
+-Name:	loadSystemFont
++Name:	LoadSystemFont
+ 
+ Params:	sName - system font name
+-iPXSize - desired font pixel size
++		iPXSize - desired font pixel size
+ 
+ Result:	Loads system font (from system Fonts
+ 		directory).
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CFreeTypeFont::loadSystemFont(string sName, GLint iPXSize)
++GLboolean CFreeTypeFont::LoadSystemFont(string sName, GLint iPXSize)
+ {
+ 	GLchar buf[512]; GetWindowsDirectory(buf, 512);
+ 	string sPath = buf;
+ 	sPath += "/Fonts/";
+ 	sPath += sName;
+ 
+-	return loadFont(sPath, iPXSize);
++	return LoadFont(sPath, iPXSize);
++}
++
++/*-----------------------------------------------
++
++Name:	GetTextWidth
++
++Params:	sText - text to get width of
++		iPXSize - it's printed size
++
++Result:	Returns width as number of pixels the
++		text will occupy.
++
++/*---------------------------------------------*/
++
++GLint CFreeTypeFont::GetTextWidth(string sText, GLint iPXSize)
++{
++	GLint iResult = 0;
++	FOR(i, ESZ(sText))iResult += iAdvX[sText[i]];
++
++	return iResult*iPXSize/iLoadedPixelSize;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	print
++Name:	Print
+ 
+ Params:	sText - text to print
+ 		x, y - 2D position
+@@ -157,12 +177,12 @@ Result:	Prints text at specified positio
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFreeTypeFont::print(string sText, GLint x, GLint y, GLint iPXSize)
++GLvoid CFreeTypeFont::Print(string sText, GLint x, GLint y, GLint iPXSize)
+ {
+ 	if(!bLoaded)return;
+ 
+ 	glBindVertexArray(uiVAO);
+-	shShaderProgram->setUniform("gSampler", 0);
++	shShaderProgram->SetUniform("gSampler", 0);
+ 	glEnable(GL_BLEND);
+ 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ 	GLint iCurX = x, iCurY = y;
+@@ -180,10 +200,10 @@ GLvoid CFreeTypeFont::print(string sText
+ 		iCurX += iBearingX[iIndex]*iPXSize/iLoadedPixelSize;
+ 		if(sText[i] != ' ')
+ 		{
+-			tCharTextures[iIndex].bindTexture();
++			tCharTextures[iIndex].BindTexture();
+ 			glm::mat4 mModelView = glm::translate(glm::mat4(1.0f), glm::vec3(float(iCurX), float(iCurY), 0.0f));
+ 			mModelView = glm::scale(mModelView, glm::vec3(fScale));
+-			shShaderProgram->setUniform("matrices.modelViewMatrix", mModelView);
++			shShaderProgram->SetUniform("matrices.modelViewMatrix", mModelView);
+ 			// Draw character
+ 			glDrawArrays(GL_TRIANGLE_STRIP, iIndex*4, 4);
+ 		}
+@@ -195,30 +215,30 @@ GLvoid CFreeTypeFont::print(string sText
+ 
+ /*-----------------------------------------------
+ 
+-Name:		printFormatted
++Name:	PrintFormatted
+ 
+ Params:	x, y - 2D position
+-			iPXSize - printed text size
+-			sText - text to print
++		iPXSize - printed text size
++		sText - text to print
+ 
+ Result:	Prints formatted text at specified position
+-			with specified pixel size.
++		with specified pixel size.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFreeTypeFont::printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
++GLvoid CFreeTypeFont::PrintFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
+ {
+ 	GLchar buf[512];
+ 	va_list ap;
+ 	va_start(ap, sText);
+ 	vsprintf(buf, sText, ap);
+ 	va_end(ap);
+-	print(buf, x, y, iPXSize);
++	Print(buf, x, y, iPXSize);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:		releaseFont
++Name:	DeleteFont
+ 
+ Params:	none
+ 
+@@ -226,16 +246,16 @@ Result:	Deletes all font textures.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFreeTypeFont::releaseFont()
++GLvoid CFreeTypeFont::DeleteFont()
+ {
+-	FOR(i, 128)tCharTextures[i].releaseTexture();
+-	vboData.releaseVBO();
++	FOR(i, 128)tCharTextures[i].DeleteTexture();
++	vboData.DeleteVBO();
+ 	glDeleteVertexArrays(1, &uiVAO);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setShaderProgram
++Name:	SetShaderProgram
+ 
+ Params:	a_shShaderProgram - shader program
+ 
+@@ -243,7 +263,7 @@ Result:	Sets shader program that font us
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CFreeTypeFont::setShaderProgram(CShaderProgram* a_shShaderProgram)
++GLvoid CFreeTypeFont::SetShaderProgram(CShaderProgram* a_shShaderProgram)
+ {
+ 	shShaderProgram = a_shShaderProgram;
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/freeTypeFont.h 16_RenderingToATexture/freeTypeFont.h
+--- 15_OBJModelLoader/freeTypeFont.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/freeTypeFont.h	2015-12-14 14:20:08.036309790 +0200
+@@ -9,31 +9,31 @@
+ 
+ /********************************
+ 
+-Class:	CFreeTypeFont
++Class:		CFreeTypeFont
+ 
+-Purpose: Wraps FreeType fonts and
+-		 their usage with OpenGL.
++Purpose:	Wraps FreeType fonts and
++			their usage with OpenGL.
+ 
+ ********************************/
+ 
+ class CFreeTypeFont
+ {
+ public:
+-	GLboolean loadFont(string sFile, GLint iPXSize);
+-	GLboolean loadSystemFont(string sName, GLint iPXSize);
++	GLboolean LoadFont(string sFile, GLint iPXSize);
++	GLboolean LoadSystemFont(string sName, GLint iPXSize);
+ 
+-	GLint getTextWidth(string sText, GLint iPXSize);
++	GLint GetTextWidth(string sText, GLint iPXSize);
+ 
+-	GLvoid print(string sText, GLint x, GLint y, GLint iPXSize = -1);
+-	GLvoid printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...);
++	GLvoid Print(string sText, GLint x, GLint y, GLint iPXSize = -1);
++	GLvoid PrintFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...);
+ 
+-	GLvoid releaseFont();
++	GLvoid DeleteFont();
+ 
+-	GLvoid setShaderProgram(CShaderProgram* a_shShaderProgram);
++	GLvoid SetShaderProgram(CShaderProgram* a_shShaderProgram);
+ 
+ 	CFreeTypeFont();
+ private:
+-	GLvoid createChar(GLint iIndex);
++	GLvoid CreateChar(GLint iIndex);
+ 
+ 	CTexture tCharTextures[256];
+ 	GLint iAdvX[256], iAdvY[256];
+Only in 15_OBJModelLoader/: geometry.h
+diff -up 15_OBJModelLoader/Lin_OpenGLApp.cpp 16_RenderingToATexture/Lin_OpenGLApp.cpp
+--- 15_OBJModelLoader/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 16_RenderingToATexture/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -8,40 +8,40 @@ GLchar Keys::kp[256] = {0};
+ 
+ /*-----------------------------------------------
+ 
+-Name:	key
++Name:	Key
+ 
+-Params:	iKey - virtual key code
++Params:	iKey - virtual Key code
+ 
+-Result:	Return true if key is pressed.
++Result:	Return true if Key is pressed.
+ 
+ /*---------------------------------------------*/
+ 
+-GLint Keys::key(GLint iKey)
++GLint Keys::Key(GLint iKey)
+ {
+ 	return (GetAsyncKeyState(iKey)>>15)&1;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	onekey
++Name:	Onekey
+ 
+-Params:	iKey - virtual key code
++Params:	iKey - virtual Key code
+ 
+-Result:	Return true if key was pressed, but only
+-		once (the key must be released).
++Result:	Return true if Key was pressed, but only
++		once (the Key must be released).
+ 
+ /*---------------------------------------------*/
+ 
+-GLint Keys::onekey(GLint iKey)
++GLint Keys::Onekey(GLint iKey)
+ {
+-	if(key(iKey) && !kp[iKey]){kp[iKey] = 1; return 1;}
+-	if(!key(iKey))kp[iKey] = 0;
++	if(Key(iKey) && !kp[iKey]){kp[iKey] = 1; return 1;}
++	if(!Key(iKey))kp[iKey] = 0;
+ 	return 0;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	resetTimer
++Name:	ResetTimer
+ 
+ Params:	none
+ 
+@@ -50,7 +50,7 @@ Result:	Resets application timer (for ex
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLWinApp::resetTimer()
++GLvoid COpenGLWinApp::ResetTimer()
+ {
+ 	tLastFrame = clock();
+ 	fFrameInterval = 0.0f;
+@@ -58,7 +58,7 @@ GLvoid COpenGLWinApp::resetTimer()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	updateTimer
++Name:	UpdateTimer
+ 
+ Params:	none
+ 
+@@ -66,7 +66,7 @@ Result:	Updates application timer.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLWinApp::updateTimer()
++GLvoid COpenGLWinApp::UpdateTimer()
+ {
+ 	clock_t tCur = clock();
+ 	fFrameInterval = float(tCur-tLastFrame)/float(CLOCKS_PER_SEC);
+@@ -90,16 +90,16 @@ GLfloat COpenGLWinApp::sof(GLfloat fVal)
+ 
+ /*-----------------------------------------------
+ 
+-Name:		initializeApp
++Name:	InitializeApp
+ 
+ Params:	a_sAppName
+ 
+ Result:	Initializes app with specified (unique)
+-			application identifier.
++		application identifier.
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean COpenGLWinApp::initializeApp(string a_sAppName)
++GLboolean COpenGLWinApp::InitializeApp(string a_sAppName)
+ {
+ 	sAppName = a_sAppName;
+ 	hMutex = CreateMutex(NULL, 1, sAppName.c_str());
+@@ -113,7 +113,7 @@ GLboolean COpenGLWinApp::initializeApp(s
+ 
+ /*-----------------------------------------------
+ 
+-Name:	registerAppClass
++Name:	RegisterAppClass
+ 
+ Params:	a_hInstance - application instance handle
+ 
+@@ -121,12 +121,12 @@ Result:	Registers application window cla
+ 
+ /*---------------------------------------------*/
+ 
+-long CALLBACK globalMessageHandler(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
++long CALLBACK GlobalMessageHandler(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam)
+ {
+ 	return appMain.msgHandlerMain(hWnd, uiMsg, wParam, lParam);
+ }
+ 
+-GLvoid COpenGLWinApp::registerAppClass(GLvoid* a_hInstance)
++GLvoid COpenGLWinApp::RegisterAppClass(GLvoid* a_hInstance)
+ {
+ 	WNDCLASSEX wcex;
+ 	memset(&wcex, 0, sizeof(WNDCLASSEX));
+@@ -141,7 +141,7 @@ GLvoid COpenGLWinApp::registerAppClass(G
+ 	wcex.hInstance = a_hInstance;
+ 	hInstance = a_hInstance;
+ 
+-	wcex.lpfnWndProc = globalMessageHandler;
++	wcex.lpfnWndProc = GlobalMessageHandler;
+ 	wcex.lpszClassName = sAppName.c_str();
+ 
+ 	wcex.lpszMenuName = NULL;
+@@ -151,7 +151,7 @@ GLvoid COpenGLWinApp::registerAppClass(G
+ 
+ /*-----------------------------------------------
+ 
+-Name:	createWindow
++Name:	CreateWindow
+ 
+ Params:	sTitle - title of created window
+ 
+@@ -159,7 +159,7 @@ Result:	Creates main application window.
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean COpenGLWinApp::createWindow(string sTitle)
++GLboolean COpenGLWinApp::CreateAppWindow(string sTitle)
+ {
+ 	if(MessageBox(NULL, "Would you like to run in fullscreen?", "Fullscreen", MB_ICONQUESTION | MB_YESNO) == IDYES)
+ 	{
+@@ -174,7 +174,7 @@ GLboolean COpenGLWinApp::createWindow(st
+ 		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
+ 		NULL, hInstance, NULL);
+ 
+-	if(!oglControl.initOpenGL(hInstance, &hWnd, 3, 3, initScene, RenderScene, releaseScene, &oglControl))return false;
++	if(!oglControl.InitOpenGL(hInstance, &hWnd, 3, 3, InitScene, RenderScene, ReleaseScene, &oglControl))return false;
+ 
+ 	ShowWindow(hWnd, SW_SHOW);
+ 
+@@ -189,7 +189,7 @@ GLboolean COpenGLWinApp::createWindow(st
+ 
+ /*-----------------------------------------------
+ 
+-Name:	appBody
++Name:	AppBody
+ 
+ Params:	none
+ 
+@@ -197,7 +197,7 @@ Result:	Main application body infinite l
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLWinApp::appBody()
++GLvoid COpenGLWinApp::AppBody()
+ {
+ 	MSG msg;
+ 	while(1)
+@@ -213,8 +213,8 @@ GLvoid COpenGLWinApp::appBody()
+ 		}
+ 		else if(bAppActive)
+ 		{
+-			updateTimer();
+-			oglControl.render(&oglControl);
++			UpdateTimer();
++			oglControl.Render(&oglControl);
+ 		}
+ 		else Sleep(200); // Do not consume processor power if application isn't active
+ 	}
+@@ -222,7 +222,7 @@ GLvoid COpenGLWinApp::appBody()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	shutdown
++Name:	Shutdown
+ 
+ Params:	none
+ 
+@@ -231,19 +231,19 @@ Result:	Shuts down application and relea
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLWinApp::shutdown()
++GLvoid COpenGLWinApp::Shutdown()
+ {
+-	oglControl.releaseOpenGLControl(&oglControl);
++	oglControl.ReleaseOpenGLControl(&oglControl);
+ 
+ 	DestroyWindow(hWnd);
+ 	UnregisterClass(sAppName.c_str(), hInstance);
+-	COpenGLControl::unregisterSimpleOpenGLClass(hInstance);
++	COpenGLControl::UnregisterSimpleOpenGLClass(hInstance);
+ 	ReleaseMutex(hMutex);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:		msgHandlerMain
++Name:	msgHandlerMain
+ 
+ Params:	whatever
+ 
+@@ -273,7 +273,7 @@ long CALLBACK COpenGLWinApp::msgHandlerM
+ 				case WA_ACTIVE:
+ 				case WA_CLICKACTIVE:
+ 					bAppActive = true;
+-					resetTimer();
++					ResetTimer();
+ 					break;
+ 				case WA_INACTIVE:
+ 					bAppActive = false;
+@@ -283,9 +283,9 @@ long CALLBACK COpenGLWinApp::msgHandlerM
+ 		}
+ 
+ 		case WM_SIZE:
+-			oglControl.resizeOpenGLViewportFull();
+-			oglControl.setProjection3D(45.0f, float(LOWORD(lParam))/float(HIWORD(lParam)), 0.5f, 1000.0f);
+-			oglControl.setOrtho2D(LOWORD(lParam), HIWORD(lParam));
++			oglControl.ResizeOpenGLViewportFull();
++			oglControl.SetProjection3D(45.0f, float(LOWORD(lParam))/float(HIWORD(lParam)), 0.5f, 1000.0f);
++			oglControl.SetOrtho2D(LOWORD(lParam), HIWORD(lParam));
+ 			break;
+ 
+ 		default:
+@@ -296,7 +296,7 @@ long CALLBACK COpenGLWinApp::msgHandlerM
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getInstance
++Name:	GetInstance
+ 
+ Params:	none
+ 
+@@ -304,33 +304,33 @@ Result:	Returns application instance.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid* COpenGLWinApp::getInstance()
++GLvoid* COpenGLWinApp::GetInstance()
+ {
+ 	return hInstance;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	msgHandlerMain
++Name:	WinMain
+ 
+ Params:	whatever
+ 
+-Result:	Application messages handler.
++Result:	Application entry point.
+ 
+ /*---------------------------------------------*/
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.initializeApp("15_opengl_3_3"))
++	if(!appMain.InitializeApp("16_opengl_3_3"))
+ 		return 0;
+-	appMain.registerAppClass(hInstance);
++	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.createWindow("15.) OBJ Model Loader - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("16.) Rendering To A Texture - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+-	appMain.resetTimer();
++	appMain.ResetTimer();
+ 
+-	appMain.appBody();
+-	appMain.shutdown();
++	appMain.AppBody();
++	appMain.Shutdown();
+ 
+ 	return 0;
+ }
+diff -up 15_OBJModelLoader/Lin_OpenGLApp.h 16_RenderingToATexture/Lin_OpenGLApp.h
+--- 15_OBJModelLoader/Lin_OpenGLApp.h	2015-12-14 14:20:08.028309790 +0200
++++ 16_RenderingToATexture/Lin_OpenGLApp.h	2015-12-14 14:20:08.032309790 +0200
+@@ -2,24 +2,33 @@
+ 
+ #include "OpenGLControl.h"
+ 
++/********************************
++
++Class:		COpenGLWinApp
++
++Purpose:	Windows stuff for creating window 
++			and Windows message handling.
++
++********************************/
++
+ class COpenGLWinApp
+ {
+ public:
+ 	GLuint hWnd; // Handle to application window
+ 	COpenGLControl oglControl; // OpenGL Control
+ 
+-	GLvoid resetTimer();
+-	GLvoid updateTimer();
++	GLvoid ResetTimer();
++	GLvoid UpdateTimer();
+ 	GLfloat sof(GLfloat fVal);
+ 
+-	GLboolean initializeApp(string a_sAppName);
+-	GLvoid registerAppClass(GLvoid* hAppInstance);
+-	GLboolean createWindow(string sTitle);
++	GLboolean InitializeApp(string a_sAppName);
++	GLvoid RegisterAppClass(GLvoid* hAppInstance);
++	GLboolean CreateAppWindow(string sTitle);
+ 	
+-	GLvoid appBody();
+-	GLvoid shutdown();
++	GLvoid AppBody();
++	GLvoid Shutdown();
+ 
+-	GLvoid* getInstance();
++	GLvoid* GetInstance();
+ 
+ 	long CALLBACK msgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
+ 
+@@ -35,11 +44,11 @@ private:
+ 
+ namespace Keys
+ {
+-	GLint key(GLint iKey);
+-	GLint onekey(GLint iKey);
++	GLint Key(GLint iKey);
++	GLint Onekey(GLint iKey);
+ 	extern GLchar kp[256];
+ }
+ 
+ extern COpenGLWinApp appMain;
+ 
+-GLvoid initScene(GLvoid*), RenderScene(GLvoid*), releaseScene(GLvoid*);
+\ No newline at end of file
++GLvoid InitScene(GLvoid*), RenderScene(GLvoid*), ReleaseScene(GLvoid*);
+\ No newline at end of file
+diff -up 15_OBJModelLoader/objModel.cpp 16_RenderingToATexture/objModel.cpp
+--- 15_OBJModelLoader/objModel.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/objModel.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -10,7 +10,7 @@ CObjModel::CObjModel()
+ 
+ /*-----------------------------------------------
+ 
+-Name:    split
++Name:    Split
+ 
+ Params:  s - string to split
+ 		 t - string to split according to
+@@ -36,7 +36,7 @@ vector<string> split(string s, string t)
+ 
+ /*-----------------------------------------------
+ 
+-Name:    getDirectoryPath
++Name:    GetDirectoryPath
+ 
+ Params:  sFilePath - file path
+ 
+@@ -44,7 +44,7 @@ Result:  Returns path of a directory fro
+ 
+ /*---------------------------------------------*/
+ 
+-string getDirectoryPath(string sFilePath)
++string GetDirectoryPath(string sFilePath)
+ {
+ 	// Get directory path
+ 	string sDirectory = "";
+@@ -58,7 +58,7 @@ string getDirectoryPath(string sFilePath
+ 
+ /*-----------------------------------------------
+ 
+-Name:    loadModel
++Name:    LoadModel
+ 
+ Params:  sFileName - full path mode file name
+ 		 sMtlFileName - relative path material file
+@@ -67,7 +67,7 @@ Result:  Loads obj model.
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CObjModel::loadModel(string sFileName, string sMtlFileName)
++GLboolean CObjModel::LoadModel(string sFileName, string sMtlFileName)
+ {
+ 	FILE* fp = fopen(sFileName.c_str(), "rt");
+ 
+@@ -173,11 +173,11 @@ GLboolean CObjModel::loadModel(string sF
+ 			
+ 				// Check whether vertex index is within boundaries (indexed from 1)
+ 				if(iVertIndex > 0 && iVertIndex <= ESZ(vVertices))
+-					vboModelData.addData(&vVertices[iVertIndex-1], sizeof(glm::vec3));
++					vboModelData.AddData(&vVertices[iVertIndex-1], sizeof(glm::vec3));
+ 				if(iTexCoordIndex > 0 && iTexCoordIndex <= ESZ(vTexCoords))
+-					vboModelData.addData(&vTexCoords[iTexCoordIndex-1], sizeof(glm::vec2));
++					vboModelData.AddData(&vTexCoords[iTexCoordIndex-1], sizeof(glm::vec2));
+ 				if(iNormalIndex > 0 && iNormalIndex <= ESZ(vNormals))
+-					vboModelData.addData(&vNormals[iNormalIndex-1], sizeof(glm::vec3));
++					vboModelData.AddData(&vNormals[iNormalIndex-1], sizeof(glm::vec3));
+ 			}
+ 			iNumFaces++;
+ 		}
+@@ -200,10 +200,10 @@ GLboolean CObjModel::loadModel(string sF
+ 
+ 	// Create VBO
+ 
+-	vboModelData.createVBO();
+-	vboModelData.bindVBO();
++	vboModelData.CreateVBO();
++	vboModelData.BindVBO();
+ 
+-	vboModelData.uploadDataToGPU(GL_STATIC_DRAW);
++	vboModelData.UploadDataToGPU(GL_STATIC_DRAW);
+ 
+ 	// Create one VAO
+ 
+@@ -239,7 +239,7 @@ GLboolean CObjModel::loadModel(string sF
+ 	bLoaded = true;
+ 
+ 	// Material should be in the same directory as model
+-	loadMaterial(getDirectoryPath(sFileName)+sMtlFileName);
++	LoadMaterial(GetDirectoryPath(sFileName)+sMtlFileName);
+ 
+ 	return true;
+ }
+@@ -254,17 +254,17 @@ Result:  Guess what it does :)
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CObjModel::renderModel()
++GLvoid CObjModel::RenderModel()
+ {
+ 	if(!bLoaded)return;
+ 	glBindVertexArray(uiVAO);
+-	tAmbientTexture.bindTexture();
++	tAmbientTexture.BindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 0, iNumFaces*3);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:    loadMaterial
++Name:    LoadMaterial
+ 
+ Params:  sFullMtlFileName - full path to material file
+ 
+@@ -273,7 +273,7 @@ Result:  Loads material (currently only
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CObjModel::loadMaterial(string sFullMtlFileName)
++GLboolean CObjModel::LoadMaterial(string sFullMtlFileName)
+ {
+ 	// For now, we'll just look for ambient texture, i.e. line that begins with map_Ka
+ 	FILE* fp = fopen(sFullMtlFileName.c_str(), "rt");
+@@ -294,8 +294,8 @@ GLboolean CObjModel::loadMaterial(string
+ 			GLint from = sLine.find("map_Ka")+6+1;
+ 			string sTextureName = sLine.substr(from, ESZ(sLine)-from-1);
+ 			// Texture should be in the same directory as material
+-			tAmbientTexture.loadTexture2D(getDirectoryPath(sFullMtlFileName)+sTextureName, true);
+-			tAmbientTexture.setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_NEAREST_MIPMAP);
++			tAmbientTexture.LoadTexture2D(GetDirectoryPath(sFullMtlFileName)+sTextureName, true);
++			tAmbientTexture.SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_NEAREST_MIPMAP);
+ 			break;
+ 		}
+ 	}
+@@ -306,7 +306,7 @@ GLboolean CObjModel::loadMaterial(string
+ 
+ /*-----------------------------------------------
+ 
+-Name:    releaseModel
++Name:    DeleteModel
+ 
+ Params:  none
+ 
+@@ -314,12 +314,12 @@ Result:  Frees all used resources by mod
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CObjModel::releaseModel()
++GLvoid CObjModel::DeleteModel()
+ {
+ 	if(!bLoaded)return;
+-	tAmbientTexture.releaseTexture();
++	tAmbientTexture.DeleteTexture();
+ 	glDeleteVertexArrays(1, &uiVAO);
+-	vboModelData.releaseVBO();
++	vboModelData.DeleteVBO();
+ 	bLoaded = false;
+ }
+ 
+@@ -333,7 +333,7 @@ Result:  Returns model polygon count.
+ 
+ /*---------------------------------------------*/
+ 
+-GLint CObjModel::getPolygonCount()
++GLint CObjModel::GetPolygonCount()
+ {
+ 	return iNumFaces;
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/objModel.h 16_RenderingToATexture/objModel.h
+--- 15_OBJModelLoader/objModel.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/objModel.h	2015-12-14 14:20:08.036309790 +0200
+@@ -5,21 +5,21 @@
+ 
+ /********************************
+ 
+-Class:	CObjModel
++Class:		CObjModel
+ 
+-Purpose: Class for handling obj
+-		 model files.
++Purpose:	Class for handling obj
++			model files.
+ 
+ ********************************/
+ 
+ class CObjModel
+ {
+ public:
+-	GLboolean loadModel(string sFileName, string sMtlFileName);
+-	GLvoid renderModel();
+-	GLvoid releaseModel();
++	GLboolean LoadModel(string sFileName, string sMtlFileName);
++	GLvoid RenderModel();
++	GLvoid DeleteModel();
+ 
+-	GLint getPolygonCount();
++	GLint GetPolygonCount();
+ 
+ 	CObjModel();
+ private:
+@@ -27,7 +27,7 @@ private:
+ 	GLint iAttrBitField;
+ 	GLint iNumFaces;
+ 
+-	GLboolean loadMaterial(string sFullMtlFileName);
++	GLboolean LoadMaterial(string sFullMtlFileName);
+ 
+ 	CVertexBufferObject vboModelData;
+ 	GLuint uiVAO;
+diff -up 15_OBJModelLoader/OpenGLControl.cpp 16_RenderingToATexture/OpenGLControl.cpp
+--- 15_OBJModelLoader/OpenGLControl.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 16_RenderingToATexture/OpenGLControl.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -19,7 +19,7 @@ COpenGLControl::COpenGLControl()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	initGLEW
++Name:	InitGLEW
+ 
+ Params:	none
+ 
+@@ -28,11 +28,11 @@ Result:	Creates fake window and OpenGL r
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean COpenGLControl::initGLEW(GLvoid* hInstance)
++GLboolean COpenGLControl::InitGLEW(GLvoid* hInstance)
+ {
+ 	if(bGlewInitialized)return true;
+ 
+-	registerSimpleOpenGLClass(hInstance);
++	RegisterSimpleOpenGLClass(hInstance);
+ 
+ 	GLuint hWndFake = CreateWindow(SIMPLE_OPENGL_CLASS_NAME, "FAKE", WS_OVERLAPPEDWINDOW | WS_MAXIMIZE | WS_CLIPCHILDREN,
+ 		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
+@@ -83,7 +83,7 @@ GLboolean COpenGLControl::initGLEW(GLvoi
+ 
+ /*-----------------------------------------------
+ 
+-Name:	initOpenGL
++Name:	InitOpenGL
+ 
+ Params:	hInstance - application instance
+ 		a_hWnd - window to init OpenGL into
+@@ -100,9 +100,9 @@ Result:	Initializes OpenGL rendering con
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean COpenGLControl::initOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam)
++GLboolean COpenGLControl::InitOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(GLvoid*), GLvoid (*a_ptrRenderScene)(GLvoid*), void(*a_ptrReleaseScene)(GLvoid*), GLvoid* lpParam)
+ {
+-	if(!initGLEW(hInstance))return false;
++	if(!InitGLEW(hInstance))return false;
+ 
+ 	hWnd = a_hWnd;
+ 	hDC = GetDC(*hWnd);
+@@ -176,18 +176,18 @@ GLboolean COpenGLControl::initOpenGL(GLv
+ 		return false;
+ 	}
+ 
+-	RenderScene = a_RenderScene;
+-	initScene = a_initScene;
+-	releaseScene = a_releaseScene;
++	ptrRenderScene = a_ptrRenderScene;
++	ptrInitScene = a_ptrInitScene;
++	ptrReleaseScene = a_ptrReleaseScene;
+ 
+-	if(initScene != NULL)initScene(lpParam);
++	if(ptrInitScene != NULL)ptrInitScene(lpParam);
+ 
+ 	return true;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	resizeOpenGLViewportFull
++Name:	ResizeOpenGLViewportFull
+ 
+ Params:	none
+ 
+@@ -195,7 +195,7 @@ Result:	Resizes viewport to full window.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::resizeOpenGLViewportFull()
++GLvoid COpenGLControl::ResizeOpenGLViewportFull()
+ {
+ 	if(hWnd == NULL)return;
+ 	RECT rRect; GetClientRect(*hWnd, &rRect);
+@@ -206,40 +206,40 @@ GLvoid COpenGLControl::resizeOpenGLViewp
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setProjection3D
++Name:	SetProjection3D
+ 
+ Params:	fFOV - field of view angle
+ 		fAspectRatio - aspect ration of width/height
+ 		fNear, fFar - distance of near and far clipping plane
+ 
+-Result:	Calculates projection matrix.
++Result:	Calculates projection matrix and stores it.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar)
++GLvoid COpenGLControl::SetProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar)
+ {
+ 	mProjection = glm::perspective(fFOV, fAspectRatio, fNear, fFar);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:		setOrtho2D
++Name:	SetOrtho2D
+ 
+ Params:	width - width of window
+ 				height - height of window
+ 
+-Result:	Calculates ortho 2D projection matrix.
++Result:	Calculates ortho 2D projection matrix and stores it.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::setOrtho2D(GLint width, GLint height)
++GLvoid COpenGLControl::SetOrtho2D(GLint width, GLint height)
+ {
+ 	mOrtho = glm::ortho(0.0f, float(width), 0.0f, float(height));
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getProjectionMatrix()
++Name:	GetProjectionMatrix()
+ 
+ Params:	none
+ 
+@@ -247,14 +247,14 @@ Result:	Retrieves pointer to projection
+ 
+ /*---------------------------------------------*/
+ 
+-glm::mat4* COpenGLControl::getProjectionMatrix()
++glm::mat4* COpenGLControl::GetProjectionMatrix()
+ {
+ 	return &mProjection;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:		getOrthoMatrix()
++Name:	GetOrthoMatrix()
+ 
+ Params:	none
+ 
+@@ -262,14 +262,14 @@ Result:	Retrieves pointer to ortho matri
+ 
+ /*---------------------------------------------*/
+ 
+-glm::mat4* COpenGLControl::getOrthoMatrix()
++glm::mat4* COpenGLControl::GetOrthoMatrix()
+ {
+ 	return &mOrtho;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	registerSimpleOpenGLClass
++Name:	RegisterSimpleOpenGLClass
+ 
+ Params:	hInstance - application instance
+ 
+@@ -277,7 +277,7 @@ Result:	Registers simple OpenGL window c
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::registerSimpleOpenGLClass(GLvoid* hInstance)
++GLvoid COpenGLControl::RegisterSimpleOpenGLClass(GLvoid* hInstance)
+ {
+ 	if(bClassRegistered)return;
+ 	WNDCLASSEX wc;
+@@ -301,7 +301,7 @@ GLvoid COpenGLControl::registerSimpleOpe
+ 
+ /*-----------------------------------------------
+ 
+-Name:	unregisterSimpleOpenGLClass
++Name:	UnregisterSimpleOpenGLClass
+ 
+ Params:	hInstance - application instance
+ 
+@@ -309,7 +309,7 @@ Result:	Unregisters simple OpenGL window
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::unregisterSimpleOpenGLClass(GLvoid* hInstance)
++GLvoid COpenGLControl::UnregisterSimpleOpenGLClass(GLvoid* hInstance)
+ {
+ 	if(bClassRegistered)
+ 	{
+@@ -347,7 +347,7 @@ long CALLBACK msgHandlerSimpleOpenGLClas
+ 
+ /*-----------------------------------------------
+ 
+-Name:	swapBuffers
++Name:	SwapBuffers
+ 
+ Params:	none
+ 
+@@ -355,14 +355,14 @@ Result:	Swaps back and front buffer.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::swapBuffers()
++GLvoid COpenGLControl::SwapBuffers()
+ {
+-	SwapBuffers(hDC);
++	::SwapBuffers(hDC);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	makeCurrent
++Name:	MakeCurrent
+ 
+ Params:	none
+ 
+@@ -372,14 +372,14 @@ Result:	Makes current device and OpenGL
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::makeCurrent()
++GLvoid COpenGLControl::MakeCurrent()
+ {
+ 	wglMakeCurrent(hDC, hRC);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	render
++Name:	Render
+ 
+ Params:	lpParam - pointer to whatever you want
+ 
+@@ -387,7 +387,7 @@ Result:	Calls previously set render func
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::render(GLvoid* lpParam)
++GLvoid COpenGLControl::Render(GLvoid* lpParam)
+ {
+ 	clock_t tCurrent = clock();
+ 	if( (tCurrent-tLastSecond) >= CLOCKS_PER_SEC)
+@@ -396,13 +396,13 @@ GLvoid COpenGLControl::render(GLvoid* lp
+ 		iFPSCount = iCurrentFPS;
+ 		iCurrentFPS = 0;
+ 	}
+-	if(RenderScene)RenderScene(lpParam);
++	if(ptrRenderScene)ptrRenderScene(lpParam);
+ 	iCurrentFPS++;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	releaseOpenGLControl
++Name:	ReleaseOpenGLControl
+ 
+ Params:	lpParam - pointer to whatever you want
+ 
+@@ -411,9 +411,9 @@ Result:	Calls previously set release fun
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid COpenGLControl::releaseOpenGLControl(GLvoid* lpParam)
++GLvoid COpenGLControl::ReleaseOpenGLControl(GLvoid* lpParam)
+ {
+-	if(releaseScene)releaseScene(lpParam);
++	if(ptrReleaseScene)ptrReleaseScene(lpParam);
+ 
+ 	wglMakeCurrent(NULL, NULL);
+ 	wglDeleteContext(hRC);
+@@ -424,7 +424,7 @@ GLvoid COpenGLControl::releaseOpenGLCont
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setVerticalSynchronization
++Name:	SetVerticalSynchronization
+ 
+ Params: bEnabled - whether to enable V-Sync
+ 
+@@ -432,11 +432,13 @@ Result:	Guess what it does :)
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean COpenGLControl::setVerticalSynchronization(GLboolean bEnabled)
++GLboolean COpenGLControl::SetVerticalSynchronization(GLboolean bEnabled)
+ {
+ 	if(!wglSwapIntervalEXT)return false;
++
+ 	if(bEnabled)wglSwapIntervalEXT(1);
+ 	else wglSwapIntervalEXT(0);
++
+ 	return true;
+ }
+ 
+@@ -450,17 +452,17 @@ Result:	... They get something :D
+ 
+ /*---------------------------------------------*/
+ 
+-GLint COpenGLControl::getFPS()
++GLint COpenGLControl::GetFPS()
+ {
+ 	return iFPSCount;
+ }
+ 
+-GLint COpenGLControl::getViewportWidth()
++GLint COpenGLControl::GetViewportWidth()
+ {
+ 	return iViewportWidth;
+ }
+ 
+-GLint COpenGLControl::getViewportHeight()
++GLint COpenGLControl::GetViewportHeight()
+ {
+ 	return iViewportHeight;
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/OpenGLControl.h 16_RenderingToATexture/OpenGLControl.h
+--- 15_OBJModelLoader/OpenGLControl.h	2015-12-14 14:20:08.028309790 +0200
++++ 16_RenderingToATexture/OpenGLControl.h	2015-12-14 14:20:08.032309790 +0200
+@@ -6,43 +6,43 @@
+ 
+ Class:	COpenGLControl
+ 
+-Purpose:	Provides convenient usage
+-			of OpenGL
++Purpose: Provides convenient usage
++		 of OpenGL.
+ 
+ ********************************/
+ 
+ class COpenGLControl
+ {
+ public:
+-	GLboolean initOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_initScene)(GLvoid*), GLvoid (*a_RenderScene)(GLvoid*), void(*a_releaseScene)(GLvoid*), GLvoid* lpParam);
++	GLboolean InitOpenGL(GLvoid* hInstance, GLuint* a_hWnd, GLint iMajorVersion, GLint iMinorVersion, GLvoid (*a_ptrInitScene)(GLvoid*), GLvoid (*a_ptrRenderScene)(GLvoid*), void(*a_ptrReleaseScene)(GLvoid*), GLvoid* lpParam);
+ 	
+-	GLvoid resizeOpenGLViewportFull();
+-	GLvoid setProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
+-	GLvoid setOrtho2D(GLint width, GLint height);
++	GLvoid ResizeOpenGLViewportFull();
++	GLvoid SetProjection3D(GLfloat fFOV, GLfloat fAspectRatio, GLfloat fNear, GLfloat fFar);
++	GLvoid SetOrtho2D(GLint width, GLint height);
+ 
+-	glm::mat4* getProjectionMatrix();
+-	glm::mat4* getOrthoMatrix();
++	glm::mat4* GetProjectionMatrix();
++	glm::mat4* GetOrthoMatrix();
+ 
+-	GLvoid render(GLvoid* lpParam);
+-	GLvoid releaseOpenGLControl(GLvoid* lpParam);
++	GLvoid Render(GLvoid* lpParam);
++	GLvoid ReleaseOpenGLControl(GLvoid* lpParam);
+ 
+-	static GLvoid registerSimpleOpenGLClass(GLvoid* hInstance);
+-	static GLvoid unregisterSimpleOpenGLClass(GLvoid* hInstance);
++	static GLvoid RegisterSimpleOpenGLClass(GLvoid* hInstance);
++	static GLvoid UnregisterSimpleOpenGLClass(GLvoid* hInstance);
+ 
+-	GLvoid makeCurrent();
+-	GLvoid swapBuffers();
++	GLvoid MakeCurrent();
++	GLvoid SwapBuffers();
+ 
+-	GLboolean setVerticalSynchronization(GLboolean bEnabled);
++	GLboolean SetVerticalSynchronization(GLboolean bEnabled);
+ 
+-	GLint getFPS();
++	GLint GetFPS();
+ 
+-	GLint getViewportWidth();
+-	GLint getViewportHeight();
++	GLint GetViewportWidth();
++	GLint GetViewportHeight();
+ 
+ 	COpenGLControl();
+ 
+ private:
+-	GLboolean initGLEW(GLvoid* hInstance);
++	GLboolean InitGLEW(GLvoid* hInstance);
+ 
+ 	GLvoid* hDC;
+ 	GLuint* hWnd;
+@@ -63,7 +63,7 @@ private:
+ 	// Viewport parameters
+ 	GLint iViewportWidth, iViewportHeight;
+ 
+-	GLvoid (*initScene)(GLvoid* lpParam), (*RenderScene)(GLvoid* lpParam), (*releaseScene)(GLvoid* lpParam);
++	GLvoid (*ptrInitScene)(GLvoid* lpParam), (*ptrRenderScene)(GLvoid* lpParam), (*ptrReleaseScene)(GLvoid* lpParam);
+ };
+ 
+ long CALLBACK msgHandlerSimpleOpenGLClass(GLuint, GLuint, GLuint, long);
+\ No newline at end of file
+diff -up 15_OBJModelLoader/pointLight.cpp 16_RenderingToATexture/pointLight.cpp
+--- 15_OBJModelLoader/pointLight.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/pointLight.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -28,7 +28,7 @@ CPointLight::CPointLight(glm::vec3 a_vCo
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setUniformData
++Name:	SetUniformData
+ 
+ Params:	spProgram - shader program
+ 		sLightVarName - name of point light variable
+@@ -37,15 +37,15 @@ Result:	Sets all point light data.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CPointLight::setUniformData(CShaderProgram* spProgram, string sLightVarName)
++GLvoid CPointLight::SetUniformData(CShaderProgram* spProgram, string sLightVarName)
+ {
+-	spProgram->setUniform(sLightVarName+".vColor", vColor);
+-	spProgram->setUniform(sLightVarName+".vPosition", vPosition);
++	spProgram->SetUniform(sLightVarName+".vColor", vColor);
++	spProgram->SetUniform(sLightVarName+".vPosition", vPosition);
+ 
+-	spProgram->setUniform(sLightVarName+".fAmbient", fAmbient);
++	spProgram->SetUniform(sLightVarName+".fAmbient", fAmbient);
+ 	
+-	spProgram->setUniform(sLightVarName+".fConstantAtt", fConstantAtt);
+-	spProgram->setUniform(sLightVarName+".fLinearAtt", fLinearAtt);
+-	spProgram->setUniform(sLightVarName+".fExpAtt", fExpAtt);
++	spProgram->SetUniform(sLightVarName+".fConstantAtt", fConstantAtt);
++	spProgram->SetUniform(sLightVarName+".fLinearAtt", fLinearAtt);
++	spProgram->SetUniform(sLightVarName+".fExpAtt", fExpAtt);
+ }
+ 
+diff -up 15_OBJModelLoader/pointLight.h 16_RenderingToATexture/pointLight.h
+--- 15_OBJModelLoader/pointLight.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/pointLight.h	2015-12-14 14:20:08.036309790 +0200
+@@ -4,10 +4,10 @@
+ 
+ /********************************
+ 
+-Class:	CPointLight
++Class:		CPointLight
+ 
+-Purpose: Support class for adding
+-		point lights to scene.
++Purpose:	Support class for adding
++			point lights to scene.
+ 
+ ********************************/
+ 
+@@ -23,7 +23,7 @@ public:
+ 	GLfloat fLinearAtt;
+ 	GLfloat fExpAtt;
+ 
+-	GLvoid setUniformData(CShaderProgram* spProgram, string sLightVarName);
++	GLvoid SetUniformData(CShaderProgram* spProgram, string sLightVarName);
+ 
+ 	CPointLight();
+ 	CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, GLfloat a_fAmbient, GLfloat a_fConstantAtt, GLfloat a_fLinearAtt, GLfloat a_fExpAtt);
+diff -up 15_OBJModelLoader/RenderScene.cpp 16_RenderingToATexture/RenderScene.cpp
+--- 15_OBJModelLoader/RenderScene.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 16_RenderingToATexture/RenderScene.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -14,11 +14,13 @@
+ 
+ #include "dirLight.h"
+ 
++#include "framebuffer.h"
++
+ #include <glm/gtc/matrix_transform.hpp>
+ #include <glm/gtc/type_ptr.hpp>
+ 
+ #define NUMSHADERS 11
+-#define NUMTEXTURES 1
++#define NUMTEXTURES 3
+ 
+ /* One VBO, where all static data are stored now,
+ in this tutorial vertex is stored as 3 floats for
+@@ -29,7 +31,7 @@ CVertexBufferObject vboSceneObjects;
+ GLuint uiVAOs[1]; // Only one VAO now
+ 
+ CShader shShaders[NUMSHADERS];
+-CShaderProgram spMain, spOrtho2D, spFont2D, spColor;
++CShaderProgram spMain, spOrtho2D, spFont2D, spColor, spMainFB;
+ 
+ CFreeTypeFont ftFont;
+ 
+@@ -44,9 +46,11 @@ CDirectionalLight dlSun;
+ CObjModel mdlThor;
+ CObjModel mdlSpongeBob;
+ 
++CFramebuffer fboTelevision;
++
+ /*-----------------------------------------------
+ 
+-Name:    initScene
++Name:    InitScene
+ 
+ Params:  lpParam - Pointer to anything you want.
+ 
+@@ -57,52 +61,59 @@ Result:  Initializes OpenGL features tha
+ 
+ #include "static_geometry.h"
+ 
+-GLint iTorusFaces;
+-
+-GLvoid initScene(GLvoid* lpParam)
++GLvoid InitScene(GLvoid* lpParam)
+ {
+ 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+ 
+ 	// Prepare all scene objects
+ 
+-	vboSceneObjects.createVBO();
++	vboSceneObjects.CreateVBO();
+ 	glGenVertexArrays(1, uiVAOs); // Create one VAO
+ 	glBindVertexArray(uiVAOs[0]);
+ 
+-	vboSceneObjects.bindVBO();
++	vboSceneObjects.BindVBO();
+ 
+ 	// Add cube to VBO
+ 
+ 	FOR(i, 36)
+ 	{
+-		vboSceneObjects.addData(&vCubeVertices[i], sizeof(glm::vec3));
+-		vboSceneObjects.addData(&vCubeTexCoords[i%6], sizeof(glm::vec2));
+-		vboSceneObjects.addData(&vCubeNormals[i/6], sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vCubeVertices[i], sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vCubeTexCoords[i%6], sizeof(glm::vec2));
++		vboSceneObjects.AddData(&vCubeNormals[i/6], sizeof(glm::vec3));
+ 	}
+ 
+ 	// Add ground to VBO
+ 
+ 	FOR(i, 6)
+ 	{
+-		vboSceneObjects.addData(&vGround[i], sizeof(glm::vec3));
+-		glm::vec2 vCoord = vCubeTexCoords[i] * 100.0f;
+-		vboSceneObjects.addData(&vCoord, sizeof(glm::vec2));
++		vboSceneObjects.AddData(&vGround[i], sizeof(glm::vec3));
++		glm::vec2 vCoord = vCubeTexCoords[i] * 50.0f;
++		vboSceneObjects.AddData(&vCoord, sizeof(glm::vec2));
+ 		glm::vec3 vGroundNormal(0.0f, 1.0f, 0.0f);
+-		vboSceneObjects.addData(&vGroundNormal, sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vGroundNormal, sizeof(glm::vec3));
+ 	}
+ 
+ 	// Add building to VBO
+ 
+ 	FOR(i, 24)
+ 	{
+-		vboSceneObjects.addData(&vBuilding[i], sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vBuilding[i], sizeof(glm::vec3));
+ 		glm::vec2 vCoord = vCubeTexCoords[i%6]*10.0f;
+-		vboSceneObjects.addData(&vCoord, sizeof(glm::vec2));
+-		vboSceneObjects.addData(&vBuildingNormals[i/6], sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vCoord, sizeof(glm::vec2));
++		vboSceneObjects.AddData(&vBuildingNormals[i/6], sizeof(glm::vec3));
++	}
++
++	// Add cinema to VBO
++
++	FOR(i, 4)
++	{
++		vboSceneObjects.AddData(&vCinema[i], sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vCinemaCoords[i], sizeof(glm::vec2));
++		glm::vec3 vNormal(0, 0, 1);
++		vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
+ 	}
+ 
+-	iTorusFaces = generateTorus(vboSceneObjects, 7.0f, 2.0f, 20, 20);
+-	vboSceneObjects.uploadDataToGPU(GL_STATIC_DRAW);
++	vboSceneObjects.UploadDataToGPU(GL_STATIC_DRAW);
+ 
+ 	// Vertex positions
+ 	glEnableVertexAttribArray(0);
+@@ -114,75 +125,88 @@ GLvoid initScene(GLvoid* lpParam)
+ 	glEnableVertexAttribArray(2);
+ 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
+ 
+-	// Load shaders and create shader programs
++	// Load shaders and create shader program
+ 
+ 	string sShaderFileNames[] = {"main_shader.vert", "main_shader.geom", "main_shader.frag", "ortho2D.vert",
+-		"ortho2D.frag", "font2D.frag", "dirLight.frag", "pointLight.frag", "fog.frag", "color.vert", "color.frag"};
++		"ortho2D.frag", "font2D.frag", "dirLight.frag", "pointLight.frag", "fog.frag", "color.vert", "color.frag",
++		};
+ 
+ 	FOR(i, NUMSHADERS)
+ 	{
+ 		string sExt = sShaderFileNames[i].substr(ESZ(sShaderFileNames[i])-4, 4);
+ 		GLint iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
+-		shShaders[i].LoadShader("data/shaders/"+sShaderFileNames[i], iShaderType);
++		shShaders[i].LoadShader("data/shaders/"+sShaderFileNames[i], iShaderType);
+ 	}
+ 
+ 	// Create shader programs
+ 
+-	spMain.CreateProgram();
+-	spMain.addShaderToProgram(&shShaders[0]);
+-	spMain.addShaderToProgram(&shShaders[1]);
+-	spMain.addShaderToProgram(&shShaders[2]);
+-	spMain.addShaderToProgram(&shShaders[6]);
+-	spMain.addShaderToProgram(&shShaders[7]);
+-	spMain.linkProgram();
+-
+-	spOrtho2D.CreateProgram();
+-	spOrtho2D.addShaderToProgram(&shShaders[3]);
+-	spOrtho2D.addShaderToProgram(&shShaders[4]);
+-	spOrtho2D.linkProgram();
+-
+-	spFont2D.CreateProgram();
+-	spFont2D.addShaderToProgram(&shShaders[3]);
+-	spFont2D.addShaderToProgram(&shShaders[5]);
+-	spFont2D.linkProgram();
+-
+-	spColor.CreateProgram();
+-	spColor.addShaderToProgram(&shShaders[9]);
+-	spColor.addShaderToProgram(&shShaders[10]);
+-	spColor.linkProgram();
++	spMain.CreateProgram();
++	spMain.AddShaderToProgram(&shShaders[0]);
++	spMain.AddShaderToProgram(&shShaders[1]);
++	spMain.AddShaderToProgram(&shShaders[2]);
++	spMain.AddShaderToProgram(&shShaders[6]);
++	spMain.AddShaderToProgram(&shShaders[7]);
++	spMain.LinkProgram();
++
++	spOrtho2D.CreateProgram();
++	spOrtho2D.AddShaderToProgram(&shShaders[3]);
++	spOrtho2D.AddShaderToProgram(&shShaders[4]);
++	spOrtho2D.LinkProgram();
++
++	spFont2D.CreateProgram();
++	spFont2D.AddShaderToProgram(&shShaders[3]);
++	spFont2D.AddShaderToProgram(&shShaders[5]);
++	spFont2D.LinkProgram();
++
++	spColor.CreateProgram();
++	spColor.AddShaderToProgram(&shShaders[9]);
++	spColor.AddShaderToProgram(&shShaders[10]);
++	spColor.LinkProgram();
++
++	spMainFB.CreateProgram();
++	spMainFB.AddShaderToProgram(&shShaders[11]);
++	spMainFB.AddShaderToProgram(&shShaders[12]);
++	spMainFB.AddShaderToProgram(&shShaders[13]);
++	spMainFB.AddShaderToProgram(&shShaders[6]);
++	spMainFB.AddShaderToProgram(&shShaders[7]);
++	spMainFB.LinkProgram();
+ 
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"Tile41a.jpg"};
++	string sTextureNames[] = {"Tile41a.jpg", "met_wall01a.jpg", "floor.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+-		tTextures[i].loadTexture2D("data/textures/"+sTextureNames[i], true);
+-		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
++		tTextures[i].LoadTexture2D("data/textures/"+sTextureNames[i], true);
++		tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
+ 	}
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	glClearDepth(1.0);
+-	glClearColor(0.0f, 0.26f, 0.48f, 1.0f);
++	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+ 
+ 	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
+-	ftFont.loadSystemFont("arial.ttf", 32);
+-	ftFont.setShaderProgram(&spFont2D);
++	ftFont.LoadSystemFont("arial.ttf", 32);
++	ftFont.SetShaderProgram(&spFont2D);
+ 	
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+-	cCamera.setMovingKeys('W', 'S', 'A', 'D');
++	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.loadSkybox("data/skyboxes/jajdarkland1/", "jajdarkland1_ft.jpg", "jajdarkland1_bk.jpg", "jajdarkland1_lf.jpg", "jajdarkland1_rt.jpg", "jajdarkland1_up.jpg", "jajdarkland1_dn.jpg");
++	sbMainSkybox.LoadSkybox("data/skyboxes/jajdarkland1/", "jajdarkland1_ft.jpg", "jajdarkland1_bk.jpg", "jajdarkland1_lf.jpg", "jajdarkland1_rt.jpg", "jajdarkland1_up.jpg", "jajdarkland1_dn.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f);
+ 
+-	mdlThor.loadModel("data/models/Thor/thor.obj", "thor.mtl");
+-	mdlSpongeBob.loadModel("data/models/Spongebob/spongebob_bind.obj", "spongebob_bind.mtl");
++	mdlThor.LoadModel("data/models/Thor/thor.obj", "thor.mtl");
++	mdlSpongeBob.LoadModel("data/models/Spongebob/spongebob_bind.obj", "spongebob_bind.mtl");
++
++	fboTelevision.CreateFramebufferWithTexture(512, 256);
++	fboTelevision.AddDepthBuffer();
++	fboTelevision.SetFramebufferTextureFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_TRILINEAR);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:    RenderScene
++Name:    RenderScene
+ 
+ Params:  lpParam - Pointer to anything you want.
+ 
+@@ -193,104 +217,167 @@ Result:  Renders whole scene.
+ GLfloat fGlobalAngle;
+ GLboolean bWireFrame = false;
+ 
+-GLvoid RenderScene(GLvoid* lpParam)
++GLvoid RenderScene(GLvoid* lpParam)
+ {
+ 	// Typecast lpParam to COpenGLControl pointer
+ 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+ 
++	// Render Thor and The Avengers text into framebuffer
++	
++	fboTelevision.BindFramebuffer();
++	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
++
++	spMain.UseProgram();
++	spMain.SetUniform("matrices.projMatrix", fboTelevision.CalculateProjectionMatrix(45.0f, 0.5f, 1000.0f));
++	dlSun.SetUniformData(&spMain, "sunLight");
++
++	glm::mat4 mView = glm::lookAt(glm::vec3(0.0f, 0.0f, 160.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
++	spMain.SetUniform("matrices.viewMatrix", &mView);
++
++	spMain.SetUniform("gSampler", 0);
++	spMain.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++
++	static glm::vec3 vThorPosition = glm::vec3(0.0f, -40.0f, -30.0f);
++	glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0),vThorPosition);
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
++	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	mdlThor.RenderModel();
++
++	// Render ground for Thor
++
++	glBindVertexArray(uiVAOs[0]);
++
++	spMain.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	spMain.SetUniform("matrices.modelMatrix", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -40.0f, 0.0f)));
++	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0f));
++
++	tTextures[2].BindTexture();
++	glDrawArrays(GL_TRIANGLES, 36, 6);
++
++	// PrGLint The Avengers in the center
++
++	spFont2D.UseProgram();
++	glDisable(GL_DEPTH_TEST);
++	spFont2D.SetUniform("matrices.projMatrix", fboTelevision.CalculateOrthoMatrix());
++
++	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++
++	
++	GLint iTextWidth = ftFont.GetTextWidth("The Avengers", 40);
++	ftFont.Print("The Avengers", (fboTelevision.GetWidth()-iTextWidth)/2, fboTelevision.GetHeight()-60, 40);
++
++	// Update Thor's position and rotation
++
++	vThorPosition.x += appMain.sof(60.0f);
++	if(vThorPosition.x > 160)vThorPosition.x = -160;
++	fGlobalAngle += appMain.sof(170.0f);
++
++	glEnable(GL_DEPTH_TEST);
++
++	//******************************
++	//******************************
++	//******************************
++
++	// Get back to normal rendering, no framebuffer
++	glBindFramebuffer(GL_FRAMEBUFFER, NULL);
++	oglControl->ResizeOpenGLViewportFull();
++
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+ 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+ 
+-	spMain.UseProgram();
++	spMain.UseProgram();
+ 
+-	spMain.setUniform("matrices.projMatrix", oglControl->getProjectionMatrix());
+-	spMain.setUniform("gSampler", 0);
++	spMain.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
++	spMain.SetUniform("gSampler", 0);
+ 
+-	glm::mat4 mView = cCamera.look();
+-	spMain.setUniform("matrices.viewMatrix", &mView);
+-	spMain.setUniform("matrices.modelMatrix", glm::mat4(1.0f));
++	mView = cCamera.Look();
++	spMain.SetUniform("matrices.viewMatrix", &mView);
+ 
+-	glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0f), cCamera.vEye);
++	mModelMatrix = glm::translate(glm::mat4(1.0f), cCamera.vEye);
+ 	
+-	spMain.setUniform("matrices.modelMatrix", &mModelMatrix);
+-	spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mView*mModelMatrix)));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mView*mModelMatrix)));
+ 
+ 	CDirectionalLight dlSun2 = dlSun;
+ 
+ 	// We set full ambient for skybox, so that its color isn't affected by directional light
+ 
+ 	dlSun2.fAmbient = 1.0f;
+-	dlSun2.setUniformData(&spMain, "sunLight");
++	dlSun2.SetUniformData(&spMain, "sunLight");
+ 
+-	sbMainSkybox.renderSkybox();
++	sbMainSkybox.RenderSkybox();
+ 
+ 	glBindVertexArray(uiVAOs[0]);
+ 
+-	dlSun.setUniformData(&spMain, "sunLight");
++	dlSun.SetUniformData(&spMain, "sunLight");
+ 	
+-	// Render ground
+-
+ 	if(bWireFrame)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+ 	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+ 
+-	spMain.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+-	spMain.setUniform("matrices.modelMatrix", glm::mat4(1.0f));
+-	spMain.setUniform("matrices.normalMatrix", glm::mat4(1.0f));
+-	tTextures[0].bindTexture();
++	spMain.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0f));
++	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0f));
++
++	// Render ground
++
++	tTextures[0].BindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 36, 6);
+ 	
+-	// Render Thor
++	// Render building
++
++	tTextures[1].BindTexture();
++	glDrawArrays(GL_TRIANGLES, 42, 24);
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-60, 0, 0));
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle+90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.setUniform("matrices.modelMatrix", &mModelMatrix);
+-	mdlThor.renderModel();
++	// Render cinema
++
++	fboTelevision.BindFramebufferTexture(0, true);
++	glDrawArrays(GL_TRIANGLE_STRIP, 66, 4);
+ 
+ 	// Render SpongeBob :D
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(60, 0, 0));
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle+180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(50, 50, 50));
+-	spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.setUniform("matrices.modelMatrix", &mModelMatrix);
+-	mdlSpongeBob.renderModel();
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(30, 0, 10));
++	mModelMatrix = glm::rotate(mModelMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20, 20, 20));
++	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	mdlSpongeBob.RenderModel();
+ 
+-	fGlobalAngle += appMain.sof(100.0f);
+-	cCamera.update();
++	cCamera.Update();
+ 
+ 	// PrGLint something over scene
+ 	
+ 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+ 	
+-	spFont2D.UseProgram();
++	spFont2D.UseProgram();
+ 	glDisable(GL_DEPTH_TEST);
+-	spFont2D.setUniform("matrices.projMatrix", oglControl->getOrthoMatrix());
++	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
+ 
+-	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
++	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+ 	
+-	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+-	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
++	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+-	ftFont.printFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
+-	ftFont.printFormatted(20, h-55, 20, "FPS: %d", oglControl->getFPS());
+-	ftFont.printFormatted(20, h-80, 20, "Model polygon count: %d", mdlThor.getPolygonCount());
+-	if(Keys::onekey('Q'))
++	ftFont.PrintFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
++	ftFont.PrintFormatted(20, h-55, 20, "FPS: %d", oglControl->GetFPS());
++	ftFont.PrintFormatted(20, h-80, 20, "Model polygon count (Thor): %d", mdlThor.GetPolygonCount());
++	ftFont.PrintFormatted(20, h-105, 20, "Model polygon count (SpongeBob): %d", mdlSpongeBob.GetPolygonCount());
++	if(Keys::Onekey('Q'))
+ 	{
+ 		bWireFrame = !bWireFrame;
+ 
+ 	}
+ 
+ 	glEnable(GL_DEPTH_TEST);
+-	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
++	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+ 
+-	oglControl->swapBuffers();
++	oglControl->SwapBuffers();
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:    releaseScene
++Name:    ReleaseScene
+ 
+ Params:  lpParam - Pointer to anything you want.
+ 
+@@ -298,19 +385,21 @@ Result:  Releases OpenGL scene.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid releaseScene(GLvoid* lpParam)
++GLvoid ReleaseScene(GLvoid* lpParam)
+ {
+-	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
+-	sbMainSkybox.releaseSkybox();
++	FOR(i, NUMTEXTURES)tTextures[i].DeleteTexture();
++	sbMainSkybox.DeleteSkybox();
+ 
+-	spMain.DeleteProgram();
+-	spOrtho2D.DeleteProgram();
+-	spFont2D.DeleteProgram();
+-	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
+-	ftFont.releaseFont();
++	spMain.DeleteProgram();
++	spOrtho2D.DeleteProgram();
++	spFont2D.DeleteProgram();
++	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
++	ftFont.DeleteFont();
+ 
+ 	glDeleteVertexArrays(1, uiVAOs);
+-	vboSceneObjects.releaseVBO();
+-	mdlThor.releaseModel();
+-	mdlSpongeBob.releaseModel();
++	vboSceneObjects.DeleteVBO();
++	mdlThor.DeleteModel();
++	mdlSpongeBob.DeleteModel();
++
++	fboTelevision.DeleteFramebuffer();
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/shaders.cpp 16_RenderingToATexture/shaders.cpp
+--- 15_OBJModelLoader/shaders.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/shaders.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -11,7 +11,7 @@ CShader::CShader()
+ 
+ /*-----------------------------------------------
+ 
+-Name:    LoadShader
++Name:    LoadShader
+ 
+ Params:  sFile - path to a file
+          a_iType - type of shader (fragment, vertex, geometry)
+@@ -20,11 +20,11 @@ Result:	Loads and compiles shader.
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CShader::LoadShader(string sFile, GLint a_iType)
++GLboolean CShader::LoadShader(string sFile, GLint a_iType)
+ {
+ 	vector<string> sLines;
+ 
+-	if(!getLinesFromFile(sFile, false, &sLines))return false;
++	if(!GetLinesFromFile(sFile, false, &sLines))return false;
+ 
+ 	const char** sProgram = new const char*[ESZ(sLines)];
+ 	FOR(i, ESZ(sLines))sProgram[i] = sLines[i].c_str();
+@@ -57,7 +57,7 @@ GLboolean CShader::LoadShader(string sFi
+ 
+ /*-----------------------------------------------
+ 
+-Name:    getLinesFromFile
++Name:    GetLinesFromFile
+ 
+ Params:  sFile - path to a file
+          bIncludePart - whether to add include part only
+@@ -67,7 +67,7 @@ Result:  Loads and adds include part.
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CShader::getLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult)
++GLboolean CShader::GetLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult)
+ {
+ 	FILE* fp = fopen(sFile.c_str(), "rt");
+ 	if(!fp)return false;
+@@ -103,7 +103,7 @@ GLboolean CShader::getLinesFromFile(stri
+ 			if(ESZ(sFileName) > 0 && sFileName[0] == '\"' && sFileName[ESZ(sFileName)-1] == '\"')
+ 			{
+ 				sFileName = sFileName.substr(1, ESZ(sFileName)-2);
+-				getLinesFromFile(sDirectory+sFileName, true, vResult);
++				GetLinesFromFile(sDirectory+sFileName, true, vResult);
+ 			}
+ 		}
+ 		else if(sFirst == "#include_part")
+@@ -120,7 +120,7 @@ GLboolean CShader::getLinesFromFile(stri
+ 
+ /*-----------------------------------------------
+ 
+-Name:	isLoaded
++Name:	IsLoaded
+ 
+ Params:	none
+ 
+@@ -128,14 +128,14 @@ Result:	True if shader was loaded and co
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CShader::isLoaded()
++GLboolean CShader::IsLoaded()
+ {
+ 	return bLoaded;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getShaderID
++Name:	GetShaderID
+ 
+ Params:	none
+ 
+@@ -143,14 +143,14 @@ Result:	Returns ID of a generated shader
+ 
+ /*---------------------------------------------*/
+ 
+-GLuint CShader::getShaderID()
++GLuint CShader::GetShaderID()
+ {
+ 	return uiShader;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	DeleteShader
++Name:	DeleteShader
+ 
+ Params:	none
+ 
+@@ -158,9 +158,9 @@ Result:	Deletes shader and frees memory
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CShader::DeleteShader()
++GLvoid CShader::DeleteShader()
+ {
+-	if(!isLoaded())return;
++	if(!IsLoaded())return;
+ 	bLoaded = false;
+ 	glDeleteShader(uiShader);
+ }
+@@ -172,7 +172,7 @@ CShaderProgram::CShaderProgram()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	CreateProgram
++Name:	CreateProgram
+ 
+ Params:	none
+ 
+@@ -180,14 +180,14 @@ Result:	Creates a new program.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CShaderProgram::CreateProgram()
++GLvoid CShaderProgram::CreateProgram()
+ {
+ 	uiProgram = glCreateProgram();
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	addShaderToProgram
++Name:	AddShaderToProgram
+ 
+ Params:	sShader - shader to add
+ 
+@@ -196,18 +196,18 @@ Result:	Adds a shader (like source file)
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CShaderProgram::addShaderToProgram(CShader* shShader)
++GLboolean CShaderProgram::AddShaderToProgram(CShader* shShader)
+ {
+-	if(!shShader->isLoaded())return false;
++	if(!shShader->IsLoaded())return false;
+ 
+-	glAttachShader(uiProgram, shShader->getShaderID());
++	glAttachShader(uiProgram, shShader->GetShaderID());
+ 
+ 	return true;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	linkProgram
++Name:	LinkProgram
+ 
+ Params:	none
+ 
+@@ -215,7 +215,7 @@ Result:	Performs final linkage of OpenGL
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CShaderProgram::linkProgram()
++GLboolean CShaderProgram::LinkProgram()
+ {
+ 	glLinkProgram(uiProgram);
+ 	GLint iLinkStatus;
+@@ -226,7 +226,7 @@ GLboolean CShaderProgram::linkProgram()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	DeleteProgram
++Name:	DeleteProgram
+ 
+ Params:	none
+ 
+@@ -234,7 +234,7 @@ Result:	Deletes program and frees memory
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CShaderProgram::DeleteProgram()
++GLvoid CShaderProgram::DeleteProgram()
+ {
+ 	if(!bLinked)return;
+ 	bLinked = false;
+@@ -243,7 +243,7 @@ GLvoid CShaderProgram::DeleteProgram()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	UseProgram
++Name:	UseProgram
+ 
+ Params:	none
+ 
+@@ -251,14 +251,14 @@ Result:	Tells OpenGL to use this program
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CShaderProgram::UseProgram()
++GLvoid CShaderProgram::UseProgram()
+ {
+ 	if(bLinked)glUseProgram(uiProgram);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:		GetProgramID
++Name:	GetProgramID
+ 
+ Params:	none
+ 
+@@ -266,31 +266,31 @@ Result:	Returns OpenGL generated shader
+ 
+ /*---------------------------------------------*/
+ 
+-GLuint CShaderProgram::GetProgramID()
++GLuint CShaderProgram::GetProgramID()
+ {
+ 	return uiProgram;
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:		uniformSetters
++Name:	UniformSetters
+ 
+ Params:	yes, there are :)
+ 
+ Result:	These set of functions set most common
+-			uniform variables.
++		types of uniform variables.
+ 
+ /*---------------------------------------------*/
+ 
+ // Setting floats
+ 
+-GLvoid CShaderProgram::setUniform(string sName, float* fValues, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, float* fValues, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform1fv(iLoc, iCount, fValues);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const GLfloat fValue)
++GLvoid CShaderProgram::SetUniform(string sName, const GLfloat fValue)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform1fv(iLoc, 1, &fValue);
+@@ -298,37 +298,37 @@ GLvoid CShaderProgram::setUniform(string
+ 
+ // Setting vectors
+ 
+-GLvoid CShaderProgram::setUniform(string sName, glm::vec2* vVectors, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, glm::vec2* vVectors, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform2fv(iLoc, iCount, (GLfloat*)vVectors);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const glm::vec2 vVector)
++GLvoid CShaderProgram::SetUniform(string sName, const glm::vec2 vVector)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform2fv(iLoc, 1, (GLfloat*)&vVector);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, glm::vec3* vVectors, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, glm::vec3* vVectors, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform3fv(iLoc, iCount, (GLfloat*)vVectors);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const glm::vec3 vVector)
++GLvoid CShaderProgram::SetUniform(string sName, const glm::vec3 vVector)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform3fv(iLoc, 1, (GLfloat*)&vVector);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, glm::vec4* vVectors, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, glm::vec4* vVectors, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform4fv(iLoc, iCount, (GLfloat*)vVectors);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const glm::vec4 vVector)
++GLvoid CShaderProgram::SetUniform(string sName, const glm::vec4 vVector)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform4fv(iLoc, 1, (GLfloat*)&vVector);
+@@ -336,13 +336,13 @@ GLvoid CShaderProgram::setUniform(string
+ 
+ // Setting 3x3 matrices
+ 
+-GLvoid CShaderProgram::setUniform(string sName, glm::mat3* mMatrices, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, glm::mat3* mMatrices, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniformMatrix3fv(iLoc, iCount, FALSE, (GLfloat*)mMatrices);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const glm::mat3 mMatrix)
++GLvoid CShaderProgram::SetUniform(string sName, const glm::mat3 mMatrix)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniformMatrix3fv(iLoc, 1, FALSE, (GLfloat*)&mMatrix);
+@@ -350,13 +350,13 @@ GLvoid CShaderProgram::setUniform(string
+ 
+ // Setting 4x4 matrices
+ 
+-GLvoid CShaderProgram::setUniform(string sName, glm::mat4* mMatrices, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, glm::mat4* mMatrices, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniformMatrix4fv(iLoc, iCount, FALSE, (GLfloat*)mMatrices);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const glm::mat4 mMatrix)
++GLvoid CShaderProgram::SetUniform(string sName, const glm::mat4 mMatrix)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniformMatrix4fv(iLoc, 1, FALSE, (GLfloat*)&mMatrix);
+@@ -364,13 +364,13 @@ GLvoid CShaderProgram::setUniform(string
+ 
+ // Setting integers
+ 
+-GLvoid CShaderProgram::setUniform(string sName, int* iValues, GLint iCount)
++GLvoid CShaderProgram::SetUniform(string sName, int* iValues, GLint iCount)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform1iv(iLoc, iCount, iValues);
+ }
+ 
+-GLvoid CShaderProgram::setUniform(string sName, const GLint iValue)
++GLvoid CShaderProgram::SetUniform(string sName, const GLint iValue)
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform1i(iLoc, iValue);
+diff -up 15_OBJModelLoader/shaders.h 16_RenderingToATexture/shaders.h
+--- 15_OBJModelLoader/shaders.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/shaders.h	2015-12-14 14:20:08.036309790 +0200
+@@ -2,7 +2,7 @@
+ 
+ /********************************
+ 
+-Class:	CShader
++Class:		CShader
+ 
+ Purpose:	Wraps OpenGL shader loading
+ 			and compiling.
+@@ -12,13 +12,13 @@ Purpose:	Wraps OpenGL shader loading
+ class CShader
+ {
+ public:
+-	GLboolean LoadShader(string sFile, GLint a_iType);
+-	GLvoid DeleteShader();
++	GLboolean LoadShader(string sFile, GLint a_iType);
++	GLvoid DeleteShader();
+ 
+-	GLboolean getLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult);
++	GLboolean GetLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult);
+ 
+-	GLboolean isLoaded();
+-	GLuint getShaderID();
++	GLboolean IsLoaded();
++	GLuint GetShaderID();
+ 
+ 	CShader();
+ 
+@@ -30,7 +30,7 @@ private:
+ 
+ /********************************
+ 
+-Class:	CShaderProgram
++Class:		CShaderProgram
+ 
+ Purpose:	Wraps OpenGL shader program
+ 			and make its usage easy.
+@@ -40,39 +40,39 @@ Purpose:	Wraps OpenGL shader program
+ class CShaderProgram
+ {
+ public:
+-	GLvoid CreateProgram();
+-	GLvoid DeleteProgram();
++	GLvoid CreateProgram();
++	GLvoid DeleteProgram();
+ 
+-	GLboolean addShaderToProgram(CShader* shShader);
+-	GLboolean linkProgram();
++	GLboolean AddShaderToProgram(CShader* shShader);
++	GLboolean LinkProgram();
+ 
+-	GLvoid UseProgram();
++	GLvoid UseProgram();
+ 
+-	GLuint GetProgramID();
++	GLuint GetProgramID();
+ 
+ 	// Setting vectors
+-	GLvoid setUniform(string sName, glm::vec2* vVectors, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const glm::vec2 vVector);
+-	GLvoid setUniform(string sName, glm::vec3* vVectors, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const glm::vec3 vVector);
+-	GLvoid setUniform(string sName, glm::vec4* vVectors, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const glm::vec4 vVector);
++	GLvoid SetUniform(string sName, glm::vec2* vVectors, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const glm::vec2 vVector);
++	GLvoid SetUniform(string sName, glm::vec3* vVectors, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const glm::vec3 vVector);
++	GLvoid SetUniform(string sName, glm::vec4* vVectors, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const glm::vec4 vVector);
+ 
+ 	// Setting floats
+-	GLvoid setUniform(string sName, float* fValues, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const GLfloat fValue);
++	GLvoid SetUniform(string sName, float* fValues, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const GLfloat fValue);
+ 
+ 	// Setting 3x3 matrices
+-	GLvoid setUniform(string sName, glm::mat3* mMatrices, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const glm::mat3 mMatrix);
++	GLvoid SetUniform(string sName, glm::mat3* mMatrices, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const glm::mat3 mMatrix);
+ 
+ 	// Setting 4x4 matrices
+-	GLvoid setUniform(string sName, glm::mat4* mMatrices, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const glm::mat4 mMatrix);
++	GLvoid SetUniform(string sName, glm::mat4* mMatrices, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const glm::mat4 mMatrix);
+ 
+ 	// Setting integers
+-	GLvoid setUniform(string sName, int* iValues, GLint iCount = 1);
+-	GLvoid setUniform(string sName, const GLint iValue);
++	GLvoid SetUniform(string sName, int* iValues, GLint iCount = 1);
++	GLvoid SetUniform(string sName, const GLint iValue);
+ 
+ 	CShaderProgram();
+ 
+diff -up 15_OBJModelLoader/skybox.cpp 16_RenderingToATexture/skybox.cpp
+--- 15_OBJModelLoader/skybox.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/skybox.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -4,7 +4,7 @@
+ 
+ /*-----------------------------------------------
+ 
+-Name:	loadSkybox
++Name:	LoadSkybox
+ 
+ Params:	paths of skybox pictures
+ 
+@@ -12,14 +12,14 @@ Result:	Loads skybox and creates VAO and
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CSkybox::loadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom)
++GLvoid CSkybox::LoadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom)
+ {
+-	tTextures[0].loadTexture2D(a_sDirectory+a_sFront);
+-	tTextures[1].loadTexture2D(a_sDirectory+a_sBack);
+-	tTextures[2].loadTexture2D(a_sDirectory+a_sLeft);
+-	tTextures[3].loadTexture2D(a_sDirectory+a_sRight);
+-	tTextures[4].loadTexture2D(a_sDirectory+a_sTop);
+-	tTextures[5].loadTexture2D(a_sDirectory+a_sBottom);
++	tTextures[0].LoadTexture2D(a_sDirectory+a_sFront);
++	tTextures[1].LoadTexture2D(a_sDirectory+a_sBack);
++	tTextures[2].LoadTexture2D(a_sDirectory+a_sLeft);
++	tTextures[3].LoadTexture2D(a_sDirectory+a_sRight);
++	tTextures[4].LoadTexture2D(a_sDirectory+a_sTop);
++	tTextures[5].LoadTexture2D(a_sDirectory+a_sBottom);
+ 
+ 	sDirectory = a_sDirectory;
+ 
+@@ -32,16 +32,16 @@ GLvoid CSkybox::loadSkybox(string a_sDir
+ 
+ 	FOR(i, 6)
+ 	{
+-		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR);
+-		tTextures[i].setSamplerParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+-		tTextures[i].setSamplerParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++		tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR);
++		tTextures[i].SetSamplerParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++		tTextures[i].SetSamplerParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 	}
+ 
+ 	glGenVertexArrays(1, &uiVAO);
+ 	glBindVertexArray(uiVAO);
+ 
+-	vboRenderData.createVBO();
+-	vboRenderData.bindVBO();
++	vboRenderData.CreateVBO();
++	vboRenderData.BindVBO();
+ 
+ 	glm::vec3 vSkyBoxVertices[24] = 
+ 	{
+@@ -75,12 +75,12 @@ GLvoid CSkybox::loadSkybox(string a_sDir
+ 
+ 	FOR(i, 24)
+ 	{
+-		vboRenderData.addData(&vSkyBoxVertices[i], sizeof(glm::vec3));
+-		vboRenderData.addData(&vSkyBoxTexCoords[i%4], sizeof(glm::vec2));
+-		vboRenderData.addData(&vSkyBoxNormals[i/4], sizeof(glm::vec3));
++		vboRenderData.AddData(&vSkyBoxVertices[i], sizeof(glm::vec3));
++		vboRenderData.AddData(&vSkyBoxTexCoords[i%4], sizeof(glm::vec2));
++		vboRenderData.AddData(&vSkyBoxNormals[i/4], sizeof(glm::vec3));
+ 	}
+ 
+-	vboRenderData.uploadDataToGPU(GL_STATIC_DRAW);
++	vboRenderData.UploadDataToGPU(GL_STATIC_DRAW);
+ 
+ 	// Vertex positions
+ 	glEnableVertexAttribArray(0);
+@@ -95,7 +95,7 @@ GLvoid CSkybox::loadSkybox(string a_sDir
+ 
+ /*-----------------------------------------------
+ 
+-Name:	renderSkybox
++Name:	RenderSkybox
+ 
+ Params:	none
+ 
+@@ -103,13 +103,13 @@ Result: Guess what it does :)
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CSkybox::renderSkybox()
++GLvoid CSkybox::RenderSkybox()
+ {
+ 	glDepthMask(0);
+ 	glBindVertexArray(uiVAO);
+ 	FOR(i, 6)
+ 	{
+-		tTextures[i].bindTexture();
++		tTextures[i].BindTexture();
+ 		glDrawArrays(GL_TRIANGLE_STRIP, i*4, 4);
+ 	}
+ 	glDepthMask(1);
+@@ -117,17 +117,17 @@ GLvoid CSkybox::renderSkybox()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	loadSkybox
++Name:	DeleteSkybox
+ 
+-Params:	paths of skybox pictures
++Params:	none
+ 
+-Result:	Loads skybox and creates VAO and VBO for it.
++Result:	Deletes skybox and all associated memory.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CSkybox::releaseSkybox()
++GLvoid CSkybox::DeleteSkybox()
+ {
+-	FOR(i, 6)tTextures[i].releaseTexture();
++	FOR(i, 6)tTextures[i].DeleteTexture();
+ 	glDeleteVertexArrays(1, &uiVAO);
+-	vboRenderData.releaseVBO();
++	vboRenderData.DeleteVBO();
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/skybox.h 16_RenderingToATexture/skybox.h
+--- 15_OBJModelLoader/skybox.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/skybox.h	2015-12-14 14:20:08.036309790 +0200
+@@ -5,19 +5,19 @@
+ 
+ /********************************
+ 
+-Class:	CSkybox
++Class:		CSkybox
+ 
+-Purpose: Class for using skybox.
++Purpose:	Class for using skybox.
+ 
+ ********************************/
+ 
+ class CSkybox
+ {
+ public:
+-	GLvoid loadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom);
+-	GLvoid renderSkybox();
++	GLvoid LoadSkybox(string a_sDirectory, string a_sFront, string a_sBack, string a_sLeft, string a_sRight, string a_sTop, string a_sBottom);
++	GLvoid RenderSkybox();
+ 
+-	GLvoid releaseSkybox();
++	GLvoid DeleteSkybox();
+ private:
+ 	GLuint uiVAO;
+ 	CVertexBufferObject vboRenderData;
+diff -up 15_OBJModelLoader/static_geometry.cpp 16_RenderingToATexture/static_geometry.cpp
+--- 15_OBJModelLoader/static_geometry.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/static_geometry.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -2,7 +2,7 @@
+ 
+ #include "static_geometry.h"
+ 
+-GLint generateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube)
++GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube)
+ {
+ 	GLfloat fAddAngleAround = 360.0f/(float)iSubDivAround;
+ 	GLfloat fAddAngleTube = 360.0f/(float)iSubDivTube;
+@@ -61,9 +61,9 @@ GLint generateTorus(CVertexBufferObject
+ 			FOR(i, 6)
+ 			{
+ 				GLint index = iIndices[i];
+-				vboDest.addData(&vQuadPoints[index], sizeof(glm::vec3));
+-				vboDest.addData(&vTexCoords[index], sizeof(glm::vec2));
+-				vboDest.addData(&vNormals[index], sizeof(glm::vec3));
++				vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
++				vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
++				vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
+ 			}
+ 			iFacesAdded += 2; // Keep count of added faces
+ 			fCurAngleTube += fAddAngleTube;
+@@ -121,4 +121,14 @@ glm::vec3 vBuilding[24] =
+ 	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(-75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 0.0f, 75.0f), glm::vec3(-75.0f, 0.0f, 75.0f), glm::vec3(-75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 75.0f, -75.0f),
+ 	glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, 75.0f), glm::vec3(75.0f, 75.0f, 75.0f),
+ 	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 75.0f, -75.0f)
++};
++
++glm::vec3 vCinema[4] = 
++{
++	glm::vec3(-30.0f, 40.0f, -70.0f), glm::vec3(-30.0f, 10.0f, -70.0f), glm::vec3(30.0f, 40.0f, -70.0f), glm::vec3(30.0f, 10.0f, -70.0f)
++};
++
++glm::vec2 vCinemaCoords[4] = 
++{
++	glm::vec2(0, 1), glm::vec2(0, 0), glm::vec2(1, 1), glm::vec2(1, 0)
+ };
+\ No newline at end of file
+diff -up 15_OBJModelLoader/static_geometry.h 16_RenderingToATexture/static_geometry.h
+--- 15_OBJModelLoader/static_geometry.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/static_geometry.h	2015-12-14 14:20:08.036309790 +0200
+@@ -10,4 +10,7 @@ extern glm::vec3 vGround[6];
+ extern glm::vec3 vBuildingNormals[4];
+ extern glm::vec3 vBuilding[24];
+ 
+-GLint generateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+\ No newline at end of file
++extern glm::vec3 vCinema[4];
++extern glm::vec2 vCinemaCoords[4]; 
++
++GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+\ No newline at end of file
+diff -up 15_OBJModelLoader/texture.cpp 16_RenderingToATexture/texture.cpp
+--- 15_OBJModelLoader/texture.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/texture.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -11,9 +11,24 @@ CTexture::CTexture()
+ 	bMipMapsGenerated = false;
+ }
+ 
++GLvoid CTexture::CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format)
++{
++	glGenTextures(1, &uiTexture);
++	glBindTexture(GL_TEXTURE_2D, uiTexture);
++	if(format == GL_RGBA || format == GL_BGRA)
++		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, NULL);
++	// We must handle this because of internal format parameter
++	else if(format == GL_RGB || format == GL_BGR)
++		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, NULL);
++	else
++		glTexImage2D(GL_TEXTURE_2D, 0, format, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, NULL);
++	
++	glGenSamplers(1, &uiSampler);
++}
++
+ /*-----------------------------------------------
+ 
+-Name:	createFromData
++Name:	CreateFromData
+ 
+ Params:	a_sPath - path to the texture
+ 		format - format of data
+@@ -23,13 +38,13 @@ Result:	Creates texture from provided da
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CTexture::createFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
++GLvoid CTexture::CreateFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
+ {
+ 	// Generate an OpenGL texture ID for this texture
+ 	glGenTextures(1, &uiTexture);
+ 	glBindTexture(GL_TEXTURE_2D, uiTexture);
+ 	if(format == GL_RGBA || format == GL_BGRA)
+-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, bData);
++		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, bData);
+ 	// We must handle this because of internal format parameter
+ 	else if(format == GL_RGB || format == GL_BGR)
+ 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, bData);
+@@ -47,7 +62,7 @@ GLvoid CTexture::createFromData(GL_UNSIG
+ 
+ /*-----------------------------------------------
+ 
+-Name:	loadTexture2D
++Name:	LoadTexture2D
+ 
+ Params:	a_sPath - path to the texture
+ 		bGenerateMipMaps - whether to create mipmaps
+@@ -57,7 +72,7 @@ Result:	Loads texture from a file, suppo
+ 
+ /*---------------------------------------------*/
+ 
+-GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
++GLboolean CTexture::LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
+ {
+ 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+ 	FIBITMAP* dib(0);
+@@ -86,7 +101,7 @@ GLboolean CTexture::loadTexture2D(string
+ 	if(FreeImage_GetBPP(dib) == 32)format = GL_RGBA;
+ 	if(FreeImage_GetBPP(dib) == 24)format = GL_BGR;
+ 	if(FreeImage_GetBPP(dib) == 8)format = GL_LUMINANCE;
+-	createFromData(bDataPointer, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib), FreeImage_GetBPP(dib), format, bGenerateMipMaps);
++	CreateFromData(bDataPointer, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib), FreeImage_GetBPP(dib), format, bGenerateMipMaps);
+ 	
+ 	FreeImage_Unload(dib);
+ 
+@@ -95,14 +110,14 @@ GLboolean CTexture::loadTexture2D(string
+ 	return true; // Success
+ }
+ 
+-GLvoid CTexture::setSamplerParameter(GLenum parameter, GLenum value)
++GLvoid CTexture::SetSamplerParameter(GLenum parameter, GLenum value)
+ {
+ 	glSamplerParameteri(uiSampler, parameter, value);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	setFiltering
++Name:	SetFiltering
+ 
+ Params:	tfMagnification - mag. filter, must be from
+ 							ETextureFiltering enum
+@@ -114,8 +129,10 @@ Result:	Sets magnification and minificat
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CTexture::setFiltering(GLint a_tfMagnification, GLint a_tfMinification)
++GLvoid CTexture::SetFiltering(GLint a_tfMagnification, GLint a_tfMinification)
+ {
++	glBindSampler(0, uiSampler);
++
+ 	// Set magnification filter
+ 	if(a_tfMagnification == TEXTURE_FILTER_MAG_NEAREST)
+ 		glSamplerParameteri(uiSampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+@@ -140,7 +157,7 @@ GLvoid CTexture::setFiltering(GLint a_tf
+ 
+ /*-----------------------------------------------
+ 
+-Name:	bindTexture
++Name:	BindTexture
+ 
+ Params:	iTextureUnit - texture unit to bind texture to
+ 
+@@ -148,7 +165,7 @@ Result:	Guess what it does :)
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CTexture::bindTexture(GLint iTextureUnit)
++GLvoid CTexture::BindTexture(GLint iTextureUnit)
+ {
+ 	glActiveTexture(GL_TEXTURE0+iTextureUnit);
+ 	glBindTexture(GL_TEXTURE_2D, uiTexture);
+@@ -157,7 +174,7 @@ GLvoid CTexture::bindTexture(GLint iText
+ 
+ /*-----------------------------------------------
+ 
+-Name:		releaseTexture
++Name:	DeleteTexture
+ 
+ Params:	none
+ 
+@@ -165,33 +182,48 @@ Result:	Frees all memory used by texture
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CTexture::releaseTexture()
++GLvoid CTexture::DeleteTexture()
+ {
+ 	glDeleteSamplers(1, &uiSampler);
+ 	glDeleteTextures(1, &uiTexture);
+ }
+ 
+-GLint CTexture::getMinificationFilter()
++/*-----------------------------------------------
++
++Name:	Getters
++
++Params:	none
++
++Result:	... They get something :D
++
++/*---------------------------------------------*/
++
++GLint CTexture::GetMinificationFilter()
+ {
+ 	return tfMinification;
+ }
+ 
+-GLint CTexture::getMagnificationFilter()
++GLint CTexture::GetMagnificationFilter()
+ {
+ 	return tfMagnification;
+ }
+ 
+-GLint CTexture::getWidth()
++GLint CTexture::GetWidth()
+ {
+ 	return iWidth;
+ }
+ 
+-GLint CTexture::getHeight()
++GLint CTexture::GetHeight()
+ {
+ 	return iHeight;
+ }
+ 
+-GLint CTexture::getBPP()
++GLint CTexture::GetBPP()
+ {
+ 	return iBPP;
++}
++
++GLuint CTexture::GetTextureID()
++{
++	return uiTexture;
+ }
+\ No newline at end of file
+diff -up 15_OBJModelLoader/texture.h 16_RenderingToATexture/texture.h
+--- 15_OBJModelLoader/texture.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/texture.h	2015-12-14 14:20:08.036309790 +0200
+@@ -13,7 +13,7 @@ enum ETextureFiltering
+ 
+ /********************************
+ 
+-Class:	CTexture
++Class:		CTexture
+ 
+ Purpose:	Wraps OpenGL texture
+ 			object and performs
+@@ -24,25 +24,30 @@ Purpose:	Wraps OpenGL texture
+ class CTexture
+ {
+ public:
+-	GLvoid createFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
+-	GLboolean loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
+-	GLvoid bindTexture(GLint iTextureUnit = 0);
++	GLvoid CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format);
++	GLvoid CreateFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
++	
++	GLboolean LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
++	GLvoid BindTexture(GLint iTextureUnit = 0);
+ 
+-	GLvoid setFiltering(GLint a_tfMagnification, GLint a_tfMinification);
++	GLvoid SetFiltering(GLint a_tfMagnification, GLint a_tfMinification);
+ 
+-	GLvoid setSamplerParameter(GLenum parameter, GLenum value);
++	GLvoid SetSamplerParameter(GLenum parameter, GLenum value);
+ 
+-	GLint getMinificationFilter();
+-	GLint getMagnificationFilter();
++	GLint GetMinificationFilter();
++	GLint GetMagnificationFilter();
+ 
+-	GLint getWidth();
+-	GLint getHeight();
+-	GLint getBPP();
++	GLint GetWidth();
++	GLint GetHeight();
++	GLint GetBPP();
+ 
+-	GLvoid releaseTexture();
++	GLuint GetTextureID();
++
++	GLvoid DeleteTexture();
+ 
+ 	CTexture();
+ private:
++
+ 	GLint iWidth, iHeight, iBPP; // Texture width, height, and bytes per pixel
+ 	GLuint uiTexture; // Texture name
+ 	GLuint uiSampler; // Sampler name
+diff -up 15_OBJModelLoader/vertexBufferObject.cpp 16_RenderingToATexture/vertexBufferObject.cpp
+--- 15_OBJModelLoader/vertexBufferObject.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/vertexBufferObject.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -9,7 +9,7 @@ CVertexBufferObject::CVertexBufferObject
+ 
+ /*-----------------------------------------------
+ 
+-Name:	createVBO
++Name:	CreateVBO
+ 
+ Params:	a_iSize - initial size of buffer
+ 
+@@ -17,7 +17,7 @@ Result:	Creates vertex buffer object.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CVertexBufferObject::createVBO(GLint a_iSize)
++GLvoid CVertexBufferObject::CreateVBO(GLint a_iSize)
+ {
+ 	glGenBuffers(1, &uiBuffer);
+ 	data.reserve(a_iSize);
+@@ -26,7 +26,7 @@ GLvoid CVertexBufferObject::createVBO(GL
+ 
+ /*-----------------------------------------------
+ 
+-Name:		releaseVBO
++Name:	DeleteVBO
+ 
+ Params:	none
+ 
+@@ -34,7 +34,7 @@ Result:	Releases VBO and frees all memor
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CVertexBufferObject::releaseVBO()
++GLvoid CVertexBufferObject::DeleteVBO()
+ {
+ 	glDeleteBuffers(1, &uiBuffer);
+ 	bDataUploaded = false;
+@@ -52,7 +52,7 @@ Result:	Maps whole buffer data to memory
+ 
+ /*---------------------------------------------*/
+ 
+-void* CVertexBufferObject::mapBufferToMemory(GLint iUsageHint)
++void* CVertexBufferObject::MapBufferToMemory(GLint iUsageHint)
+ {
+ 	if(!bDataUploaded)return NULL;
+ 	void* ptrRes = glMapBuffer(iBufferType, iUsageHint);
+@@ -61,7 +61,7 @@ void* CVertexBufferObject::mapBufferToMe
+ 
+ /*-----------------------------------------------
+ 
+-Name:	mapSubBufferToMemory
++Name:	MapSubBufferToMemory
+ 
+ Params:	iUsageHGLint - GL_READ_ONLY, GL_WRITE_ONLY...
+ 		uiOffset - data offset (from where should
+@@ -72,7 +72,7 @@ Result:	Maps specified part of buffer to
+ 
+ /*---------------------------------------------*/
+ 
+-void* CVertexBufferObject::mapSubBufferToMemory(GLint iUsageHint, GLuint uiOffset, GLuint uiLength)
++void* CVertexBufferObject::MapSubBufferToMemory(GLint iUsageHint, GLuint uiOffset, GLuint uiLength)
+ {
+ 	if(!bDataUploaded)return NULL;
+ 	void* ptrRes = glMapBufferRange(iBufferType, uiOffset, uiLength, iUsageHint);
+@@ -81,7 +81,7 @@ void* CVertexBufferObject::mapSubBufferT
+ 
+ /*-----------------------------------------------
+ 
+-Name:	unmapBuffer
++Name:	UnmapBuffer
+ 
+ Params:	none
+ 
+@@ -89,14 +89,14 @@ Result:	Unmaps previously mapped buffer.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CVertexBufferObject::unmapBuffer()
++GLvoid CVertexBufferObject::UnmapBuffer()
+ {
+ 	glUnmapBuffer(iBufferType);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	bindVBO
++Name:	BindVBO
+ 
+ Params:	a_iBufferType - buffer type (GL_ARRAY_BUFFER, ...)
+ 
+@@ -104,7 +104,7 @@ Result:	Binds this VBO.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CVertexBufferObject::bindVBO(GLint a_iBufferType)
++GLvoid CVertexBufferObject::BindVBO(GLint a_iBufferType)
+ {
+ 	iBufferType = a_iBufferType;
+ 	glBindBuffer(iBufferType, uiBuffer);
+@@ -112,7 +112,7 @@ GLvoid CVertexBufferObject::bindVBO(GLin
+ 
+ /*-----------------------------------------------
+ 
+-Name:	uploadDataToGPU
++Name:	UploadDataToGPU
+ 
+ Params:	iUsageHGLint - GL_STATIC_DRAW, GL_DYNAMIC_DRAW...
+ 
+@@ -120,7 +120,7 @@ Result:	Sends data to GPU.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CVertexBufferObject::uploadDataToGPU(GLint iDrawingHint)
++GLvoid CVertexBufferObject::UploadDataToGPU(GLint iDrawingHint)
+ {
+ 	glBufferData(iBufferType, data.size(), &data[0], iDrawingHint);
+ 	bDataUploaded = true;
+@@ -129,31 +129,31 @@ GLvoid CVertexBufferObject::uploadDataTo
+ 
+ /*-----------------------------------------------
+ 
+-Name:		addData
++Name:	AddData
+ 
+ Params:	ptrData - pointer to arbitrary data
+-			uiDataSize - data size in bytes
++		uiDataSize - data size in bytes
+ 
+ Result:	Adds arbitrary data to VBO.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid CVertexBufferObject::addData(void* ptrData, GLuint uiDataSize)
++GLvoid CVertexBufferObject::AddData(void* ptrData, GLuint uiDataSize)
+ {
+ 	data.insert(data.end(), (GL_UNSIGNED_BYTE*)ptrData, (GL_UNSIGNED_BYTE*)ptrData+uiDataSize);
+ }
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getDataPointer
++Name:	GetDataPointer
+ 
+ Params:	none
+ 
+-Result:	Returns data pointer (only before uplading).
++Result:	Returns data pointer (only before uploading).
+ 
+ /*---------------------------------------------*/
+ 
+-void* CVertexBufferObject::getDataPointer()
++void* CVertexBufferObject::GetDataPointer()
+ {
+ 	if(bDataUploaded)return NULL;
+ 	return (void*)data[0];
+@@ -161,7 +161,7 @@ void* CVertexBufferObject::getDataPointe
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getBuffer
++Name:	GetBufferID
+ 
+ Params:	none
+ 
+@@ -169,7 +169,7 @@ Result:	Returns VBO ID.
+ 
+ /*---------------------------------------------*/
+ 
+-GLuint CVertexBufferObject::getBuffer()
++GLuint CVertexBufferObject::GetBufferID()
+ {
+ 	return uiBuffer;
+ }
+diff -up 15_OBJModelLoader/vertexBufferObject.h 16_RenderingToATexture/vertexBufferObject.h
+--- 15_OBJModelLoader/vertexBufferObject.h	2015-12-14 14:20:08.032309790 +0200
++++ 16_RenderingToATexture/vertexBufferObject.h	2015-12-14 14:20:08.036309790 +0200
+@@ -2,7 +2,7 @@
+ 
+ /********************************
+ 
+-Class:	CVertexBufferObject
++Class:		CVertexBufferObject
+ 
+ Purpose:	Wraps OpenGL vertex buffer
+ 			object.
+@@ -12,20 +12,20 @@ Purpose:	Wraps OpenGL vertex buffer
+ class CVertexBufferObject
+ {
+ public:
+-	GLvoid createVBO(GLint a_iSize = 0);
+-	GLvoid releaseVBO();
++	GLvoid CreateVBO(GLint a_iSize = 0);
++	GLvoid DeleteVBO();
+ 
+-	void* mapBufferToMemory(GLint iUsageHint);
+-	void* mapSubBufferToMemory(GLint iUsageHint, GLuint uiOffset, GLuint uiLength);
+-	GLvoid unmapBuffer();
++	void* MapBufferToMemory(GLint iUsageHint);
++	void* MapSubBufferToMemory(GLint iUsageHint, GLuint uiOffset, GLuint uiLength);
++	GLvoid UnmapBuffer();
+ 
+-	GLvoid bindVBO(GLint a_iBufferType = GL_ARRAY_BUFFER);
+-	GLvoid uploadDataToGPU(GLint iUsageHint);
++	GLvoid BindVBO(GLint a_iBufferType = GL_ARRAY_BUFFER);
++	GLvoid UploadDataToGPU(GLint iUsageHint);
+ 	
+-	GLvoid addData(void* ptrData, GLuint uiDataSize);
++	GLvoid AddData(void* ptrData, GLuint uiDataSize);
+ 
+-	void* getDataPointer();
+-	GLuint getBuffer();
++	void* GetDataPointer();
++	GLuint GetBufferID();
+ 
+ 	CVertexBufferObject();
+ 

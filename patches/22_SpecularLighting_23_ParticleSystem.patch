@@ -1,0 +1,172 @@
+diff -up 22_SpecularLighting/Lin_OpenGLApp.cpp 23_ParticleSystem/Lin_OpenGLApp.cpp
+--- 22_SpecularLighting/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.052309790 +0200
++++ 23_ParticleSystem/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.056309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("22_opengl_3_3"))
++	if(!appMain.InitializeApp("23_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("22.) Specular Lighting - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("23.) Particle System - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+Only in 23_ParticleSystem/: particle_system_tf.cpp
+Only in 23_ParticleSystem/: particle_system_tf.h
+diff -up 22_SpecularLighting/RenderScene.cpp 23_ParticleSystem/RenderScene.cpp
+--- 22_SpecularLighting/RenderScene.cpp	2015-12-14 14:20:08.052309790 +0200
++++ 23_ParticleSystem/RenderScene.cpp	2015-12-14 14:20:08.056309790 +0200
+@@ -20,6 +20,8 @@
+ 
+ #include "static_geometry.h"
+ 
++#include "particle_system_tf.h"
++
+ 
+ CVertexBufferObject vboSceneObjects;
+ GLuint uiVAOSceneObjects;
+@@ -38,7 +40,9 @@ CMultiLayeredHeightmap hmWorld;
+ 
+ GLint iTorusFaces;
+ 
+-GLboolean bDisplayNormals = true; // Do not display normals by default
++GLboolean bDisplayNormals = false; // Do not display normals by default
++
++CParticleSystemTransformFeedback psMainParticleSystem;
+ 
+ /*-----------------------------------------------
+ 
+@@ -93,20 +97,32 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.LoadSkybox("data/skyboxes/nuke/", "nuke_front.jpg", "nuke_back.jpg", "nuke_right.jpg", "nuke_left.jpg", "nuke_top.jpg", "nuke_top.jpg");
++	sbMainSkybox.LoadSkybox("data/skyboxes/bluefreeze/", "bluefreeze_front.jpg", "bluefreeze_back.jpg", "bluefreeze_right.jpg", "bluefreeze_left.jpg", "bluefreeze_top.jpg", "bluefreeze_top.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f, 0);
+ 
+ 	amModels[0].LoadModelFromFile("data/models/house/house.3ds");
+-	amModels[1].LoadModelFromFile("data/models/small_fighter_1/small_fighter_1.3DS");
++	amModels[1].LoadModelFromFile("data/models/treasure_chest_obj/treasure_chest.obj");
+ 	
+ 	CAssimpModel::FinalizeVBO();
+-
+-
+ 	CMultiLayeredHeightmap::LoadTerrainShaderProgram();
+ 	hmWorld.LoadHeightMapFromImage("data/worlds/world_like_in_21th_tutorial.bmp");
+ 
+ 	matShiny = CMaterial(1.0f, 32.0f);
++
++	psMainParticleSystem.InitalizeParticleSystem();
++
++	psMainParticleSystem.SetGeneratorProperties(
++		glm::vec3(-10.0f, 17.5f, 0.0f), // Where the particles are generated
++		glm::vec3(-5, 0, -5), // Minimal velocity
++		glm::vec3(5, 20, 5), // Maximal velocity
++		glm::vec3(0, -5, 0), // Gravity force applied to particles
++		glm::vec3(0.0f, 0.5f, 1.0f), // Color (light blue)
++		1.5f, // Minimum lifetime in seconds
++		3.0f, // Maximum lifetime in seconds
++		0.75f, // Rendered size
++		0.02f, // Spawn every 0.05 seconds
++		30); // And spawn 30 particles
+ }
+ 
+ /*-----------------------------------------------
+@@ -170,11 +186,10 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 	amModels[0].RenderModel();
+ 	
+-	// ... and a jet fighter
++	// ... and a treasure chest
+ 
+-	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-20.0f, 72.0f, 50));
+-	mModel = glm::rotate(mModel, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+-	mModel = glm::scale(mModel, glm::vec3(1, 1, 1));
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-10.0f, 17.5f, 0));
++	mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
+ 
+ 	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 	amModels[1].RenderModel();
+@@ -209,7 +224,6 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	fGlobalAngle += appMain.sof(50.0f);
+ 
+-
+ 	// Now we're going to render terrain
+ 
+ 	hmWorld.SetRenderSize(300.0f, 35.0f, 300.0f);
+@@ -259,10 +273,10 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 		amModels[0].RenderModel(GL_POINTS);
+ 
+-		// ... and the jet fighter again
++		// ... and the treasure chest again
+ 
+-		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-20.0f, 72.0f, 50));
+-		mModel = glm::rotate(mModel, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
++		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-10.0f, 17.5f, 0));
++		mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
+ 
+ 		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 		amModels[1].RenderModel(GL_POINTS);
+@@ -295,6 +309,13 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 		hmWorld.RenderHeightmapForNormals();
+ 	}
+ 
++	tTextures[6].BindTexture(); 
++
++	psMainParticleSystem.SetMatrices(oglControl->GetProjectionMatrix(), cCamera.vEye, cCamera.vView, cCamera.vUp);
++
++	psMainParticleSystem.UpdateParticles(appMain.sof(1.0f));
++	psMainParticleSystem.RenderParticles();
++
+ 	cCamera.Update();
+ 
+ 	// PrGLint something over scene
+@@ -309,7 +330,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+ 	ftFont.PrintFormatted(20, h-30, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-80, 20, "Heightmap size: %dx%d", hmWorld.GetNumHeightmapRows(), hmWorld.GetNumHeightmapCols());
++	ftFont.PrintFormatted(20, h-80, 20, "Particles: %d", psMainParticleSystem.GetNumParticles());
+ 
+ 	ftFont.PrintFormatted(20, h-110, 20, "Specular Intensity: %.2f (Press 'Q' and 'E' to change)", matShiny.fSpecularIntensity);
+ 	if(Keys::Key('Q'))matShiny.fSpecularIntensity -= appMain.sof(0.2f);
+@@ -319,7 +340,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	if(Keys::Key('Z'))matShiny.fSpecularPower -= appMain.sof(8.0f);
+ 	if(Keys::Key('C'))matShiny.fSpecularPower += appMain.sof(8.0f);
+ 
+-	ftFont.PrintFormatted(20, h-200, 20, "Displaying Normals: %s (Press 'N' to toggle)", bDisplayNormals ? "Yes" : "Nah");
++	ftFont.PrintFormatted(20, h-200, 20, "Displaying Normals: %s (Press 'N' to toggle)", bDisplayNormals ? "Yes" : "Nope");
+ 	if(Keys::Onekey('N'))bDisplayNormals = !bDisplayNormals;
+ 
+ 	glEnable(GL_DEPTH_TEST);	
+diff -up 22_SpecularLighting/texture.cpp 23_ParticleSystem/texture.cpp
+--- 22_SpecularLighting/texture.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 23_ParticleSystem/texture.cpp	2015-12-14 14:20:08.056309790 +0200
+@@ -289,7 +289,7 @@ GLvoid LoadAllTextures()
+ {
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"metalplate.jpg", "scifi_metal.jpg", "scifi_ceiling.jpg", "circuits.jpg", "path.png", "sand.jpg"};
++	string sTextureNames[] = {"fungus.dds", "sand_grass_02.jpg", "rock_2_4w.jpg", "sand.jpg", "path.png", "scifi_metal.jpg", "particle.bmp"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+diff -up 22_SpecularLighting/texture.h 23_ParticleSystem/texture.h
+--- 22_SpecularLighting/texture.h	2015-12-14 14:20:08.056309790 +0200
++++ 23_ParticleSystem/texture.h	2015-12-14 14:20:08.056309790 +0200
+@@ -62,6 +62,6 @@ private:
+ 	string sPath;
+ };
+ 
+-#define NUMTEXTURES 6
++#define NUMTEXTURES 7
+ extern CTexture tTextures[NUMTEXTURES];
+ GLvoid LoadAllTextures();
+\ No newline at end of file

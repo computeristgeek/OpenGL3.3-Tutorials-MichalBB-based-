@@ -1,0 +1,446 @@
+diff -up 17_Spotlight/Lin_OpenGLApp.cpp 18_3DPickingPt_1/Lin_OpenGLApp.cpp
+--- 17_Spotlight/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 18_3DPickingPt_1/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.040309790 +0200
+@@ -182,8 +182,6 @@ GLboolean COpenGLWinApp::CreateAppWindow
+ 	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+ 	UpdateWindow(hWnd);
+ 
+-	ShowCursor(FALSE);
+-
+ 	return true;
+ }
+ 
+@@ -321,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("17_opengl_3_3"))
++	if(!appMain.InitializeApp("18_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("17.) Spotlight - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("18.) 3D Picking pt. 1 - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+diff -up 17_Spotlight/objModel.cpp 18_3DPickingPt_1/objModel.cpp
+--- 17_Spotlight/objModel.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 18_3DPickingPt_1/objModel.cpp	2015-12-14 14:20:08.040309790 +0200
+@@ -81,6 +81,10 @@ GLboolean CObjModel::LoadModel(string sF
+ 
+ 	iNumFaces = 0;
+ 
++	// Bounding box data - two opposite corners of model's bounding box
++	glm::vec3 vLowerLeftFront = glm::vec3(999999.0f, 999999.0f, -999999.0f),
++		vUpperRightBack = glm::vec3(-999999.0f, -999999.0f, 999999.0f);
++
+ 	while(fgets(line, 255, fp))
+ 	{
+ 		// Error flag, that can be set when something is inconsistent throughout
+@@ -105,6 +109,14 @@ GLboolean CObjModel::LoadModel(string sF
+ 			GLint dim = 0;
+ 			while(dim < 3 && ss >> vNewVertex[dim])dim++;
+ 			vVertices.push_back(vNewVertex);
++			// Update lower-left-front corner of BB
++			vLowerLeftFront.x = min(vLowerLeftFront.x, vNewVertex.x);
++			vLowerLeftFront.y = min(vLowerLeftFront.y, vNewVertex.y);
++			vLowerLeftFront.z = max(vLowerLeftFront.z, vNewVertex.z);
++			// Update upper-right-back corner of BB
++			vUpperRightBack.x = max(vUpperRightBack.x, vNewVertex.x);
++			vUpperRightBack.y = max(vUpperRightBack.y, vNewVertex.y);
++			vUpperRightBack.z = min(vUpperRightBack.z, vNewVertex.z);
+ 			iAttrBitField |= 1;
+ 		}
+ 		// Texture coordinate
+@@ -173,7 +185,9 @@ GLboolean CObjModel::LoadModel(string sF
+ 			
+ 				// Check whether vertex index is within boundaries (indexed from 1)
+ 				if(iVertIndex > 0 && iVertIndex <= ESZ(vVertices))
++				{
+ 					vboModelData.AddData(&vVertices[iVertIndex-1], sizeof(glm::vec3));
++				}
+ 				if(iTexCoordIndex > 0 && iTexCoordIndex <= ESZ(vTexCoords))
+ 					vboModelData.AddData(&vTexCoords[iTexCoordIndex-1], sizeof(glm::vec2));
+ 				if(iNormalIndex > 0 && iNormalIndex <= ESZ(vNormals))
+@@ -218,6 +232,7 @@ GLboolean CObjModel::LoadModel(string sF
+ 	{
+ 		glEnableVertexAttribArray(0);
+ 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, iDataStride, 0);
++		
+ 	}
+ 	// Texture coordinates
+ 	if(iAttrBitField&2)
+@@ -236,6 +251,51 @@ GLboolean CObjModel::LoadModel(string sF
+ 		if(iAttrBitField&2)iDataOffset += sizeof(glm::vec2);
+ 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, iDataStride, (void*)iDataOffset);
+ 	}
++
++	// Now create bounding box VAO and VBO
++
++	glGenVertexArrays(1, &uiBBVAO); 
++	glBindVertexArray(uiBBVAO);
++
++	glm::vec3 vBoxVertices[] = 
++	{
++		// Front wall of bounding box
++		vLowerLeftFront,
++		glm::vec3(vUpperRightBack.x, vLowerLeftFront.y, vLowerLeftFront.z),
++		glm::vec3(vLowerLeftFront.x, vUpperRightBack.y, vLowerLeftFront.z),
++		glm::vec3(vUpperRightBack.x, vUpperRightBack.y, vLowerLeftFront.z),
++		// Back wall of bounding box
++		glm::vec3(vLowerLeftFront.x, vLowerLeftFront.y, vUpperRightBack.z),
++		glm::vec3(vUpperRightBack.x, vLowerLeftFront.y, vUpperRightBack.z),
++		glm::vec3(vLowerLeftFront.x, vUpperRightBack.y, vUpperRightBack.z),
++		vUpperRightBack
++	};
++
++	GLint iIndices[] = 
++	{
++		0, 1, 2, 3, 8, // Front wall
++		4, 5, 6, 7, 8, // Back wall
++		4, 0, 6, 2, 8, // Left wall
++		1, 5, 3, 7, 8, // Right wall
++		2, 3, 6, 7, 8, // Top wall
++		0, 1, 4, 5	   // Bottom wall
++	};
++
++	vboModelBB.CreateVBO();
++	vboModelBB.BindVBO();
++
++	FOR(i, 8)vboModelBB.AddData(&vBoxVertices[i], sizeof(glm::vec3));
++	vboModelBB.UploadDataToGPU(GL_STATIC_DRAW);
++
++	glEnableVertexAttribArray(0);
++	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
++
++	vboModelBBIndices.CreateVBO();
++	vboModelBBIndices.BindVBO(GL_ELEMENT_ARRAY_BUFFER);
++
++	vboModelBBIndices.AddData(iIndices, sizeof(iIndices));
++	vboModelBBIndices.UploadDataToGPU(GL_STATIC_DRAW);
++
+ 	bLoaded = true;
+ 
+ 	// Material should be in the same directory as model
+@@ -265,6 +325,26 @@ GLvoid CObjModel::RenderModel()
+ 
+ /*-----------------------------------------------
+ 
++Name:    RenderBoundingBox
++
++Params:  none
++
++Result:  Renders bounding box of a model.
++
++/*---------------------------------------------*/
++
++GLvoid CObjModel::RenderBoundingBox()
++{
++	if(!bLoaded)return;
++	glBindVertexArray(uiBBVAO);
++
++	glEnable(GL_PRIMITIVE_RESTART_INDEX);
++	glPrimitiveRestartIndex(8);
++	glDrawElements(GL_TRIANGLE_STRIP, 29, GL_UNSIGNED_INT, 0);
++}
++
++/*-----------------------------------------------
++
+ Name:    LoadMaterial
+ 
+ Params:  sFullMtlFileName - full path to material file
+@@ -311,7 +391,7 @@ Name:    DeleteModel
+ 
+ Params:  none
+ 
+-Result:  Frees all used resources by model.
++Result:  Frees all resources used by model.
+ 
+ /*---------------------------------------------*/
+ 
+@@ -321,6 +401,9 @@ GLvoid CObjModel::DeleteModel()
+ 	tAmbientTexture.DeleteTexture();
+ 	glDeleteVertexArrays(1, &uiVAO);
+ 	vboModelData.DeleteVBO();
++	vboModelBBIndices.DeleteVBO();
++	vboModelBB.DeleteVBO();
++	glDeleteVertexArrays(1, &uiBBVAO);
+ 	bLoaded = false;
+ }
+ 
+diff -up 17_Spotlight/objModel.h 18_3DPickingPt_1/objModel.h
+--- 17_Spotlight/objModel.h	2015-12-14 14:20:08.036309790 +0200
++++ 18_3DPickingPt_1/objModel.h	2015-12-14 14:20:08.040309790 +0200
+@@ -17,6 +17,7 @@ class CObjModel
+ public:
+ 	GLboolean LoadModel(string sFileName, string sMtlFileName);
+ 	GLvoid RenderModel();
++	GLvoid RenderBoundingBox();
+ 	GLvoid DeleteModel();
+ 
+ 	GLint GetPolygonCount();
+@@ -29,7 +30,8 @@ private:
+ 
+ 	GLboolean LoadMaterial(string sFullMtlFileName);
+ 
+-	CVertexBufferObject vboModelData;
++	CVertexBufferObject vboModelData, vboModelBB, vboModelBBIndices;
+ 	GLuint uiVAO;
++	GLuint uiBBVAO;
+ 	CTexture tAmbientTexture;
+ };
+\ No newline at end of file
+Only in 18_3DPickingPt_1/: picking.cpp
+Only in 18_3DPickingPt_1/: picking.h
+diff -up 17_Spotlight/RenderScene.cpp 18_3DPickingPt_1/RenderScene.cpp
+--- 17_Spotlight/RenderScene.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 18_3DPickingPt_1/RenderScene.cpp	2015-12-14 14:20:08.040309790 +0200
+@@ -20,7 +20,9 @@
+ #include <glm/gtc/matrix_transform.hpp>
+ #include <glm/gtc/type_ptr.hpp>
+ 
+-#define NUMTEXTURES 3
++#include "picking.h"
++
++#define NUMTEXTURES 1
+ 
+ /* One VBO, where all static data are stored now,
+ in this tutorial vertex is stored as 3 floats for
+@@ -43,8 +45,9 @@ CSpotLight slFlashLight;
+ 
+ CObjModel mdlAlien;
+ CObjModel mdlSpongeBob;
++CObjModel mdlThor;
+ 
+-CFramebuffer fboTelevision;
++CFramebuffer fboPickBuffer;
+ 
+ /*-----------------------------------------------
+ 
+@@ -61,7 +64,7 @@ Result:  Initializes OpenGL features tha
+ 
+ GLvoid InitScene(GLvoid* lpParam)
+ {
+-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
++	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+ 
+ 	// Prepare all scene objects
+ 
+@@ -93,7 +96,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	}
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"grass.png", "met_wall01a.jpg", "tower.jpg"};
++	string sTextureNames[] = {"grass.png"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+@@ -103,7 +106,6 @@ GLvoid InitScene(GLvoid* lpParam)
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	glClearDepth(1.0);
+-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+ 
+ 	// Here we load font with pixel size 32 - this means that if we prGLint with size above 32, the quality will be low
+ 	ftFont.LoadSystemFont("arial.ttf", 32);
+@@ -120,9 +122,11 @@ GLvoid InitScene(GLvoid* lpParam)
+ 
+ 	mdlAlien.LoadModel("data/models/alien2_obj/alien2.obj", "alien2.mtl");
+ 	mdlSpongeBob.LoadModel("data/models/Spongebob/spongebob_bind.obj", "spongebob_bind.mtl");
+-
++	mdlThor.LoadModel("data/models/Thor/thor.obj", "thor.mtl");
+ }
+ 
++
++
+ /*-----------------------------------------------
+ 
+ Name:    RenderScene
+@@ -133,8 +137,67 @@ Result:  Renders whole scene.
+ 
+ /*---------------------------------------------*/
+ 
++GLvoid RenderBoundingBoxes(glm::mat4* mProj, GLboolean bRedBox)
++{
++	spColor.UseProgram();
++	spColor.SetUniform("matrices.projectionMatrix", mProj);
++
++	glm::vec4 vRed(1.0f, 0.0f, 0.0f, 1.0f); // Red color
++
++	glm::mat4 mView = cCamera.Look();
++	spColor.SetUniform("matrices.viewMatrix", &mView);
++
++	// Render SpongeBob :D
++
++	glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-40.0f, 0, -30.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
++	spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	
++	spColor.SetUniform("vColor", bRedBox ? vRed : GetColorByIndex(0));
++	mdlSpongeBob.RenderBoundingBox();
++
++	// Render strange creature found on internet as free model :D
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -30.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
++	spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	
++	spColor.SetUniform("vColor", bRedBox ? vRed : GetColorByIndex(1));
++	mdlAlien.RenderBoundingBox();
++
++	// Render Thor
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 0.0f, -30.0f));
++	mModelMatrix = glm::rotate(mModelMatrix, -90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
++	spColor.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
++
++	spColor.SetUniform("vColor", bRedBox ? vRed : GetColorByIndex(2));
++	mdlThor.RenderBoundingBox();
++}
++
+ GLfloat fGlobalAngle;
+ GLboolean bWireFrame = false;
++GLboolean bShowBB = false;
++GLint iSelectedIndex = -1;
++
++string sObjectNames[] = 
++{
++	"SpongeBob",
++	"Alien Creature",
++	"Thor"
++};
++
++/*-----------------------------------------------
++
++Name:    RenderScene
++
++Params:  lpParam - Pointer to anything you want.
++
++Result:  Renders whole scene.
++
++/*---------------------------------------------*/
+ 
+ GLvoid RenderScene(GLvoid* lpParam)
+ {
+@@ -142,6 +205,12 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+ 
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
++	if(Keys::Onekey(VK_LBUTTON))
++	{
++		RenderBoundingBoxes(oglControl->GetProjectionMatrix(), false);
++		iSelectedIndex = GetPickedColorIndexUnderMouse();
++		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
++	}
+ 
+ 	spMain.UseProgram();
+ 
+@@ -200,7 +269,6 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	CDirectionalLight dl2 = dlSun;
+ 	dl2.fAmbient = 1.0f;
+-	dl2.vColor = glm::vec3(0.13f, 0.13f, 0.13f);
+ 	dl2.SetUniformData(&spMain, "sunLight");
+ 	
+ 	if(bWireFrame)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+@@ -214,33 +282,10 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	tTextures[0].BindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 0, 6);
+-	
+-	// Render stairs
+-
+-	tTextures[1].BindTexture();
+-	glm::mat4 mTranslated = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, -70));
+-	FOR(i, 50)
+-	{
+-		GLfloat fAngle = i*20.0f;
+-		GLfloat fSine = float(sin(fAngle*3.1415f/180.0f));
+-		mModelMatrix = glm::translate(mTranslated, glm::vec3(0, float(i)*4.0f, 0));
+-		glm::mat4 mRotated = glm::rotate(mModelMatrix, fAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-		spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mRotated)));
+-		spMain.SetUniform("matrices.modelMatrix", &mRotated);
+-		glDrawArrays(GL_TRIANGLES, 6, 30);
+-	}
+-
+-	// Render tower (cylinder)
+-
+-	tTextures[2].BindTexture();
+-	mModelMatrix = glm::translate(mTranslated, glm::vec3(0.0f, 30.0f, 0.0f));
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-
+-	glDrawArrays(GL_TRIANGLES, 36, iCylinderFaces*3);
+ 
+ 	// Render SpongeBob :D
+ 
+-	mModelMatrix = glm::translate(mTranslated, glm::vec3(-20.0f, 0, -30.0f));
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-40.0f, 0, -30.0f));
+ 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+@@ -248,12 +293,26 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	// Render strange creature found on internet as free model :D
+ 
+-	mModelMatrix = glm::translate(mTranslated, glm::vec3(20.0f, 204.0f, -10.0f));
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -30.0f));
+ 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+ 	mdlAlien.RenderModel();
+ 
++	// Render Thor
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 0.0f, -30.0f));
++	mModelMatrix = glm::rotate(mModelMatrix, -90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
++	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	mdlThor.RenderModel();
++
++	// Render bounding boxes
++
++	if(bShowBB)
++		RenderBoundingBoxes(oglControl->GetProjectionMatrix(), true);
++
+ 	cCamera.Update();
+ 
+ 	// PrGLint something over scene
+@@ -271,22 +330,16 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	ftFont.PrintFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
+ 	ftFont.PrintFormatted(20, h-55, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-80, 20, "Cutoff angle: %.2f (Press 'E' and 'C' to change)", slFlashLight.fConeAngle);
+-	ftFont.PrintFormatted(20, h-105, 20, "Linear attenuation: %.4f (Press 'R' and 'V' to change)", slFlashLight.fLinearAtt);
++	ftFont.PrintFormatted(20, h-80, 20, "Show bounding boxes: %s (Press 'B' to toggle)", bShowBB ? "On" : "Off");
++	ftFont.PrintFormatted(20, h-105, 20, "Last object: %s", iSelectedIndex == -1 ? "none" : sObjectNames[iSelectedIndex].c_str());
+ 	ftFont.PrintFormatted(20, h-130, 20, "Flashlight: %s (Press 'F' to toggle)", slFlashLight.bOn ? "On" : "Off");
+ 
+ 	if(Keys::Onekey('Q'))
+ 		bWireFrame = !bWireFrame;
+-	if(Keys::Key('R'))
+-		slFlashLight.fLinearAtt += appMain.sof(0.01f);
+-	if(Keys::Key('V'))
+-		slFlashLight.fLinearAtt -= appMain.sof(0.01f);
+-	if(Keys::Key('E'))
+-		slFlashLight.fConeAngle += appMain.sof(4.0f);
+-	if(Keys::Key('C'))
+-		slFlashLight.fConeAngle -= appMain.sof(4.0f);
+ 	if(Keys::Onekey('F'))
+ 		slFlashLight.bOn = 1-slFlashLight.bOn;
++	if(Keys::Onekey('B'))
++		bShowBB = !bShowBB;
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+@@ -319,6 +372,4 @@ GLvoid ReleaseScene(GLvoid* lpParam)
+ 	vboSceneObjects.DeleteVBO();
+ 	mdlAlien.DeleteModel();
+ 	mdlSpongeBob.DeleteModel();
+-
+-	fboTelevision.DeleteFramebuffer();
+ }
+\ No newline at end of file

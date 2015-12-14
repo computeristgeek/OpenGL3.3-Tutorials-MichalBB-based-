@@ -1,0 +1,565 @@
+diff -up 18_3DPickingPt_1/flyingCamera.h 19_3DPickingPt_2/flyingCamera.h
+--- 18_3DPickingPt_1/flyingCamera.h	2015-12-14 14:20:08.040309790 +0200
++++ 19_3DPickingPt_2/flyingCamera.h	2015-12-14 14:20:08.044309790 +0200
+@@ -26,3 +26,5 @@ private:
+ 	glm::vec2 pCur; // For mosue rotation
+ 	GLint iForw, iBack, iLeft, iRight;
+ };
++
++extern CFlyingCamera cCamera;
+\ No newline at end of file
+diff -up 18_3DPickingPt_1/picking.cpp 19_3DPickingPt_2/picking.cpp
+--- 18_3DPickingPt_1/picking.cpp	2015-12-14 14:20:08.040309790 +0200
++++ 19_3DPickingPt_2/picking.cpp	2015-12-14 14:20:08.044309790 +0200
+@@ -3,8 +3,7 @@
+ #include "Lin_OpenGLApp.h"
+ #include "picking.h"
+ 
+-// This is RGB white in our indexing
+-#define RGB_WHITE (0xFF | (0xFF<<8) | (0xFF<<16))
++#include "flyingCamera.h"
+ 
+ /*-----------------------------------------------
+ 
+@@ -59,7 +58,75 @@ GLint GetPickedColorIndexUnderMouse()
+ 	mp.y = rect.bottom-mp.y;
+ 	GL_UNSIGNED_BYTE bArray[4];
+ 	glReadPixels(mp.x, mp.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, bArray);
+-	GLint iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]);
+-	if(iResult == RGB_WHITE)return -1;
++	GLint iResult = GetIndexByColor(bArray[0], bArray[1], bArray[2]) - 1;
++
+ 	return iResult;
++}
++
++#include <glm/gtc/matrix_transform.hpp>
++
++/*-----------------------------------------------
++
++Name:    Get3DRayUnderMouse
++
++Params:  v1, v2 - results storage
++
++Result:  Retrieves 3D ray under cursor from near
++		 to far plane.
++
++/*---------------------------------------------*/
++
++GLvoid Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2)
++{
++	glm::vec2 mp; GetCursorPos(&mp);
++	ScreenToClient(appMain.hWnd, &mp);
++	RECT rect; GetClientRect(appMain.hWnd, &rect);
++	mp.y = rect.bottom-mp.y;
++
++	glm::vec4 viewport = glm::vec4(0.0f, 0.0f, appMain.oglControl.GetViewportWidth(), appMain.oglControl.GetViewportHeight());
++
++	*v1 = glm::unProject(glm::vec3(float(mp.x), float(mp.y), 0.0f), cCamera.Look(), *appMain.oglControl.GetProjectionMatrix(), viewport);
++	*v2 = glm::unProject(glm::vec3(float(mp.x), float(mp.y), 1.0f), cCamera.Look(), *appMain.oglControl.GetProjectionMatrix(), viewport);
++}
++
++/*-----------------------------------------------
++
++Name:    RaySphereCollision
++
++Params:  vSphereCenter - guess what it is
++	     fSphereRadius - guess what it is
++		 vA, vB - two points of ray
++
++Result:  Checks if a ray given by two points
++		 collides with sphere.
++
++/*---------------------------------------------*/
++
++GLboolean RaySphereCollision(glm::vec3 vSphereCenter, GLfloat fSphereRadius, glm::vec3 vA, glm::vec3 vB)
++{
++	// Create the vector from end point vA to center of sphere
++	glm::vec3 vDirToSphere = vSphereCenter - vA;
++
++	// Create a normalized direction vector from end point vA to end point vB
++	glm::vec3 vLineDir = glm::normalize(vB-vA);
++
++	// Find length of line segment
++	GLfloat fLineLength = glm::distance(vA, vB);
++
++	// Using the dot product, we project the vDirToSphere onto the vector vLineDir
++	GLfloat t = glm::dot(vDirToSphere, vLineDir);
++
++	glm::vec3 vClosestPoint;
++	// If our projected distance from vA is less than or equal to 0, the closest point is vA
++	if (t <= 0.0f)
++		vClosestPoint = vA;
++	// If our projected distance from vA is greater thatn line length, closest point is vB
++	else if (t >= fLineLength)
++		vClosestPoint = vB;
++	// Otherwise calculate the point on the line using t and return it
++	else
++		vClosestPoint = vA+vLineDir*t;
++
++	// Now just check if closest point is within radius of sphere
++	return glm::distance(vSphereCenter, vClosestPoint) <= fSphereRadius;
+ }
+\ No newline at end of file
+diff -up 18_3DPickingPt_1/picking.h 19_3DPickingPt_2/picking.h
+--- 18_3DPickingPt_1/picking.h	2015-12-14 14:20:08.040309790 +0200
++++ 19_3DPickingPt_2/picking.h	2015-12-14 14:20:08.044309790 +0200
+@@ -2,4 +2,7 @@
+ 
+ glm::vec4 GetColorByIndex(GLint index);
+ GLint GetIndexByColor(GLint r, GLint g, GLint b);
+-GLint GetPickedColorIndexUnderMouse();
+\ No newline at end of file
++GLint GetPickedColorIndexUnderMouse();
++
++GLvoid Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2);
++GLboolean RaySphereCollision(glm::vec3 vSphereCenter, GLfloat fSphereRadius, glm::vec3 vA, glm::vec3 vB);
+\ No newline at end of file
+diff -up 18_3DPickingPt_1/RenderScene.cpp 19_3DPickingPt_2/RenderScene.cpp
+--- 18_3DPickingPt_1/RenderScene.cpp	2015-12-14 14:20:08.040309790 +0200
++++ 19_3DPickingPt_2/RenderScene.cpp	2015-12-14 14:20:08.044309790 +0200
+@@ -22,7 +22,7 @@
+ 
+ #include "picking.h"
+ 
+-#define NUMTEXTURES 1
++#define NUMTEXTURES 2
+ 
+ /* One VBO, where all static data are stored now,
+ in this tutorial vertex is stored as 3 floats for
+@@ -64,7 +64,7 @@ Result:  Initializes OpenGL features tha
+ 
+ GLvoid InitScene(GLvoid* lpParam)
+ {
+-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
++	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+ 
+ 	// Prepare all scene objects
+ 
+@@ -96,7 +96,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	}
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"grass.png"};
++	string sTextureNames[] = {"images.jpeg", "blackhole.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+@@ -137,56 +137,72 @@ Result:  Renders whole scene.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid RenderBoundingBoxes(glm::mat4* mProj, GLboolean bRedBox)
++glm::vec3 vObjectPositions[] =
+ {
++	glm::vec3(-40.0f, 0, -30.0f),
++	glm::vec3(0.0f, 0.0f, -30.0f),
++	glm::vec3(40.0f, 0, -30.0f),
++	glm::vec3(0.0f, 100.0f, -30.0f),
++};
++
++// Because some of these models aren't centered, we must offset bounding spheres a little
++
++glm::vec3 vSpherePositions[] =
++{
++	vObjectPositions[0]+glm::vec3(0.0f, 9.0f, 0.0f),
++	vObjectPositions[1]+glm::vec3(0.0f, 5.0f, -5.0f),
++	vObjectPositions[2]+glm::vec3(0.0f, 15.0f, 0.0f),
++	vObjectPositions[3]
++};
++
++GLfloat fSphereRadii[] = {11.0f, 9.2f, 10.0f, 40.0f};
++
++/*-----------------------------------------------
++
++Name:    RenderBoundingSpheres
++
++Params:  mProj - Projection matrix used on scene (just for
++				 shader, it should be passed nicer way but
++				 what the heck).
++
++Result:  Renders spheres surrounding our scene objects.
++
++/*---------------------------------------------*/
++
++GLvoid RenderBoundingSpheres(glm::mat4* mProj)
++{
++	glBindVertexArray(uiVAOs[0]);
+ 	spColor.UseProgram();
+ 	spColor.SetUniform("matrices.projectionMatrix", mProj);
+ 
+ 	glm::vec4 vRed(1.0f, 0.0f, 0.0f, 1.0f); // Red color
++	spColor.SetUniform("vColor", vRed);
+ 
+ 	glm::mat4 mView = cCamera.Look();
+ 	spColor.SetUniform("matrices.viewMatrix", &mView);
+ 
+-	// Render SpongeBob :D
+-
+-	glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-40.0f, 0, -30.0f));
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
+-	spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	
+-	spColor.SetUniform("vColor", bRedBox ? vRed : GetColorByIndex(0));
+-	mdlSpongeBob.RenderBoundingBox();
+-
+-	// Render strange creature found on internet as free model :D
+-
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -30.0f));
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+-	spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	
+-	spColor.SetUniform("vColor", bRedBox ? vRed : GetColorByIndex(1));
+-	mdlAlien.RenderBoundingBox();
+-
+-	// Render Thor
++	FOR(i, 4)
++	{
++		glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0), vSpherePositions[i]);
++		mModelMatrix = glm::scale(mModelMatrix, glm::vec3(fSphereRadii[i], fSphereRadii[i], fSphereRadii[i]));
++		spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 0.0f, -30.0f));
+-	mModelMatrix = glm::rotate(mModelMatrix, -90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+-	spColor.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
++		glDrawArrays(GL_TRIANGLES, 6, iSphereFaces*3);
++	}
+ 
+-	spColor.SetUniform("vColor", bRedBox ? vRed : GetColorByIndex(2));
+-	mdlThor.RenderBoundingBox();
+ }
+ 
+ GLfloat fGlobalAngle;
+ GLboolean bWireFrame = false;
+-GLboolean bShowBB = false;
++GLboolean bShowBS = true;
+ GLint iSelectedIndex = -1;
+ 
+ string sObjectNames[] = 
+ {
+ 	"SpongeBob",
+ 	"Alien Creature",
+-	"Thor"
++	"Thor",
++	"Black Hole",
+ };
+ 
+ /*-----------------------------------------------
+@@ -203,14 +219,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ {
+ 	// Typecast lpParam to COpenGLControl pointer
+ 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+-
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+-	if(Keys::Onekey(VK_LBUTTON))
+-	{
+-		RenderBoundingBoxes(oglControl->GetProjectionMatrix(), false);
+-		iSelectedIndex = GetPickedColorIndexUnderMouse();
+-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+-	}
+ 
+ 	spMain.UseProgram();
+ 
+@@ -283,9 +292,23 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	tTextures[0].BindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 0, 6);
+ 
++	// Render Black Hole
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), vObjectPositions[3]);
++	// To make things interesting, let's rotate the black hole
++	fGlobalAngle += appMain.sof(78.0f);
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
++	// Lower the sphere radius a little so bounding sphere and actual sphere don't overlap when both rendered
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(fSphereRadii[3]-0.1f, fSphereRadii[3]-0.1f, fSphereRadii[3]-0.1f));
++
++	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	tTextures[1].BindTexture();
++	glDrawArrays(GL_TRIANGLES, 6, iSphereFaces*3);
++
+ 	// Render SpongeBob :D
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-40.0f, 0, -30.0f));
++	mModelMatrix = glm::translate(glm::mat4(1.0), vObjectPositions[0]);
+ 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+@@ -293,7 +316,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	// Render strange creature found on internet as free model :D
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -30.0f));
++	mModelMatrix = glm::translate(glm::mat4(1.0), vObjectPositions[1]);
+ 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+@@ -301,17 +324,36 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	// Render Thor
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 0.0f, -30.0f));
++	mModelMatrix = glm::translate(glm::mat4(1.0),vObjectPositions[2]);
+ 	mModelMatrix = glm::rotate(mModelMatrix, -90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+ 	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+ 	mdlThor.RenderModel();
+ 
+-	// Render bounding boxes
++	// Check for collisions if we left click the mouse button
++	if(Keys::Onekey(VK_LBUTTON))
++	{
++		glm::vec3 v1, v2;
++		Get3DRayUnderMouse(&v1, &v2);
++		FOR(i, 4)
++		{
++			if(RaySphereCollision(vSpherePositions[i], fSphereRadii[i], v1, v2))
++			{
++				iSelectedIndex = i;
++				break;
++			}
++		}
++		GLint a = 5;
++	}
++
++	// Render bounding spheres
+ 
+-	if(bShowBB)
+-		RenderBoundingBoxes(oglControl->GetProjectionMatrix(), true);
++	if(bShowBS)
++	{
++		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
++		RenderBoundingSpheres(oglControl->GetProjectionMatrix());
++	}
+ 
+ 	cCamera.Update();
+ 
+@@ -330,7 +372,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	ftFont.PrintFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
+ 	ftFont.PrintFormatted(20, h-55, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-80, 20, "Show bounding boxes: %s (Press 'B' to toggle)", bShowBB ? "On" : "Off");
++	ftFont.PrintFormatted(20, h-80, 20, "Show bounding spheres: %s (Press 'B' to toggle)", bShowBS ? "On" : "Off");
+ 	ftFont.PrintFormatted(20, h-105, 20, "Last object: %s", iSelectedIndex == -1 ? "none" : sObjectNames[iSelectedIndex].c_str());
+ 	ftFont.PrintFormatted(20, h-130, 20, "Flashlight: %s (Press 'F' to toggle)", slFlashLight.bOn ? "On" : "Off");
+ 
+@@ -339,7 +381,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	if(Keys::Onekey('F'))
+ 		slFlashLight.bOn = 1-slFlashLight.bOn;
+ 	if(Keys::Onekey('B'))
+-		bShowBB = !bShowBB;
++		bShowBS = !bShowBS;
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+diff -up 18_3DPickingPt_1/static_geometry.cpp 19_3DPickingPt_2/static_geometry.cpp
+--- 18_3DPickingPt_1/static_geometry.cpp	2015-12-14 14:20:08.044309790 +0200
++++ 19_3DPickingPt_2/static_geometry.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -166,66 +166,108 @@ GLint GenerateCylinder(CVertexBufferObje
+ 	return iFacesAdded;
+ }
+ 
+-glm::vec3 vCubeVertices[36] = 
+-{
+-	// Front face
+-	glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, 0.5f),
+-	// Back face
+-	glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, 0.5f, -0.5f),
+-	// Left face
+-	glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, -0.5f),
+-	// Right face
+-	glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f),
+-	// Top face
+-	glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, -0.5f),
+-	// Bottom face
+-	glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, 0.5f),
+-};
+-glm::vec2 vCubeTexCoords[6] = {glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 1.0f)};
+ 
+-glm::vec3 vCubeNormals[6] = 
+-{
+-	glm::vec3(0.0f, 0.0f, 1.0f),
+-	glm::vec3(0.0f, 0.0f, -1.0f),
+-	glm::vec3(-1.0f, 0.0f, 0.0f),
+-	glm::vec3(1.0f, 0.0f, 0.0f),
+-	glm::vec3(0.0f, 1.0f, 0.0f),
+-	glm::vec3(0.0f, -1.0f, 0.0f)
+-};
++/*-----------------------------------------------
+ 
+-glm::vec3 vGround[6] = 
+-{
+-	glm::vec3(-1000, 0, -1000), glm::vec3(-1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, -1000), glm::vec3(-1000, 0, -1000)
+-};
++Name:	GenerateSphere
+ 
+-glm::vec3 vStair[] = 
+-{
+-	glm::vec3(-40.0f, 4.0f, -15.0f), glm::vec3(0.0f, 4.0f, -15.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(-40.0f, 4.0f, 0.0f), // Top
+-	glm::vec3(-40.0f, 4.0f, 0.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-40.0f, 0.0f, 0.0f), // Front
+-	glm::vec3(0.0f, 4.0f, -15.0f), glm::vec3(-40.0f, 4.0f, -15.0f), glm::vec3(-40.0f, 0.0f, -15.0f), glm::vec3(0.0f, 0.0f, -15.0f), // Back
+-	glm::vec3(-40.0f, 4.0f, -15.0f), glm::vec3(-40.0f, 4.0f, 0.0f), glm::vec3(-40.0f, 0.0f, 0.0f), glm::vec3(-40.0f, 0.0f, -15.0f), // Left
+-	glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 4.0f, -15.0f), glm::vec3(0.0f, 0.0f, -15.0f), glm::vec3(0.0f, 0.0f, 0.0f), // Right
+-};
++Params:	vboDest - VBO where to store sphere
++		fRadius - sphere radius
++
++Result: Generates centered sphere.
++
++/*---------------------------------------------*/
+ 
+-glm::vec2 vStairCoords[] = 
++GLint GenerateSphere(CVertexBufferObject &vboDest, GLfloat fRadius, GLint iSubDivY, GLint iSubDivZ)
+ {
+-	glm::vec2(0.0f, 0.9f), glm::vec2(2.0f, 0.9f), glm::vec2(2.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+-	glm::vec2(0.0f, 0.2f), glm::vec2(2.0f, 0.2f), glm::vec2(2.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+-	glm::vec2(0.0f, 0.2f), glm::vec2(2.0f, 0.2f), glm::vec2(2.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+-	glm::vec2(0.0f, 0.2f), glm::vec2(0.9f, 0.2f), glm::vec2(0.9f, 0.0f), glm::vec2(0.0f, 0.0f),
+-	glm::vec2(0.0f, 0.2f), glm::vec2(0.9f, 0.2f), glm::vec2(0.9f, 0.0f), glm::vec2(0.0f, 0.0f)
+-};
++	GLfloat fAddAngleY = 360.0f/float(iSubDivY), fAddAngleZ = 180.0f/float(iSubDivZ);
++	GLfloat fCurAngleY = 0.0f;
++	GLfloat fTexU = 1.0f/float(iSubDivY), fTexV = 1.0f/float(iSubDivZ); 
++	GLint iStepsY = 1;
++
++	const GLfloat PI = float(atan(1.0)*4.0);
++
++	GLint iFacesAdded = 0;
++
++	while(iStepsY <= iSubDivY)
++	{
++		GLfloat fNextAngleY = fCurAngleY+fAddAngleY;
++		GLfloat fSineY = sin(fCurAngleY/180.0f*PI), fCosY = cos(fCurAngleY/180.0f*PI);
++		GLfloat fNextSineY = sin(fNextAngleY/180.0f*PI), fNextCosY = cos(fNextAngleY/180.0f*PI);
++		glm::vec3 vDirY(fCosY, 0.0f, -fSineY), vNextDirY(fNextCosY, 0.0f, -fNextSineY);
++		GLfloat fCurAngleZ = 0.0f;
++		GLint iStepsZ = 1;
++		while(iStepsZ <= iSubDivZ)
++		{
++			GLfloat fNextAngleZ = fCurAngleZ+fAddAngleZ;
++
++			GLfloat fSineZ = sin(fCurAngleZ/180.0f*PI), fCosZ = cos(fCurAngleZ/180.0f*PI);
++			GLfloat fNextSineZ = sin(fNextAngleZ/180.0f*PI), fNextCosZ = cos(fNextAngleZ/180.0f*PI);
++
++			glm::vec3 vQuadPoints[] = 
++			{
++				glm::vec3(vDirY.x*fSineZ*fRadius, fCosZ*fRadius, vDirY.z*fSineZ*fRadius),
++				glm::vec3(vDirY.x*fNextSineZ*fRadius, fNextCosZ*fRadius, vDirY.z*fNextSineZ*fRadius),
++				glm::vec3(vNextDirY.x*fNextSineZ*fRadius, fNextCosZ*fRadius, vNextDirY.z*fNextSineZ*fRadius),
++				glm::vec3(vNextDirY.x*fSineZ*fRadius, fCosZ*fRadius, vNextDirY.z*fSineZ*fRadius),
++			};
++			/*
++			TODO: I'm not sure why this doesn't work at all, would like to kno
++			SECRET QUEST FOR THIS TUTORIAL: Find out what's wrong and let me know
++			REWARD: 10000 EXP
++			glm::vec2 vTexCoords[] = 
++			{
++				glm::vec2(fTexU*float(iStepsY-1), 1.0f-fTexV*float(iStepsZ-1)),
++				glm::vec2(fTexU*float(iStepsY), 1.0f-fTexV*float(iStepsZ)),
++				glm::vec2(fTexU*float(iStepsY), 1.0f-fTexV*float(iStepsZ)),
++				glm::vec2(fTexU*float(iStepsY-1), 1.0f-fTexV*float(iStepsZ-1))
++			};*/
++
++			glm::vec3 vNormals[] = 
++			{
++				glm::normalize(vQuadPoints[0]),
++				glm::normalize(vQuadPoints[1]),
++				glm::normalize(vQuadPoints[2]),
++				glm::normalize(vQuadPoints[3])
++			};
++
++			glm::vec2 vTexCoords[] = 
++			{
++				glm::vec2(asin(vNormals[0].x)/PI+0.5f , asin(vNormals[0].y)/PI+0.5f),
++				glm::vec2(asin(vNormals[1].x)/PI+0.5f , asin(vNormals[1].y)/PI+0.5f),
++				glm::vec2(asin(vNormals[2].x)/PI+0.5f , asin(vNormals[2].y)/PI+0.5f),
++				glm::vec2(asin(vNormals[3].x)/PI+0.5f , asin(vNormals[3].y)/PI+0.5f),
++			};
++
++			GLint iIndices[] = {0, 1, 2, 2, 3, 0};
++
++			FOR(i, 6)
++			{
++				GLint index = iIndices[i];
++				vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
++				vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
++				vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
++			}
++			iFacesAdded += 2; // Keep count of added faces
++
++			iStepsZ++;
++			fCurAngleZ += fAddAngleZ;
++		}
++		iStepsY++;
++		fCurAngleY += fAddAngleY;
++	}
++
++	return iFacesAdded;
++}
+ 
+-glm::vec3 vStairNormals[] = 
++glm::vec2 vCubeTexCoords[6] = {glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 1.0f)};
++
++glm::vec3 vGround[6] = 
+ {
+-	glm::vec3(0.0f, 1.0f, 0.0f),
+-	glm::vec3(0.0f, 0.0f, 1.0f),
+-	glm::vec3(0.0f, 0.0f, -1.0f),
+-	glm::vec3(-1.0f, 0.0f, 0.0f),
+-	glm::vec3(1.0f, 0.0f, 0.0f)
++	glm::vec3(-1000, 0, -1000), glm::vec3(-1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, -1000), glm::vec3(-1000, 0, -1000)
+ };
+ 
+-GLint iCylinderFaces;
++GLint iSphereFaces;
+ 
+ /*-----------------------------------------------
+ 
+@@ -249,17 +291,5 @@ GLvoid AddSceneObjects(CVertexBufferObje
+ 		vboDest.AddData(&vGroundNormal, sizeof(glm::vec3));
+ 	}
+ 
+-	// Add stair to VBO
+-	FOR(i, 5) // i is stair's side, 5 sides are enough (all beside bottom side)
+-	{
+-		GLint iIndices[] = {0, 1, 2, 2, 3, 0};
+-		FOR(j, 6)
+-		{
+-			vboDest.AddData(&vStair[4*i+iIndices[j]], sizeof(glm::vec3));
+-			vboDest.AddData(&vStairCoords[4*i+iIndices[j]], sizeof(glm::vec2));
+-			vboDest.AddData(&vStairNormals[i], sizeof(glm::vec3));
+-		}
+-	}
+-
+-	iCylinderFaces = GenerateCylinder(vboDest, 60.0f, 250.0f, 15, 8.0f, 15.0f);
++	iSphereFaces = GenerateSphere(vboDest, 1.0f, 12, 12);
+ }
+\ No newline at end of file
+diff -up 18_3DPickingPt_1/static_geometry.h 19_3DPickingPt_2/static_geometry.h
+--- 18_3DPickingPt_1/static_geometry.h	2015-12-14 14:20:08.044309790 +0200
++++ 19_3DPickingPt_2/static_geometry.h	2015-12-14 14:20:08.048309790 +0200
+@@ -2,19 +2,8 @@
+ 
+ #include "vertexBufferObject.h"
+ 
+-extern glm::vec3 vCubeVertices[36];
+-extern glm::vec2 vCubeTexCoords[6];
+-extern glm::vec3 vCubeNormals[6];
+-extern glm::vec3 vGround[6];
+-
+-extern glm::vec3 vBuildingNormals[4];
+-extern glm::vec3 vBuilding[24];
+-
+-extern glm::vec3 vCinema[4];
+-extern glm::vec2 vCinemaCoords[4]; 
+-
+ GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+ GLint GenerateCylinder(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU = 1.0f, GLfloat fMapV = 1.0f);
+ GLvoid AddSceneObjects(CVertexBufferObject& vboDest);
+ 
+-extern GLint iCylinderFaces;
+\ No newline at end of file
++extern GLint iSphereFaces;
+\ No newline at end of file

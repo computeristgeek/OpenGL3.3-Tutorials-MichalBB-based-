@@ -1,0 +1,1195 @@
+Only in 26_ShadowMapping/: anorms.h
+Only in 26_ShadowMapping/: assimp_model.cpp
+Only in 26_ShadowMapping/: assimp_model.h
+Only in 26_ShadowMapping/: framebuffer.cpp
+Only in 26_ShadowMapping/: framebuffer.h
+Only in 26_ShadowMapping/: heightmap.cpp
+Only in 26_ShadowMapping/: heightmap.h
+diff -up 26_ShadowMapping/Lin_OpenGLApp.cpp 27_OcclusionQuery/Lin_OpenGLApp.cpp
+--- 26_ShadowMapping/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.064309790 +0200
++++ 27_OcclusionQuery/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.068309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("26_opengl_3_3"))
++	if(!appMain.InitializeApp("27_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("26.) Shadow Mapping - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("27.) Occlusion Query - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+Only in 26_ShadowMapping/: md2model.cpp
+Only in 26_ShadowMapping/: md2model.h
+Only in 26_ShadowMapping/: particle_system_tf.cpp
+Only in 26_ShadowMapping/: particle_system_tf.h
+diff -up 26_ShadowMapping/RenderScene.cpp 27_OcclusionQuery/RenderScene.cpp
+--- 26_ShadowMapping/RenderScene.cpp	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/RenderScene.cpp	2015-12-14 14:20:08.072309790 +0200
+@@ -14,48 +14,20 @@
+ #include "dirLight.h"
+ #include "material.h"
+ 
+-#include "assimp_model.h"
+-#include "md2model.h"
+-
+-#include "heightmap.h"
+-
+ #include "static_geometry.h"
+ 
+-#include "particle_system_tf.h"
+-
+-CVertexBufferObject vboSceneObjects;
+-GLuint uiVAOSceneObjects;
+-
+ CFreeTypeFont ftFont;
+ 
+ CSkybox sbMainSkybox;
+ CFlyingCamera cCamera;
+ 
+ CDirectionalLight dlSun;
+-
+ CMaterial matShiny;
+-CAssimpModel amModels[4];
+ 
+-CMultiLayeredHeightmap hmWorld;
+-
+-GLint iTorusFaces;
++GLuint uiOcclusionQuery;
+ 
+ GLboolean bDisplayNormals = false; // Do not display normals by default
+ 
+-CParticleSystemTransformFeedback psMainParticleSystem;
+-CMD2Model md2Models[1];
+-animState_t animationStateMain;
+-
+-#include "framebuffer.h"
+-
+-CFramebuffer fboShadowMap;
+-GLboolean bShadowsOn = true;
+-GLboolean bDisplayShadowMap = true;
+-GLint iShadowMapTextureSize = 1024;
+-
+-CVertexBufferObject vboShadowMapQuad;
+-GLuint uiVAOShadowMapQuad;
+-
+ /*-----------------------------------------------
+ 
+ Name:    InitScene
+@@ -79,25 +51,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	
+ 	LoadAllTextures();
+ 
+-	vboSceneObjects.CreateVBO();
+-	glGenVertexArrays(1, &uiVAOSceneObjects); // Create one VAO
+-	glBindVertexArray(uiVAOSceneObjects);
+-
+-	vboSceneObjects.BindVBO();
+-
+-	iTorusFaces = GenerateTorus(vboSceneObjects, 7.0f, 2.0f, 20, 20);
+-	vboSceneObjects.UploadDataToGPU(GL_STATIC_DRAW);
+-
+-	// Vertex positions
+-	glEnableVertexAttribArray(0);
+-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), 0);
+-	// Texture coordinates
+-	glEnableVertexAttribArray(1);
+-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)sizeof(glm::vec3));
+-	// Normal vectors
+-	glEnableVertexAttribArray(2);
+-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
+-
++	PrepareStaticSceneObjects();
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	glClearDepth(1.0);
+@@ -109,80 +63,16 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.LoadSkybox("data/skyboxes/delirious/", "delirious_front.jpg", "delirious_back.jpg", "delirious_right.jpg", "delirious_left.jpg", "delirious_top.jpg", "delirious_top.jpg");
++	sbMainSkybox.LoadSkybox("data/skyboxes/calm/", "calm_front.jpg", "calm_back.jpg", "calm_right.jpg", "calm_left.jpg", "calm_top.jpg", "calm_top.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f, 0);
+-
+-	amModels[0].LoadModelFromFile("data/models/treasure_chest_obj/treasure_chest.obj");
+-	amModels[1].LoadModelFromFile("data/models/Arrow/Arrow.obj");
+-	amModels[2].LoadModelFromFile("data/models/fountainOBJ/fountain.obj");
+-	amModels[3].LoadModelFromFile("data/models/ConcreteColumn_OBJ/ConcreteColumn.obj");
+ 	
+-	CAssimpModel::FinalizeVBO();
+-	CMultiLayeredHeightmap::LoadTerrainShaderProgram();
+-	hmWorld.LoadHeightMapFromImage("data/worlds/world.bmp");
+-	hmWorld.SetRenderSize(300.0f, 25.0f, 300.0f);
+-
+ 	matShiny = CMaterial(1.0f, 32.0f);
+ 
+-	psMainParticleSystem.InitalizeParticleSystem();
+-
+-
+-	psMainParticleSystem.SetGeneratorProperties(
+-		glm::vec3(-98.76f, 43.02f, 1.34f), // Where the particles are generated
+-		glm::vec3(-10, 0, -10), // Minimal velocity
+-		glm::vec3(10, 20, 10), // Maximal velocity
+-		glm::vec3(0, -20, 0), // Gravity force applied to particles
+-		glm::vec3(0.0f, 0.25f, 1.0f), // Color (dark blue)
+-		1.5f, // Minimum lifetime in seconds
+-		3.0f, // Maximum lifetime in seconds
+-		0.25f, // Rendered size
+-		0.02f, // Spawn every 0.02 seconds
+-		30); // And spawn 30 particles
+-
+-	md2Models[0].LoadModel("data/models/HoboGoblin/Model.MD2");
+-	animationStateMain = md2Models[0].StartAnimation(STAND);
+-
+-	glm::vec3 vShadowMapQuad[] = 
+-	{
+-		glm::vec3(0.75f, 1.0f, 0.0f),
+-		glm::vec3(0.75f, 0.5f, 0.0f),
+-		glm::vec3(1.0f, 1.0f, 0.0f),
+-		glm::vec3(1.0f, 0.5f, 0.0f)
+-	};
+-
+-	glm::vec2 vShadowMapQuadTC[] =
+-	{
+-		glm::vec2(0.0f, 1.0f),
+-		glm::vec2(0.0f, 0.0f),
+-		glm::vec2(1.0f, 1.0f),
+-		glm::vec2(1.0f, 0.0f)
+-	};
+-
+-	vboShadowMapQuad.CreateVBO();
+-	FOR(i, 4)
+-	{
+-		vboShadowMapQuad.AddData(&vShadowMapQuad[i], sizeof(glm::vec3));
+-		vboShadowMapQuad.AddData(&vShadowMapQuadTC[i], sizeof(glm::vec2));
+-	}
+-
+-	glGenVertexArrays(1, &uiVAOShadowMapQuad);
+-	glBindVertexArray(uiVAOShadowMapQuad);
+-
+-	vboShadowMapQuad.BindVBO();
+-	vboShadowMapQuad.UploadDataToGPU(GL_STATIC_DRAW);
+-
+-	glEnableVertexAttribArray(0);
+-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3)+sizeof(glm::vec2), 0);
+-	glEnableVertexAttribArray(1);
+-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec3)+sizeof(glm::vec2), (void*)sizeof(glm::vec3));
+-
+-
+-	fboShadowMap.CreateFramebufferWithTexture(iShadowMapTextureSize, iShadowMapTextureSize);
+-	fboShadowMap.AddDepthBuffer();
+-	fboShadowMap.SetFramebufferTextureFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_NEAREST);
+-
+ 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
++
++	// Occlusion query object
++	glGenQueries(1, &uiOcclusionQuery);
+ }
+ 
+ /*-----------------------------------------------
+@@ -196,135 +86,21 @@ Result:  Renders whole scene.
+ /*---------------------------------------------*/
+ 
+ glm::vec3 vModelPosition = glm::vec3(0, 20, 0);
+-GLfloat fModelRotation;
+-animType_t atCurrentAnimation = STAND;
+-
+-struct SShootedArrow
+-{
+-	glm::vec3 vPos;
+-	glm::vec3 vDir;
+-	GLfloat fRotAngle;
+-	GLfloat fLifeTime;
+-};
++GLfloat fGlobalAngle;
+ 
+-std::vector<SShootedArrow> arrows;
++GLboolean bShowOccluders = false;
++GLboolean bEnableOcclusionQuery = true;
+ 
+ GLvoid RenderScene(GLvoid* lpParam)
+ {
+ 	// Typecast lpParam to COpenGLControl pointer
+ 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+ 
+-	glm::mat4 mDepthBiasMVP;
+-	glm::mat4 mModel;
+-	if(bShadowsOn) // So if the shadows are on
+-	{
+-		// We are going to render scene from the light's point of view
+-		fboShadowMap.BindFramebuffer();
+-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+-		spShadowMapper.UseProgram();
+-		
+-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+-
+-		spShadowMapper.UseProgram();
+-
+-		// Because we have a directional light, we just set it high enough (vLightPos) so that it sees all objects on scene
+-		// We also create orthographics projection matrix for the purposes of rendering shadows
+-		const GLfloat fRangeX = 150, fRangeY = 150, fMinZ = 0.05f, fMaxZ = 400;
+-		glm::mat4 mPROJ = glm::ortho<float>(-fRangeX, fRangeX, -fRangeY, fRangeY, fMinZ, fMaxZ);
+-		glm::vec3 vLightPos = -dlSun.vDirection*150.0f;
+-		glm::mat4 mViewFromLight = glm::lookAt(vLightPos, glm::vec3(0,0,0), glm::vec3(0,1,0));
+-
+-		glm::mat4 biasMatrix(
+-			0.5, 0.0, 0.0, 0.0, 
+-			0.0, 0.5, 0.0, 0.0,
+-			0.0, 0.0, 0.5, 0.0,
+-			0.5, 0.5, 0.5, 1.0
+-			);
+-
+-		// Calculate depth bias matrix to calculate shadow coordinates in shader programs
+-		mDepthBiasMVP = biasMatrix * mPROJ * mViewFromLight;
+-
+-		CAssimpModel::BindModelsVAO();
+-
+-		// Render fountain
+-
+-		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-97.87f, 25.15f, 3.27f));
+-		mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
+-
+-		spShadowMapper.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		glm::mat4 depthMVP = mPROJ * mViewFromLight * mModel;
+-		spShadowMapper.SetUniform("depthMVP", depthMVP);
+-		amModels[2].RenderModel();
+-
+-		// Render some pillars
+-
+-		FOR(row, 3)FOR(column, 2)
+-		{
+-			glm::vec3 vPosition = glm::vec3(100.0f+column*40.0f, 0.0f, -140.0f+row*33.0f+column*16.0f);
+-			vPosition.y = hmWorld.GetHeightFromRealVector(vPosition);
+-
+-			mModel = glm::translate(glm::mat4(1.0), vPosition);
+-			mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
+-			depthMVP = mPROJ * mViewFromLight * mModel;
+-			spShadowMapper.SetUniform("depthMVP", depthMVP);
+-			spShadowMapper.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-			amModels[3].RenderModel();
+-		}
+-
+-		// Render set of treasures
+-
+-		FOR(i, 3)
+-		{
+-			glm::vec3 vPosition = glm::vec3(-100.0f+i*47.0f, 0.0f, -30.0f-i*47.0f);
+-			vPosition.y = hmWorld.GetHeightFromRealVector(vPosition);
+-			mModel = glm::translate(glm::mat4(1.0), vPosition);
+-			mModel = glm::scale(mViewFromLight, glm::vec3(1.0f, 1.0f, 1.0f));
+-
+-			depthMVP = mPROJ * mViewFromLight * mModel;
+-			spShadowMapper.SetUniform("depthMVP", depthMVP);
+-			spShadowMapper.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-			amModels[0].RenderModel();
+-		}
+-
+-		FOR(i, ESZ(arrows)) // Iterate through all arrows and render them
+-		{
+-			if(arrows[i].fLifeTime < 0.0f)
+-			{
+-				arrows.erase(arrows.begin()+i);
+-				i--;
+-				continue;
+-			}
+-			mModel = glm::translate(glm::mat4(1.0), arrows[i].vPos);
+-			mModel = glm::rotate(mModel, arrows[i].fRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-			mModel = glm::scale(mModel, glm::vec3(12.0f, 12.0f, 6.0f));
+-			
+-			depthMVP = mPROJ * mViewFromLight * mModel;
+-			spShadowMapper.SetUniform("depthMVP", depthMVP);
+-			spShadowMapper.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-			amModels[1].RenderModel();
+-		}
+-
+-		// Render the Hobo Goblin
+-
+-		mModel = glm::translate(glm::mat4(1.0), glm::vec3(vModelPosition));
+-		mModel = glm::rotate(mModel, fModelRotation, glm::vec3(0, 1, 0));
+-		mModel = glm::rotate(mModel, -90.0f, glm::vec3(1, 0, 0));
+-		mModel = glm::scale(mModel, glm::vec3(0.35f, 0.35f, 0.35f));
+-
+-		depthMVP = mPROJ * mViewFromLight * mModel;
+-		spShadowMapper.SetUniform("depthMVP", depthMVP);
+-		spShadowMapper.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-
+-		md2Models[0].RenderModel(&animationStateMain);
+-
+-		// Now the shadows are rendered, we can go back to normal rendering
+-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+-	}
+-
+-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 	oglControl->ResizeOpenGLViewportFull();
+ 
++	glm::mat4 mModel;
++
+ 	// Render skybox
+ 
+ 	spSkybox.UseProgram();
+@@ -345,9 +121,6 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spMain.SetUniform("matrices.viewMatrix", cCamera.Look());
+ 
+ 	spMain.SetUniform("gSampler", 0);
+-
+-	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0));
+-	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0));
+ 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+ 
+ 	// This values set the darkness of whole scene (direction of light), that's why such name of variable :D
+@@ -363,153 +136,125 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	// I'm always using this shiny material, no matter what I render, it would be nice to change it sometimes :P
+ 	matShiny.SetUniformData(&spMain, "matActive"); 
+ 
+-	spMain.SetUniform("matrices.depthBiasMVP", mDepthBiasMVP);
+-	// Bind shadow map to 5th texture unit (index is 5, if we count from 1 it's 6th)
+-	// You can use whichever texture unit you want, I used 5 because of 5 textures in terrain and 6th first available
+-	fboShadowMap.BindFramebufferTexture(5, false);
+-	spMain.SetUniform("shadowMap", 5);
+-	spMain.SetUniform("bShadowsOn", bShadowsOn ? 1 : 0);
+-
+-	CAssimpModel::BindModelsVAO();
+-
+ 	spMain.UseProgram();
+-	
+-	// Render fountain
++	glBindVertexArray(uiVAOSceneObjects);
+ 
+-	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-97.87f, 25.15f, 3.27f));
+-	mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
++	// Render ground
+ 
+-	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-	amModels[2].RenderModel();
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", glm::mat4(1.0));
++	tTextures[0].BindTexture();
++	glDrawArrays(GL_TRIANGLES, iSphereFaces*3+36, 6);
+ 
+-	// Render some pillars
++	// Render that grid of where spheres are
+ 
+-	FOR(row, 3)FOR(column, 2)
+-	{
+-		glm::vec3 vPosition = glm::vec3(100.0f+column*40.0f, 0.0f, -140.0f+row*33.0f+column*16.0f);
+-		vPosition.y = hmWorld.GetHeightFromRealVector(vPosition);
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", glm::translate(glm::mat4(1.0), glm::vec3(0.0f, fCubeHalfSize, 0.0f)));
++	tTextures[1].BindTexture();
++	glDrawArrays(GL_TRIANGLES, iSphereFaces*3, 36);
+ 
+-		mModel = glm::translate(glm::mat4(1.0), vPosition);
+-		mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
++	GLint iSpheresPassed = 0;
++	GLboolean bRenderSphere[3][3][3];
++	glm::mat4 mModelMatrices[3][3][3];
+ 
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[3].RenderModel();
+-	}
++	spOccluders.UseProgram();
++	spOccluders.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
++	spOccluders.SetUniform("matrices.viewMatrix", cCamera.Look());
++	spOccluders.SetUniform("vColor", glm::vec4(1, 0, 0, 0));
++	glBindVertexArray(uiVAOOccluders);
+ 
+-	// Render set of treasures
++	// Occlusion query begins here
++	// First of all, disable writing to the color buffer and depth buffer. We just wanna check if they would be rendered, not actually render them
++	glColorMask(false, false, false, false);
++	glDepthMask(GL_FALSE);
+ 
+-	FOR(i, 3)
++	FOR(x, 3)
+ 	{
+-		glm::vec3 vPosition = glm::vec3(-100.0f+i*47.0f, 0.0f, -30.0f-i*47.0f);
+-		vPosition.y = hmWorld.GetHeightFromRealVector(vPosition);
+-		mModel = glm::translate(glm::mat4(1.0), vPosition);
+-		mModel = glm::scale(mModel, glm::vec3(1.0f, 1.0f, 1.0f));
+-
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[0].RenderModel();
++		FOR(y, 3)
++		{
++			FOR(z, 3)
++			{
++				bRenderSphere[x][y][z] = false;
++				GLfloat fLocalRotAngle = fGlobalAngle + x*60.0f + y*20.0f + z*6.0f;
++				glm::vec3 vOcclusionCubePos = glm::vec3(-fCubeHalfSize+fCubeHalfSize*x*2.0f/3.0f + fCubeHalfSize/3.0f, -fCubeHalfSize+fCubeHalfSize*y*2.0f/3.0f + fCubeHalfSize/3.0f, -fCubeHalfSize+fCubeHalfSize*z*2.0f/3.0f + fCubeHalfSize/3.0f);
++
++				mModelMatrices[x][y][z] = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, fCubeHalfSize, 0.0f));
++				mModelMatrices[x][y][z] = glm::translate(mModelMatrices[x][y][z], vOcclusionCubePos);
++				mModelMatrices[x][y][z] = glm::rotate(mModelMatrices[x][y][z], fLocalRotAngle, glm::vec3(1, 0, 0));
++				mModelMatrices[x][y][z] = glm::rotate(mModelMatrices[x][y][z], fLocalRotAngle, glm::vec3(0, 1, 0));
++				mModelMatrices[x][y][z] = glm::rotate(mModelMatrices[x][y][z], fLocalRotAngle, glm::vec3(0, 0, 1));
++
++				if(bEnableOcclusionQuery)
++				{
++					mModel = glm::scale(mModelMatrices[x][y][z], glm::vec3(fCubeHalfSize/3, fCubeHalfSize/3, fCubeHalfSize/3));
++					spOccluders.SetUniform("matrices.modelMatrix", mModel);
++
++					// Begin occlusion query
++					glBeginQuery(GL_SAMPLES_PASSED, uiOcclusionQuery);
++						// Every pixel that passes the depth test now gets added to the result
++						glDrawArrays(GL_TRIANGLES, 0, 36);
++					glEndQuery(GL_SAMPLES_PASSED);
++					// Now get tthe number of pixels passed
++					GLint iSamplesPassed = 0;
++					glGetQueryObjectiv(uiOcclusionQuery, GL_QUERY_RESULT, &iSamplesPassed);
++					
++					// If some samples passed, this means, that we should better render the whole sphere, because we were able 
++					// to see its bounding box
++					if(iSamplesPassed > 0)
++					{
++						bRenderSphere[x][y][z] = true;
++						// Increase the number of spheres that have passed
++						iSpheresPassed++;
++					}
++				}
++				else // If we do not use occlusion query, then all of the spheres have passed
++				{
++					bRenderSphere[x][y][z] = true;
++					// Increase the number of spheres that have passed
++					iSpheresPassed++;
++				}
++			}
++		}
+ 	}
+ 
+-	FOR(i, ESZ(arrows)) // Iterate through all arrows, render them and update them
++	// Re-enable writing to color buffer and depth buffer
++	glColorMask(true, true, true, true);
++	glDepthMask(GL_TRUE);
++
++	// Show either occluders or spheres
++	if(bShowOccluders)
+ 	{
+-		if(arrows[i].fLifeTime < 0.0f)
++		FOR(x, 3)
+ 		{
+-			arrows.erase(arrows.begin()+i);
+-			i--;
+-			continue;
++			FOR(y, 3)
++			{
++				FOR(z, 3)
++				{
++					mModel = glm::scale(mModelMatrices[x][y][z], glm::vec3(fCubeHalfSize/3, fCubeHalfSize/3, fCubeHalfSize/3));
++					spOccluders.SetUniform("matrices.modelMatrix", mModel);
++					glDrawArrays(GL_TRIANGLES, 0, 36);
++				}
++			}
+ 		}
+-		mModel = glm::translate(glm::mat4(1.0), arrows[i].vPos);
+-		mModel = glm::rotate(mModel, arrows[i].fRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-		mModel = glm::scale(mModel, glm::vec3(12.0f, 12.0f, 6.0f));
+-
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[1].RenderModel();
+-
+-		arrows[i].vPos += arrows[i].vDir*appMain.sof(92.0f);
+-		arrows[i].fLifeTime -= appMain.sof(1.0f);
+ 	}
+-
+-	// Render extra arrow that shows direction of light
+-
+-	mModel = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 80.0f, 0.0f));
+-	mModel = glm::rotate(mModel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+-	mModel = glm::rotate(mModel, -fAngleOfDarkness, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModel = glm::scale(mModel, glm::vec3(20.0f, 20.0f, 10.0f));
+-
+-	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-	amModels[1].RenderModel();
+-
+-	// Render Hobo Goblin
+-
+-	spMD2Animation.UseProgram();
+-	spMD2Animation.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
+-	spMD2Animation.SetUniform("matrices.viewMatrix", cCamera.Look());
+-
+-	spMD2Animation.SetUniform("gSampler", 0);
+-	spMD2Animation.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+-
+-	dlSun.SetUniformData(&spMD2Animation, "sunLight");
+-	matShiny.SetUniformData(&spMD2Animation, "matActive");
+-
+-	mModel = glm::translate(glm::mat4(1.0), glm::vec3(vModelPosition));
+-	mModel = glm::rotate(mModel, fModelRotation, glm::vec3(0, 1, 0));
+-	mModel = glm::rotate(mModel, -90.0f, glm::vec3(1, 0, 0));
+-	mModel = glm::scale(mModel, glm::vec3(0.35f, 0.35f, 0.35f));
+-
+-	spMD2Animation.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-
+-	spMD2Animation.SetUniform("matrices.depthBiasMVP", mDepthBiasMVP);
+-	fboShadowMap.BindFramebufferTexture(5, false);
+-	spMD2Animation.SetUniform("shadowMap", 5);
+-	spMD2Animation.SetUniform("bShadowsOn", 1);
+-
+-	md2Models[0].RenderModel(&animationStateMain);
+-	md2Models[0].UpdateAnimation(&animationStateMain, appMain.sof(1.0f));
+-
+-	// Now we're going to render terrain
+-
+-	CShaderProgram* spTerrain = CMultiLayeredHeightmap::GetShaderProgram();
+-
+-	spTerrain->UseProgram();
+-
+-	spTerrain->SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
+-	spTerrain->SetUniform("matrices.viewMatrix", cCamera.Look());
+-
+-	spTerrain->SetUniform("vEyePosition", cCamera.vEye);
+-
+-	spTerrain->SetUniform("bShadowsOn", 1);
+-	matShiny.SetUniformData(spTerrain, "matActive");
+-
+-	// We bind all 5 textures - 3 of them are textures for layers, 1 texture is a "path" texture, and last one is
+-	// the places in heightmap where path should be and how intense should it be
+-	FOR(i, 5)
++	else
+ 	{
+-		GLchar sSamplerName[256];
+-		sprintf(sSamplerName, "gSampler[%d]", i);
+-		tTextures[i].BindTexture(i);
+-		spTerrain->SetUniform(sSamplerName, i);
++		spMain.UseProgram();
++		glBindVertexArray(uiVAOSceneObjects);
++		tTextures[2].BindTexture();
++		FOR(x, 3)
++		{
++			FOR(y, 3)
++			{
++				FOR(z, 3)
++				{
++					if(bRenderSphere[x][y][z] == false)
++						continue;
++					spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModelMatrices[x][y][z]);
++					glDrawArrays(GL_TRIANGLES, 0, iSphereFaces*3);
++				}
++			}
++		}
+ 	}
+-
+-	// ... set some uniforms
+-	spTerrain->SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", glm::mat4(1.0));
+-	spTerrain->SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+-
+-	dlSun.SetUniformData(spTerrain, "sunLight");
+-
+-	spTerrain->SetUniform("matrices.depthBiasMVP", mDepthBiasMVP);
+-
+-	fboShadowMap.BindFramebufferTexture(5, false);
+-	spTerrain->SetUniform("shadowMap", 5);	
+-
+-	// ... and finally render heightmap
+-	hmWorld.RenderHeightmap();
+-
+-	// Render particles (water in fountain in this tutorial)
+-
+-	tTextures[6].BindTexture(); 
+-
+-	psMainParticleSystem.SetMatrices(oglControl->GetProjectionMatrix(), cCamera.vEye, cCamera.vView, cCamera.vUp);
+-	psMainParticleSystem.UpdateParticles(appMain.sof(1.0f));
+-	psMainParticleSystem.RenderParticles();
++	fGlobalAngle += appMain.sof(45.0f);
+ 
+ 	cCamera.Update();
+ 
+@@ -524,104 +269,14 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spFont2D.SetUniform("vColor", glm::vec4(0.9f, 0.9f, 0.9f, 1.0f));
+ 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
+ 	ftFont.PrintFormatted(20, h-30, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-55, 20, "Shadows: %s ('R' to toggle)", bShadowsOn ? "On" : "Off");
+-	ftFont.PrintFormatted(20, h-80, 20, "Display Shadow Map: %s ('M' to toggle)", bDisplayShadowMap ? "Yes" : "Nope");
+-	ftFont.PrintFormatted(20, h-105, 20, "Shadow Map Texture Size: %dx%d (Change with PGUP and PGDN)", iShadowMapTextureSize, iShadowMapTextureSize);
+-
+-	ftFont.PrintFormatted(20, h-155, 20, "Move with arrow keys, shoot with SPACE ;)");
+-	ftFont.PrintFormatted(20, h-180, 20, "Use + and - to play with direction of light");
+-	ftFont.PrintFormatted(20, h-205, 20, "(the arrow in the sky shows direction of light)");
+-
+-	if(bDisplayShadowMap)
+-	{
+-		// Display shadow map
+-		spShadowMapRender.UseProgram();
+-		glBindVertexArray(uiVAOShadowMapQuad);
+-		fboShadowMap.BindFramebufferTexture();
+-		spShadowMapRender.SetUniform("samplerShadow", 0);
+-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+-	}
+-
+-	GLboolean bRunning = false;
+-	static GLboolean bLastFrameRunning = false;
+-
+-	if(Keys::Key(VK_UP))
+-	{
+-		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+-		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+-
+-		glm::vec3 vMoveVector(fSine, 0, fCosine);
+-
+-		vModelPosition += vMoveVector*appMain.sof(50.0f);
+-
+-		if(animationStateMain.type != RUN)animationStateMain = md2Models[0].StartAnimation(RUN);
+-		bRunning = true;
+-	}
+-	if(Keys::Key(VK_DOWN))
+-	{
+-		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+-		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+-
+-		glm::vec3 vMoveVector(fSine, 0, fCosine);
+-
+-		vModelPosition -= vMoveVector*appMain.sof(50.0f);
+-
+-		if(animationStateMain.type != RUN)animationStateMain = md2Models[0].StartAnimation(RUN);
+-		bRunning = true;
+-	}
+-	if(Keys::Key(VK_LEFT))
+-		fModelRotation += appMain.sof(135.0f);
+-	if(Keys::Key(VK_RIGHT))
+-		fModelRotation -= appMain.sof(135.0f);
+ 
+-	vModelPosition.y = hmWorld.GetHeightFromRealVector(vModelPosition)+8.0f;
++	ftFont.PrintFormatted(20, h-80, 20, "Occlusion Query: %s ('X' to toggle)", bEnableOcclusionQuery ? "Enabled" : "Disabled");
++	ftFont.PrintFormatted(20, h-105, 20, "Show Occluders: %s ('C' to toggle)", bShowOccluders ? "Yes Please" : "No");
++	ftFont.PrintFormatted(20, h-130, 20, "Spheres Rendered: %d / 27", iSpheresPassed);
++	ftFont.PrintFormatted(20, h-155, 20, "Faces Of One Sphere: %d", iSphereFaces);
+ 
+-	if(!bRunning && bLastFrameRunning)animationStateMain = md2Models[0].StartAnimation(atCurrentAnimation);
+-	bLastFrameRunning = bRunning;
+-
+-	if(Keys::Onekey(VK_SPACE))
+-	{
+-		SShootedArrow newArrow;
+-		newArrow.fLifeTime = 4.0f;
+-		newArrow.fRotAngle = fModelRotation+90;
+-
+-		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
+-		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
+-
+-		newArrow.vDir = glm::vec3(fSine, 0, fCosine);
+-		newArrow.vPos = vModelPosition;
+-
+-		arrows.push_back(newArrow);
+-
+-		if(!bRunning)
+-			animationStateMain = md2Models[0].StartAnimation(ATTACK);
+-	}
+-	if(!bRunning && animationStateMain.type == ATTACK && animationStateMain.iterations >= 1)
+-		animationStateMain = md2Models[0].StartAnimation(STAND);
+-
+-	if(Keys::Onekey('R'))bShadowsOn = !bShadowsOn;
+-	if(Keys::Onekey('M'))bDisplayShadowMap = !bDisplayShadowMap;
+-
+-	GLboolean bRecreate = false;
+-	if(Keys::Onekey(VK_PRIOR))
+-	{
+-		iShadowMapTextureSize <<= 1;
+-		if(iShadowMapTextureSize == 4096)iShadowMapTextureSize = 32;
+-		bRecreate = true;
+-	}
+-	if(Keys::Onekey(VK_NEXT))
+-	{
+-		iShadowMapTextureSize >>= 1;
+-		if(iShadowMapTextureSize == 16)iShadowMapTextureSize = 2048;
+-		bRecreate = true;
+-	}
+-	if(bRecreate)
+-	{
+-		fboShadowMap.DeleteFramebuffer();
+-		fboShadowMap.CreateFramebufferWithTexture(iShadowMapTextureSize, iShadowMapTextureSize);
+-		fboShadowMap.AddDepthBuffer();
+-		fboShadowMap.SetFramebufferTextureFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_NEAREST);
+-	}
++	if(Keys::Onekey('X'))bEnableOcclusionQuery = !bEnableOcclusionQuery;
++	if(Keys::Onekey('C'))bShowOccluders = !bShowOccluders;
+ 
+ 	glEnable(GL_DEPTH_TEST);	
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+@@ -651,12 +306,5 @@ GLvoid ReleaseScene(GLvoid* lpParam)
+ 	glDeleteVertexArrays(1, &uiVAOSceneObjects);
+ 	vboSceneObjects.DeleteVBO();
+ 
+-	CAssimpModel::ReleaseAllModelData();
+-	md2Models[0].DeleteModel();
+-
+-	hmWorld.ReleaseHeightmap();
+-	CMultiLayeredHeightmap::ReleaseTerrainShaderProgram();
+-
+-	fboShadowMap.DeleteFramebuffer();
+-	psMainParticleSystem.DeleteParticleSystem();
++	glDeleteQueries(1, &uiOcclusionQuery);
+ }
+\ No newline at end of file
+diff -up 26_ShadowMapping/shaders.cpp 27_OcclusionQuery/shaders.cpp
+--- 26_ShadowMapping/shaders.cpp	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/shaders.cpp	2015-12-14 14:20:08.072309790 +0200
+@@ -13,11 +13,8 @@ CShader shShaders[NUMSHADERS];
+ CShaderProgram spMain,
+ 				spOrtho2D,
+ 				spFont2D,
+-				spNormalDisplayer,
+-				spMD2Animation,
+ 				spSkybox,
+-				spShadowMapper,
+-				spShadowMapRender;
++				spOccluders;
+ 
+ /*-----------------------------------------------
+ 
+@@ -33,9 +30,8 @@ GLboolean PrepareShaderPrograms()
+ {
+ 	// Load shaders and create shader program
+ 
+-	string sShaderFileNames[] = {"main_shader.vert", "main_shader.frag", "ortho2D.vert", "ortho2D.frag", "font2D.frag", "dirLight.frag",
+-		"normal_displayer.vert", "normal_displayer.geom", "normal_displayer.frag", "md2anim.vert", "skybox.vert", "skybox.frag",
+-		"shadowMapper.vert", "shadowMapper.frag", "shadowMapRender.vert", "shadowMapRender.frag", "shadows.frag"
++	string sShaderFileNames[] = {"main_shader.vert", "main_shader.frag", "ortho2D.vert", "ortho2D.frag", "font2D.frag", "dirLight.frag", "skybox.vert", "skybox.frag",
++		"occluders.vert", "occluders.frag"
+ 	};
+ 
+ 	FOR(i, NUMSHADERS)
+@@ -51,7 +47,6 @@ GLboolean PrepareShaderPrograms()
+ 		spMain.AddShaderToProgram(&shShaders[0]);
+ 		spMain.AddShaderToProgram(&shShaders[1]);
+ 		spMain.AddShaderToProgram(&shShaders[5]);
+-		spMain.AddShaderToProgram(&shShaders[16]); // Add shadows support
+ 	if(!spMain.LinkProgram())return false;
+ 
+ 	spOrtho2D.CreateProgram();
+@@ -64,34 +59,15 @@ GLboolean PrepareShaderPrograms()
+ 		spFont2D.AddShaderToProgram(&shShaders[4]);
+ 	if(!spFont2D.LinkProgram())return false;
+ 
+-	spNormalDisplayer.CreateProgram();
+-		spNormalDisplayer.AddShaderToProgram(&shShaders[6]);
+-		spNormalDisplayer.AddShaderToProgram(&shShaders[7]);
+-		spNormalDisplayer.AddShaderToProgram(&shShaders[8]);
+-	if(!spNormalDisplayer.LinkProgram())return false;
+-
+-	spMD2Animation.CreateProgram();
+-		spMD2Animation.AddShaderToProgram(&shShaders[9]);
+-		spMD2Animation.AddShaderToProgram(&shShaders[1]);
+-		spMD2Animation.AddShaderToProgram(&shShaders[5]);
+-		spMD2Animation.AddShaderToProgram(&shShaders[16]);
+-	if(!spMD2Animation.LinkProgram())return false;
+-
+-
+ 	spSkybox.CreateProgram();
+-		spSkybox.AddShaderToProgram(&shShaders[10]);
+-		spSkybox.AddShaderToProgram(&shShaders[11]);
++		spSkybox.AddShaderToProgram(&shShaders[6]);
++		spSkybox.AddShaderToProgram(&shShaders[7]);
+ 	if(!spSkybox.LinkProgram())return false;
+ 
+-	spShadowMapper.CreateProgram();
+-		spShadowMapper.AddShaderToProgram(&shShaders[12]);
+-		spShadowMapper.AddShaderToProgram(&shShaders[13]);
+-	if(!spShadowMapper.LinkProgram())return false;
+-
+-	spShadowMapRender.CreateProgram();
+-		spShadowMapRender.AddShaderToProgram(&shShaders[14]);
+-		spShadowMapRender.AddShaderToProgram(&shShaders[15]);
+-	if(!spShadowMapRender.LinkProgram())return false;
++	spOccluders.CreateProgram();
++		spOccluders.AddShaderToProgram(&shShaders[8]);
++		spOccluders.AddShaderToProgram(&shShaders[9]);
++	spOccluders.LinkProgram();
+ 
+ 	return true;
+ }
+@@ -111,11 +87,8 @@ GLvoid DeleteAllShaderPrograms()
+ 	spMain.DeleteProgram();
+ 	spOrtho2D.DeleteProgram();
+ 	spFont2D.DeleteProgram();
+-	spNormalDisplayer.DeleteProgram();
+-	spMD2Animation.DeleteProgram();
+ 	spSkybox.DeleteProgram();
+-	spShadowMapper.DeleteProgram();
+-	spShadowMapRender.DeleteProgram();
++	spOccluders.DeleteProgram();
+ 
+ 	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
+ }
+@@ -332,6 +305,16 @@ GLboolean CShaderProgram::LinkProgram()
+ 	GLint iLinkStatus;
+ 	glGetProgramiv(uiProgram, GL_LINK_STATUS, &iLinkStatus);
+ 	bLinked = iLinkStatus == GL_TRUE;
++	if(!bLinked)
++	{
++		GLchar sInfoLog[1024];
++		GLchar sFinalMessage[1536];
++		GLint iLogLength;
++		glGetProgramInfoLog(uiProgram, 1024, &iLogLength, sInfoLog);
++		sprintf(sFinalMessage, "Error! Shader program wasn't linked! The linker returned:\n\n%s", sInfoLog);
++		MessageBox(NULL, sFinalMessage, "Error", MB_ICONERROR);
++		return false;
++	}
+ 	return bLinked;
+ }
+ 
+diff -up 26_ShadowMapping/shaders.h 27_OcclusionQuery/shaders.h
+--- 26_ShadowMapping/shaders.h	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/shaders.h	2015-12-14 14:20:08.072309790 +0200
+@@ -88,7 +88,7 @@ private:
+ GLboolean PrepareShaderPrograms();
+ GLvoid DeleteAllShaderPrograms();
+ 
+-#define NUMSHADERS 17
++#define NUMSHADERS 10
+ 
+ extern CShader shShaders[NUMSHADERS];
+-extern CShaderProgram spMain, spOrtho2D, spFont2D, spNormalDisplayer, spMD2Animation, spSkybox, spShadowMapper, spShadowMapRender;
+\ No newline at end of file
++extern CShaderProgram spMain, spOrtho2D, spFont2D, spSkybox, spOccluders;
+\ No newline at end of file
+diff -up 26_ShadowMapping/static_geometry.cpp 27_OcclusionQuery/static_geometry.cpp
+--- 26_ShadowMapping/static_geometry.cpp	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/static_geometry.cpp	2015-12-14 14:20:08.072309790 +0200
+@@ -2,58 +2,109 @@
+ 
+ #include "static_geometry.h"
+ 
+-GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube)
++CVertexBufferObject vboSceneObjects;
++CVertexBufferObject vboOccluders;
++GLuint uiVAOSceneObjects;
++GLuint uiVAOOccluders;
++GLfloat fCubeHalfSize = 30.0f;
++GLint iSphereFaces;
++
++glm::vec3 vCubeVertices[36] = 
++{
++	// Front face
++	glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, 0.5f),
++	// Back face
++	glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, 0.5f, -0.5f),
++	// Left face
++	glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, -0.5f),
++	// Right face
++	glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f),
++	// Top face
++	glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(0.5f, 0.5f, -0.5f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec3(-0.5f, 0.5f, -0.5f),
++	// Bottom face
++	glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, 0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, 0.5f),
++};
++glm::vec2 vCubeTexCoords[6] = {glm::vec2(0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 1.0f)};
++
++glm::vec3 vCubeNormals[6] = 
++{
++	glm::vec3(0.0f, 0.0f, 1.0f),
++	glm::vec3(0.0f, 0.0f, -1.0f),
++	glm::vec3(-1.0f, 0.0f, 0.0f),
++	glm::vec3(1.0f, 0.0f, 0.0f),
++	glm::vec3(0.0f, 1.0f, 0.0f),
++	glm::vec3(0.0f, -1.0f, 0.0f)
++};
++
++glm::vec3 vGround[6] = 
++{
++	glm::vec3(-300, 0, -300), glm::vec3(300, 0, -300), glm::vec3(300, 0, 300), glm::vec3(300, 0, 300), glm::vec3(-300, 0, 300), glm::vec3(-300, 0, -300)
++};
++
++glm::vec2 vGroundTexCoords[6] = 
++{
++	glm::vec2(0.0f, 10.0f), glm::vec2(10.0f, 10.0f), glm::vec2(10.0f, 0.0f), glm::vec2(10.0f, 0.0f), glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 10.0f)
++};
++
++/*-----------------------------------------------
++
++Name:	GenerateSphere
++
++Params:	vboDest - VBO where to store sphere
++		fRadius - sphere radius
++
++Result: Generates centered sphere.
++
++/*---------------------------------------------*/
++
++GLint GenerateSphere(CVertexBufferObject &vboDest, GLfloat fRadius, GLint iSubDivY, GLint iSubDivZ)
+ {
+-	GLfloat fAddAngleAround = 360.0f/(float)iSubDivAround;
+-	GLfloat fAddAngleTube = 360.0f/(float)iSubDivTube;
++	GLfloat fAddAngleY = 360.0f/float(iSubDivY), fAddAngleZ = 180.0f/float(iSubDivZ);
++	GLfloat fCurAngleY = 0.0f;
++	GLfloat fTexU = 1.0f/float(iSubDivY), fTexV = 1.0f/float(iSubDivZ); 
++	GLint iStepsY = 1;
+ 
+-	GLfloat fCurAngleAround = 0.0f;
+-	GLint iStepsAround = 1;
+ 	const GLfloat PI = float(atan(1.0)*4.0);
+ 
+ 	GLint iFacesAdded = 0;
+ 
+-	while(iStepsAround <= iSubDivAround)
++	while(iStepsY <= iSubDivY)
+ 	{
+-		GLfloat fSineAround = sin(fCurAngleAround/180.0f*PI);
+-		GLfloat fCosineAround = cos(fCurAngleAround/180.0f*PI);
+-		glm::vec3 vDir1(fSineAround, fCosineAround, 0.0f);
+-		GLfloat fNextAngleAround = fCurAngleAround+fAddAngleAround;
+-		GLfloat fNextSineAround = sin(fNextAngleAround/180.0f*PI);
+-		GLfloat fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
+-		glm::vec3 vDir2(fNextSineAround, fNextCosineAround, 0.0f);
+-		GLfloat fCurAngleTube = 0.0f;
+-		GLint iStepsTube = 1;
+-		while(iStepsTube <= iSubDivTube)
+-		{
+-			GLfloat fSineTube = sin(fCurAngleTube/180.0f*PI);
+-			GLfloat fCosineTube = cos(fCurAngleTube/180.0f*PI);
+-			GLfloat fNextAngleTube = fCurAngleTube+fAddAngleTube;
+-			GLfloat fNextSineTube = sin(fNextAngleTube/180.0f*PI);
+-			GLfloat fNextCosineTube = cos(fNextAngleTube/180.0f*PI);
+-			glm::vec3 vMid1 = vDir1*(fRadius-fTubeRadius/2), vMid2 = vDir2*(fRadius-fTubeRadius/2);
++		GLfloat fNextAngleY = fCurAngleY+fAddAngleY;
++		GLfloat fSineY = sin(fCurAngleY/180.0f*PI), fCosY = cos(fCurAngleY/180.0f*PI);
++		GLfloat fNextSineY = sin(fNextAngleY/180.0f*PI), fNextCosY = cos(fNextAngleY/180.0f*PI);
++		glm::vec3 vDirY(fCosY, 0.0f, -fSineY), vNextDirY(fNextCosY, 0.0f, -fNextSineY);
++		GLfloat fCurAngleZ = 0.0f;
++		GLint iStepsZ = 1;
++		while(iStepsZ <= iSubDivZ)
++		{
++			GLfloat fNextAngleZ = fCurAngleZ+fAddAngleZ;
++
++			GLfloat fSineZ = sin(fCurAngleZ/180.0f*PI), fCosZ = cos(fCurAngleZ/180.0f*PI);
++			GLfloat fNextSineZ = sin(fNextAngleZ/180.0f*PI), fNextCosZ = cos(fNextAngleZ/180.0f*PI);
++
+ 			glm::vec3 vQuadPoints[] = 
+ 			{
+-				vMid1 + glm::vec3(0.0f, 0.0f, -fNextSineTube*fTubeRadius) + vDir1*fNextCosineTube*fTubeRadius,
+-				vMid1 + glm::vec3(0.0f, 0.0f, -fSineTube*fTubeRadius) + vDir1*fCosineTube*fTubeRadius,
+-				vMid2 + glm::vec3(0.0f, 0.0f, -fSineTube*fTubeRadius) + vDir2*fCosineTube*fTubeRadius,
+-				vMid2 + glm::vec3(0.0f, 0.0f, -fNextSineTube*fTubeRadius) + vDir2*fNextCosineTube*fTubeRadius
++				glm::vec3(vDirY.x*fSineZ*fRadius, fCosZ*fRadius, vDirY.z*fSineZ*fRadius),
++				glm::vec3(vDirY.x*fNextSineZ*fRadius, fNextCosZ*fRadius, vDirY.z*fNextSineZ*fRadius),
++				glm::vec3(vNextDirY.x*fNextSineZ*fRadius, fNextCosZ*fRadius, vNextDirY.z*fNextSineZ*fRadius),
++				glm::vec3(vNextDirY.x*fSineZ*fRadius, fCosZ*fRadius, vNextDirY.z*fSineZ*fRadius),
+ 			};
+ 
+ 			glm::vec3 vNormals[] = 
+ 			{
+-				glm::vec3(0.0f, 0.0f, -fNextSineTube) + vDir1*fNextCosineTube,
+-				glm::vec3(0.0f, 0.0f, -fSineTube) + vDir1*fCosineTube,
+-				glm::vec3(0.0f, 0.0f, -fSineTube) + vDir2*fCosineTube,
+-				glm::vec3(0.0f, 0.0f, -fNextSineTube) + vDir2*fNextCosineTube
++				glm::normalize(vQuadPoints[0]),
++				glm::normalize(vQuadPoints[1]),
++				glm::normalize(vQuadPoints[2]),
++				glm::normalize(vQuadPoints[3])
+ 			};
+ 
+ 			glm::vec2 vTexCoords[] = 
+ 			{
+-				glm::vec2(fCurAngleAround/360.0f, fNextAngleTube/360.0f),
+-				glm::vec2(fCurAngleAround/360.0f, fCurAngleTube/360.0f),
+-				glm::vec2(fNextAngleAround/360.0f, fCurAngleTube/360.0f),
+-				glm::vec2(fNextAngleAround/360.0f, fNextAngleTube/360.0f)
++				glm::vec2(asin(vNormals[0].x)/PI+0.5f , asin(vNormals[0].y)/PI+0.5f),
++				glm::vec2(asin(vNormals[1].x)/PI+0.5f , asin(vNormals[1].y)/PI+0.5f),
++				glm::vec2(asin(vNormals[2].x)/PI+0.5f , asin(vNormals[2].y)/PI+0.5f),
++				glm::vec2(asin(vNormals[3].x)/PI+0.5f , asin(vNormals[3].y)/PI+0.5f),
+ 			};
+ 
+ 			GLint iIndices[] = {0, 1, 2, 2, 3, 0};
+@@ -66,11 +117,149 @@ GLint GenerateTorus(CVertexBufferObject
+ 				vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
+ 			}
+ 			iFacesAdded += 2; // Keep count of added faces
+-			fCurAngleTube += fAddAngleTube;
+-			iStepsTube++;
++
++			iStepsZ++;
++			fCurAngleZ += fAddAngleZ;
+ 		}
+-		fCurAngleAround += fAddAngleAround;
+-		iStepsAround++;
++		iStepsY++;
++		fCurAngleY += fAddAngleY;
+ 	}
++
+ 	return iFacesAdded;
+ }
++
++
++/*-----------------------------------------------
++
++Name:	PrepareStaticSceneObjects
++
++Params:	none
++
++Result: Initializes all static scene objects and
++builds its VAOs and VBOs.
++
++/*---------------------------------------------*/
++
++GLvoid PrepareStaticSceneObjects()
++{
++	vboSceneObjects.CreateVBO();
++
++	GLint iSubDivY, iSubDivZ;
++	// Read how detailed the sphere should be from a file
++	FILE* fp = fopen("sphere.ini", "r");
++	fscanf(fp, "%d %d", &iSubDivY, &iSubDivZ);
++	fclose(fp);
++	iSphereFaces = GenerateSphere(vboSceneObjects, fCubeHalfSize/6.0f, iSubDivY, iSubDivZ);
++	
++
++	glm::vec2 vTexCoords[] = 
++	{
++		glm::vec2(0.0f, fCubeHalfSize*0.1f),
++		glm::vec2(fCubeHalfSize*0.1f, fCubeHalfSize*0.1f),
++		glm::vec2(fCubeHalfSize*0.1f, 0.0f),
++		glm::vec2(0.0f, 0.0f)
++	};
++
++	GLint indices[] = {0, 3, 1, 1, 3, 2};
++
++	FOR(i, 2)
++	{
++		GLfloat fSign = i ? -1.0f : 1.0f;
++		glm::vec3 vNormal(0.0f, 1.0f, 0.0f);
++		glm::vec3 vQuad[] = 
++		{
++			glm::vec3(-fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, -fCubeHalfSize),
++			glm::vec3(fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, -fCubeHalfSize),
++			glm::vec3(fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, fCubeHalfSize),
++			glm::vec3(-fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, fCubeHalfSize),
++		};
++
++		FOR(j, 6)
++		{
++			GLint k = indices[j];
++			vboSceneObjects.AddData(&vQuad[k], sizeof(glm::vec3));
++			vboSceneObjects.AddData(&vTexCoords[k], sizeof(glm::vec2));
++			vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
++		}
++	}
++
++	FOR(i, 2)
++	{
++		GLfloat fSign = i ? -1.0f : 1.0f;
++		glm::vec3 vNormal(1.0f, 0.0f, 0.0f);
++		glm::vec3 vQuad[] = 
++		{
++			glm::vec3(-fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, fCubeHalfSize, -fCubeHalfSize),
++			glm::vec3(-fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, fCubeHalfSize, fCubeHalfSize),
++			glm::vec3(-fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, -fCubeHalfSize, fCubeHalfSize),
++			glm::vec3(-fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f, -fCubeHalfSize, -fCubeHalfSize),
++		};
++
++		FOR(j, 6)
++		{
++			GLint k = indices[j];
++			vboSceneObjects.AddData(&vQuad[k], sizeof(glm::vec3));
++			vboSceneObjects.AddData(&vTexCoords[k], sizeof(glm::vec2));
++			vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
++		}
++	}
++
++
++	FOR(i, 2)
++	{
++		GLfloat fSign = i ? -1.0f : 1.0f;
++		glm::vec3 vNormal(0.0f, 0.0f, 1.0f);
++		glm::vec3 vQuad[] = 
++		{
++			glm::vec3(-fCubeHalfSize, fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f),
++			glm::vec3(fCubeHalfSize, fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f),
++			glm::vec3(fCubeHalfSize, -fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f),
++			glm::vec3(-fCubeHalfSize, -fCubeHalfSize, -fCubeHalfSize+fCubeHalfSize*(i+1)*2.0f/3.0f),
++		};
++
++		FOR(j, 6)
++		{
++			GLint k = indices[j];
++			vboSceneObjects.AddData(&vQuad[k], sizeof(glm::vec3));
++			vboSceneObjects.AddData(&vTexCoords[k], sizeof(glm::vec2));
++			vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
++		}
++	}
++
++	glm::vec3 vNormal(0.0f, 1.0f, 0.0f);
++	FOR(i, 6)
++	{
++		vboSceneObjects.AddData(&vGround[i], sizeof(glm::vec3));
++		vboSceneObjects.AddData(&vGroundTexCoords[i], sizeof(glm::vec2));
++		vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
++	}
++
++
++	glGenVertexArrays(1, &uiVAOSceneObjects);
++	glBindVertexArray(uiVAOSceneObjects);
++	vboSceneObjects.BindVBO();
++	vboSceneObjects.UploadDataToGPU(GL_STATIC_DRAW);
++
++	// Vertex positions
++	glEnableVertexAttribArray(0);
++	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), 0);
++	// Texture coordinates
++	glEnableVertexAttribArray(1);
++	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)sizeof(glm::vec3));
++	// Normal vectors
++	glEnableVertexAttribArray(2);
++	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
++
++
++	vboOccluders.CreateVBO();
++	vboOccluders.AddData(vCubeVertices, 36*sizeof(glm::vec3));
++	glGenVertexArrays(1, &uiVAOOccluders);
++	glBindVertexArray(uiVAOOccluders);
++	vboOccluders.BindVBO();
++	vboOccluders.UploadDataToGPU(GL_STATIC_DRAW);
++
++
++	// Vertex positions
++	glEnableVertexAttribArray(0);
++	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
++}
+\ No newline at end of file
+diff -up 26_ShadowMapping/static_geometry.h 27_OcclusionQuery/static_geometry.h
+--- 26_ShadowMapping/static_geometry.h	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/static_geometry.h	2015-12-14 14:20:08.072309790 +0200
+@@ -2,4 +2,14 @@
+ 
+ #include "vertexBufferObject.h"
+ 
+-GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+\ No newline at end of file
++GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
++
++extern GLuint uiVAOSceneObjects;
++extern GLuint uiVAOOccluders;
++extern CVertexBufferObject vboSceneObjects;
++extern CVertexBufferObject vboOccluders;
++extern GLint iSphereFaces;
++
++extern GLfloat fCubeHalfSize;
++
++GLvoid PrepareStaticSceneObjects();
+\ No newline at end of file
+diff -up 26_ShadowMapping/texture.cpp 27_OcclusionQuery/texture.cpp
+--- 26_ShadowMapping/texture.cpp	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/texture.cpp	2015-12-14 14:20:08.072309790 +0200
+@@ -300,7 +300,7 @@ GLvoid LoadAllTextures()
+ {
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"fungus.dds", "sand_grass_02.jpg", "rock_2_4w.jpg", "sand.jpg", "path.png", "scifi_metal.jpg", "particle.bmp"};
++	string sTextureNames[] = {"dirt_seamless.jpg", "metal_plate.jpg", "planked_wood.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+diff -up 26_ShadowMapping/texture.h 27_OcclusionQuery/texture.h
+--- 26_ShadowMapping/texture.h	2015-12-14 14:20:08.068309790 +0200
++++ 27_OcclusionQuery/texture.h	2015-12-14 14:20:08.072309790 +0200
+@@ -64,6 +64,6 @@ private:
+ 	string sPath;
+ };
+ 
+-#define NUMTEXTURES 7
++#define NUMTEXTURES 3
+ extern CTexture tTextures[NUMTEXTURES];
+ GLvoid LoadAllTextures();
+\ No newline at end of file

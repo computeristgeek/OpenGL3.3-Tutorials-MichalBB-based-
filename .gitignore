@@ -1,5 +1,4 @@
 *.o
-*.patch
 CreatingOpenGL3_3Window
 FirstTriangle
 ShadersAreComing

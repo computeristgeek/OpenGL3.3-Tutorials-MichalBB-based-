@@ -1,0 +1,519 @@
+diff -up 11_Multitexturing/flyingCamera.cpp 12_FogOutside/flyingCamera.cpp
+--- 11_Multitexturing/flyingCamera.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/flyingCamera.cpp	2015-12-14 14:20:08.020309790 +0200
+@@ -88,12 +88,12 @@ GLfloat CFlyingCamera::getAngleY()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	getAngleX
++Name:		getAngleX
+ 
+ Params:	none
+ 
+ Result:	Gets X angle of camera (head turning up
+-		and down).
++			and down).
+ 
+ /*---------------------------------------------*/
+ 
+diff -up 11_Multitexturing/freeTypeFont.cpp 12_FogOutside/freeTypeFont.cpp
+--- 11_Multitexturing/freeTypeFont.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/freeTypeFont.cpp	2015-12-14 14:20:08.020309790 +0200
+@@ -183,7 +183,7 @@ GLvoid CFreeTypeFont::print(string sText
+ 			tCharTextures[iIndex].bindTexture();
+ 			glm::mat4 mModelView = glm::translate(glm::mat4(1.0f), glm::vec3(float(iCurX), float(iCurY), 0.0f));
+ 			mModelView = glm::scale(mModelView, glm::vec3(fScale));
+-			shShaderProgram->setUniform("modelViewMatrix", mModelView);
++			shShaderProgram->setUniform("matrices.modelViewMatrix", mModelView);
+ 			// Draw character
+ 			glDrawArrays(GL_TRIANGLE_STRIP, iIndex*4, 4);
+ 		}
+@@ -195,7 +195,30 @@ GLvoid CFreeTypeFont::print(string sText
+ 
+ /*-----------------------------------------------
+ 
+-Name:	releaseFont
++Name:		printFormatted
++
++Params:	x, y - 2D position
++			iPXSize - printed text size
++			sText - text to print
++
++Result:	Prints formatted text at specified position
++			with specified pixel size.
++
++/*---------------------------------------------*/
++
++GLvoid CFreeTypeFont::printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...)
++{
++	GLchar buf[512];
++	va_list ap;
++	va_start(ap, sText);
++	vsprintf(buf, sText, ap);
++	va_end(ap);
++	print(buf, x, y, iPXSize);
++}
++
++/*-----------------------------------------------
++
++Name:		releaseFont
+ 
+ Params:	none
+ 
+diff -up 11_Multitexturing/freeTypeFont.h 12_FogOutside/freeTypeFont.h
+--- 11_Multitexturing/freeTypeFont.h	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/freeTypeFont.h	2015-12-14 14:20:08.020309790 +0200
+@@ -25,6 +25,7 @@ public:
+ 	GLint getTextWidth(string sText, GLint iPXSize);
+ 
+ 	GLvoid print(string sText, GLint x, GLint y, GLint iPXSize = -1);
++	GLvoid printFormatted(GLint x, GLint y, GLint iPXSize, char* sText, ...);
+ 
+ 	GLvoid releaseFont();
+ 
+diff -up 11_Multitexturing/Lin_OpenGLApp.cpp 12_FogOutside/Lin_OpenGLApp.cpp
+--- 11_Multitexturing/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.020309790 +0200
+@@ -182,7 +182,7 @@ GLboolean COpenGLWinApp::createWindow(st
+ 	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+ 	UpdateWindow(hWnd);
+ 
+-	// Hide cursor, because of FPS camera
++
+ 	ShowCursor(FALSE);
+ 
+ 	return true;
+@@ -322,11 +322,11 @@ Result:	Application messages handler.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.initializeApp("11_opengl_3_3"))
++	if(!appMain.initializeApp("12_opengl_3_3"))
+ 		return 0;
+ 	appMain.registerAppClass(hInstance);
+ 
+-	if(!appMain.createWindow("11.) Multitexturing - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.createWindow("12.) Fog Outside - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.resetTimer();
+ 
+diff -up 11_Multitexturing/RenderScene.cpp 12_FogOutside/RenderScene.cpp
+--- 11_Multitexturing/RenderScene.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/RenderScene.cpp	2015-12-14 14:20:08.020309790 +0200
+@@ -15,6 +15,9 @@
+ #include <glm/gtc/matrix_transform.hpp>
+ #include <glm/gtc/type_ptr.hpp>
+ 
++#define NUMSHADERS 6
++#define NUMTEXTURES 3
++
+ /* One VBO, where all static data are stored now,
+ in this tutorial vertex is stored as 3 floats for
+ position, 2 floats for texture coordinate and
+@@ -23,10 +26,8 @@ position, 2 floats for texture coordinat
+ CVertexBufferObject vboSceneObjects;
+ GLuint uiVAOs[1]; // Only one VAO now
+ 
+-CShader shShaders[5];
+-CShaderProgram spDirectionalLight, spOrtho2D, spFont2D;
+-
+-#define NUMTEXTURES 4
++CShader shShaders[NUMSHADERS];
++CShaderProgram spFogAndLight, spOrtho2D, spFont2D;
+ 
+ CTexture tTextures[NUMTEXTURES];
+ 
+@@ -38,7 +39,7 @@ CSkybox sbMainSkybox;
+ 
+ /*-----------------------------------------------
+ 
+-Name:		initScene
++Name:	initScene
+ 
+ Params:	lpParam - Pointer to anything you want.
+ 
+@@ -75,7 +76,7 @@ GLvoid initScene(GLvoid* lpParam)
+ 	FOR(i, 6)
+ 	{
+ 		vboSceneObjects.addData(&vGround[i], sizeof(glm::vec3));
+-		vCubeTexCoords[i] *= 10.0f;
++		vCubeTexCoords[i] *= 100.0f;
+ 		vboSceneObjects.addData(&vCubeTexCoords[i%6], sizeof(glm::vec2));
+ 		glm::vec3 vGroundNormal(0.0f, 1.0f, 0.0f);
+ 		vboSceneObjects.addData(&vGroundNormal, sizeof(glm::vec3));
+@@ -101,11 +102,13 @@ GLvoid initScene(GLvoid* lpParam)
+ 	shShaders[2].LoadShader("data/shaders/ortho2D.vert", GL_VERTEX_SHADER);
+ 	shShaders[3].LoadShader("data/shaders/ortho2D.frag", GL_FRAGMENT_SHADER);
+ 	shShaders[4].LoadShader("data/shaders/font2D.frag", GL_FRAGMENT_SHADER);
++	shShaders[5].LoadShader("data/shaders/fog.frag", GL_FRAGMENT_SHADER);
+ 
+-	spDirectionalLight.CreateProgram();
+-	spDirectionalLight.addShaderToProgram(&shShaders[0]);
+-	spDirectionalLight.addShaderToProgram(&shShaders[1]);
+-	spDirectionalLight.linkProgram();
++	spFogAndLight.CreateProgram();
++	spFogAndLight.addShaderToProgram(&shShaders[0]);
++	spFogAndLight.addShaderToProgram(&shShaders[1]);
++	spFogAndLight.addShaderToProgram(&shShaders[5]);
++	spFogAndLight.linkProgram();
+ 
+ 	spOrtho2D.CreateProgram();
+ 	spOrtho2D.addShaderToProgram(&shShaders[2]);
+@@ -119,7 +122,7 @@ GLvoid initScene(GLvoid* lpParam)
+ 
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"grass.jpg", "aardfdry256_1.jpg", "crate.jpg", "metalplate.jpg"};
++	string sTextureNames[] = {"grass.jpg", "crate.jpg", "metalplate.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
+ 	{
+@@ -135,10 +138,10 @@ GLvoid initScene(GLvoid* lpParam)
+ 	ftFont.loadSystemFont("arial.ttf", 32);
+ 	ftFont.setShaderProgram(&spFont2D);
+ 	
+-	cCamera = CFlyingCamera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
++	cCamera = CFlyingCamera(glm::vec3(-75.0f, 10.0f, 120.0f), glm::vec3(-75.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.setMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.loadSkybox("data/skyboxes/jajdesert1/", "jajdesert1_ft.jpg", "jajdesert1_bk.jpg", "jajdesert1_lf.jpg", "jajdesert1_rt.jpg", "jajdesert1_up.jpg", "jajdesert1_dn.jpg");
++	sbMainSkybox.loadSkybox("data/skyboxes/jajlands1/", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
+ }
+ 
+ /*-----------------------------------------------
+@@ -152,7 +155,19 @@ Result:	Renders whole scene.
+ /*---------------------------------------------*/
+ 
+ GLfloat fGlobalAngle;
+-GLfloat fDryAmount = 0.75f;
++
++#define FOG_EQUATION_LINEAR		0
++#define FOG_EQUATION_EXP		1
++#define FOG_EQUATION_EXP2		2
++
++namespace FogParameters
++{
++	GLfloat fDensity = 0.04f;
++	GLfloat fStart = 10.0f;
++	GLfloat fEnd = 75.0f;
++	glm::vec4 vFogColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
++	GLint iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
++};
+ 
+ GLvoid RenderScene(GLvoid* lpParam)
+ {
+@@ -162,100 +177,90 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+ 	glEnable(GL_TEXTURE_2D);
++	spFogAndLight.UseProgram();
+ 
+-	spDirectionalLight.UseProgram();
+-
+-	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	spFogAndLight.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
++	spFogAndLight.setUniform("sunLight.fAmbientIntensity", 1.0f); // Full light for skybox
++	spFogAndLight.setUniform("sunLight.vDirection", glm::vec3(0, -1, 0));
+ 
+-	spDirectionalLight.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
+-	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 1.0f); // Full light for skybox
+-	spDirectionalLight.setUniform("sunLight.vDirection", glm::vec3(0, -1, 0));
+-
+-	spDirectionalLight.setUniform("projectionMatrix", oglControl->getProjectionMatrix());
+-
+-	// Set number of textures to 1
+-	spDirectionalLight.setUniform("numTextures", 1);
+-	// Set sampler 0 texture unit 0
+-	spDirectionalLight.setUniform("gSamplers[0]", 0);
+-	// Texture unit 0 FULLY contributes in final image
+-	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
++	spFogAndLight.setUniform("matrices.projectionMatrix", oglControl->getProjectionMatrix());
++	spFogAndLight.setUniform("gSampler", 0);
+ 
+ 	glm::mat4 mModelView = cCamera.look();
+ 	glm::mat4 mModelToCamera;
+ 
+-	// Proceed with skybox rendering
+-	spDirectionalLight.setUniform("normalMatrix", glm::mat4(1.0));
+-	spDirectionalLight.setUniform("modelViewMatrix", glm::translate(mModelView, cCamera.vEye));
+-	sbMainSkybox.renderSkybox();
++	spFogAndLight.setUniform("fogParams.iEquation", FogParameters::iFogEquation);
++	spFogAndLight.setUniform("fogParams.vFogColor", FogParameters::vFogColor);
+ 
++	if(FogParameters::iFogEquation == FOG_EQUATION_LINEAR)
++	{
++		spFogAndLight.setUniform("fogParams.fStart", FogParameters::fStart);
++		spFogAndLight.setUniform("fogParams.fEnd", FogParameters::fEnd);
++	}
++	else
++		spFogAndLight.setUniform("fogParams.fDensity", FogParameters::fDensity);
++
++	spFogAndLight.setUniform("matrices.modelViewMatrix", glm::translate(mModelView, cCamera.vEye));
++	sbMainSkybox.renderSkybox();
+ 
+ 	glBindVertexArray(uiVAOs[0]);
+-	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 0.55f);
+-	spDirectionalLight.setUniform("modelViewMatrix", &mModelView);
++	spFogAndLight.setUniform("sunLight.fAmbientIntensity", 0.55f);
++	spFogAndLight.setUniform("matrices.modelViewMatrix", &mModelView);
+ 	
+ 	// Render ground
+ 
+-	spDirectionalLight.setUniform("numTextures", 2);
+-	// Set sampler 0 texture unit 0
+-	spDirectionalLight.setUniform("gSamplers[0]", 0);
+-	// Set sampler 1 texture unit 1
+-	spDirectionalLight.setUniform("gSamplers[1]", 1);
+-	// Set contribution according to desertification factor
+-	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f-fDryAmount);
+-	spDirectionalLight.setUniform("fTextureContributions[1]", fDryAmount);
+-	// Bind texture 0 to texture unit 0
+-	tTextures[0].bindTexture(0);
+-	// Bind texture 1 to texture unit 1
+-	tTextures[1].bindTexture(1);
+-	
++	tTextures[0].bindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 36, 6);
+ 
+-	// Render box pile, only 1 texture is needed now
++	// Create a nice spiral from boxes
+ 
+-	spDirectionalLight.setUniform("numTextures", 1);
+-	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
++	tTextures[1].bindTexture();
+ 
+-	tTextures[2].bindTexture();
+-	const GLint iNumFloors = 5;
+-	FOR(floor, iNumFloors)
++	GLfloat dx[] = {1.0f, 0.0f, -1.0f, 0.0f};
++	GLfloat dz[] = {0.0f, -1.0f, 0.0f, 1.0f};
++	GLint iCurDir = 0;
++	glm::vec3 vBoxPos(0.0f, 7.48f, 0.0f);
++	const GLint iSpiralLevels = 12;
++	SFOR(i, 1, iSpiralLevels)
+ 	{
+-		GLint iCnt = iNumFloors-floor;
+-		GLfloat fSize = iCnt*8.0f;
+-		FOR(z, iCnt)FOR(x, iCnt)
++		FOR(j, i)
+ 		{
+-			glm::vec3 vPos = glm::vec3(-fSize/2+4.0f+x*8.02f, -5.98f+floor*8.02f, -fSize/2+4.0f+z*8.02f);
+-			mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+-			mModelToCamera = glm::scale(mModelToCamera, glm::vec3(8.0f, 8.0f, 8.0f));
++			mModelToCamera = glm::translate(glm::mat4(1.0), vBoxPos);
++			mModelToCamera = glm::scale(mModelToCamera, glm::vec3(15.0f, 15.0f, 15.0f));
+ 			// We need to transform normals properly, it's done by transpose of inverse matrix of rotations and scales
+-			spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-			spDirectionalLight.setUniform("modelViewMatrix", mModelView*mModelToCamera);
++			spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
++			spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+ 			glDrawArrays(GL_TRIANGLES, 0, 36);
++
++			vBoxPos += glm::vec3(15.02f*dx[iCurDir], 0.0f, 15.02f*dz[iCurDir]);
+ 		}
++		iCurDir = (iCurDir+1)%4;
+ 	}
+ 
+ 	// Render 3 rotated tori to create interesting object
+ 
+-	tTextures[3].bindTexture();
++	tTextures[2].bindTexture();
++	spFogAndLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+ 	
+-	// Translate them to top of box pile
+-	glm::vec3 vPos = glm::vec3(0.0f, float(iNumFloors)*8.0f-1.5f, 0.0f);
++	// Now it's gonna GLfloat in the air
++	glm::vec3 vPos = glm::vec3(0.0f, 50.0, 0.0f);
+ 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+ 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-	spDirectionalLight.setUniform("modelViewMatrix", mModelView*mModelToCamera);
++	spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
++	spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+ 	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
+ 
+ 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+ 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+ 	mModelToCamera = glm::rotate(mModelToCamera, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+-	spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-	spDirectionalLight.setUniform("modelViewMatrix", mModelView*mModelToCamera);
++	spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
++	spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+ 	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
+ 
+ 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+ 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle+90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-	spDirectionalLight.setUniform("modelViewMatrix", mModelView*mModelToCamera);
++	spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
++	spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+ 	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
+ 
+ 	fGlobalAngle += appMain.sof(100.0f);
+@@ -265,24 +270,42 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	spFont2D.UseProgram();
+ 	glDisable(GL_DEPTH_TEST);
+-	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
+-	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
++	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
++	spFont2D.setUniform("matrices.projectionMatrix", oglControl->getOrthoMatrix());
++
++	spFont2D.setUniform("vColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
++	ftFont.printFormatted(20, h-20, 24, "Current fog equation: %s (Press F to change)", FogParameters::iFogEquation == 0 ? "Linear" : (FogParameters::iFogEquation == 1 ? "Exp" : "Exp2"));
++	if(FogParameters::iFogEquation == 0)
++	{
++		ftFont.printFormatted(20, h-50, 24, "Fog start: %.4f (Press + and - to change)", FogParameters::fStart);
++		ftFont.printFormatted(20, h-80, 24, "Fog end: %.4f  (Press PGUP and PGDN to change)", FogParameters::fEnd);
++		if(Keys::key(VK_ADD))
++			FogParameters::fStart += appMain.sof(15.0f);
++		if(Keys::key(VK_SUBTRACT))
++			FogParameters::fStart -= appMain.sof(15.0f);
++
++		if(Keys::key(VK_PRIOR))
++			FogParameters::fEnd += appMain.sof(15.0f);
++		if(Keys::key(VK_NEXT))
++			FogParameters::fEnd -= appMain.sof(15.0f);
++	}
++	else
++	{
++		ftFont.printFormatted(20, h-50, 24, "Fog density: %.4f (Press + and - to change)", FogParameters::fDensity);
++		if(Keys::key(VK_ADD))
++			FogParameters::fDensity +=	appMain.sof(0.01f);
++		if(Keys::key(VK_SUBTRACT))
++			FogParameters::fDensity -= appMain.sof(0.01f);
++	}
++
++	if(Keys::onekey('F'))FogParameters::iFogEquation = (FogParameters::iFogEquation+1)%3;
+ 
+-	// Get maximal number of texture units;
+-	GLint iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
+-	GLchar buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
+-	ftFont.print(buf, 20, 50, 24);
++	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+ 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
+ 
+-	// Change level of desertification
+-	if(Keys::key('G'))fDryAmount -= appMain.sof(0.2f);
+-	if(Keys::key('H'))fDryAmount += appMain.sof(0.2f);
+-
+-	fDryAmount = min(max(0.0f, fDryAmount), 1.0f);
+-
+ 	oglControl->swapBuffers();
+ }
+ 
+@@ -301,10 +324,10 @@ GLvoid releaseScene(GLvoid* lpParam)
+ 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
+ 	sbMainSkybox.releaseSkybox();
+ 
+-	spDirectionalLight.DeleteProgram();
++	spFogAndLight.DeleteProgram();
+ 	spOrtho2D.DeleteProgram();
+ 	spFont2D.DeleteProgram();
+-	FOR(i, 5)shShaders[i].DeleteShader();
++	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
+ 	ftFont.releaseFont();
+ 
+ 	glDeleteVertexArrays(1, uiVAOs);
+diff -up 11_Multitexturing/skybox.cpp 12_FogOutside/skybox.cpp
+--- 11_Multitexturing/skybox.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/skybox.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -46,17 +46,17 @@ GLvoid CSkybox::loadSkybox(string a_sDir
+ 	glm::vec3 vSkyBoxVertices[24] = 
+ 	{
+ 		// Front face
+-		glm::vec3(50.0f, 50.0f, 50.0f), glm::vec3(50.0f, -50.0f, 50.0f), glm::vec3(-50.0f, 50.0f, 50.0f), glm::vec3(-50.0f, -50.0f, 50.0f),
++		glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(200.0f, -200.0f, 200.0f), glm::vec3(-200.0f, 200.0f, 200.0f), glm::vec3(-200.0f, -200.0f, 200.0f),
+ 		// Back face
+-		glm::vec3(-50.0f, 50.0f, -50.0f), glm::vec3(-50.0f, -50.0f, -50.0f), glm::vec3(50.0f, 50.0f, -50.0f), glm::vec3(50.0f, -50.0f, -50.0f),
++		glm::vec3(-200.0f, 200.0f, -200.0f), glm::vec3(-200.0f, -200.0f, -200.0f), glm::vec3(200.0f, 200.0f, -200.0f), glm::vec3(200.0f, -200.0f, -200.0f),
+ 		// Left face
+-		glm::vec3(-50.0f, 50.0f, 50.0f), glm::vec3(-50.0f, -50.0f, 50.0f), glm::vec3(-50.0f, 50.0f, -50.0f), glm::vec3(-50.0f, -50.0f, -50.0f),
++		glm::vec3(-200.0f, 200.0f, 200.0f), glm::vec3(-200.0f, -200.0f, 200.0f), glm::vec3(-200.0f, 200.0f, -200.0f), glm::vec3(-200.0f, -200.0f, -200.0f),
+ 		// Right face
+-		glm::vec3(50.0f, 50.0f, -50.0f), glm::vec3(50.0f, -50.0f, -50.0f), glm::vec3(50.0f, 50.0f, 50.0f), glm::vec3(50.0f, -50.0f, 50.0f),
++		glm::vec3(200.0f, 200.0f, -200.0f), glm::vec3(200.0f, -200.0f, -200.0f), glm::vec3(200.0f, 200.0f, 200.0f), glm::vec3(200.0f, -200.0f, 200.0f),
+ 		// Top face
+-		glm::vec3(-50.0f, 50.0f, -50.0f), glm::vec3(50.0f, 50.0f, -50.0f), glm::vec3(-50.0f, 50.0f, 50.0f), glm::vec3(50.0f, 50.0f, 50.0f),
++		glm::vec3(-200.0f, 200.0f, -200.0f), glm::vec3(200.0f, 200.0f, -200.0f), glm::vec3(-200.0f, 200.0f, 200.0f), glm::vec3(200.0f, 200.0f, 200.0f),
+ 		// Bottom face
+-		glm::vec3(50.0f, -50.0f, -50.0f), glm::vec3(-50.0f, -50.0f, -50.0f), glm::vec3(50.0f, -50.0f, 50.0f), glm::vec3(-50.0f, -50.0f, 50.0f),
++		glm::vec3(200.0f, -200.0f, -200.0f), glm::vec3(-200.0f, -200.0f, -200.0f), glm::vec3(200.0f, -200.0f, 200.0f), glm::vec3(-200.0f, -200.0f, 200.0f),
+ 	};
+ 	glm::vec2 vSkyBoxTexCoords[4] =
+ 	{
+diff -up 11_Multitexturing/static_geometry.cpp 12_FogOutside/static_geometry.cpp
+--- 11_Multitexturing/static_geometry.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/static_geometry.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -104,5 +104,5 @@ glm::vec3 vCubeNormals[6] =
+ 
+ glm::vec3 vGround[6] = 
+ {
+-	glm::vec3(-100, -10, -100), glm::vec3(50, -10, -100), glm::vec3(100, -10, 100), glm::vec3(100, -10, 100), glm::vec3(-100, -10, 100), glm::vec3(-100, -10, -100)
++	glm::vec3(-1000, 0, -1000), glm::vec3(50, 0, -1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(-1000, 0, 1000), glm::vec3(-1000, 0, -1000)
+ };
+\ No newline at end of file
+diff -up 11_Multitexturing/texture.cpp 12_FogOutside/texture.cpp
+--- 11_Multitexturing/texture.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 12_FogOutside/texture.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -13,11 +13,11 @@ CTexture::CTexture()
+ 
+ /*-----------------------------------------------
+ 
+-Name:		createFromData
++Name:	createFromData
+ 
+ Params:	a_sPath - path to the texture
+-				format - format of data
+-				bGenerateMipMaps - whether to create mipmaps
++		format - format of data
++		bGenerateMipMaps - whether to create mipmaps
+ 
+ Result:	Creates texture from provided data.
+ 
+@@ -51,13 +51,13 @@ GLvoid CTexture::createFromData(GL_UNSIG
+ 
+ /*-----------------------------------------------
+ 
+-Name:		loadTexture2D
++Name:	loadTexture2D
+ 
+ Params:	a_sPath - path to the texture
+-				bGenerateMipMaps - whether to create mipmaps
++		bGenerateMipMaps - whether to create mipmaps
+ 
+ Result:	Loads texture from a file, supports most
+-			graphics formats.
++		graphics formats.
+ 
+ /*---------------------------------------------*/
+ 
+@@ -102,12 +102,12 @@ GLvoid CTexture::setSamplerParameter(GLe
+ 
+ /*-----------------------------------------------
+ 
+-Name:		setFiltering
++Name:	setFiltering
+ 
+ Params:	tfMagnification - mag. filter, must be from
+-									ETextureFiltering enum
+-			tfMinification - min. filter, must be from
+-									ETextureFiltering enum
++							ETextureFiltering enum
++		tfMinification - min. filter, must be from
++							ETextureFiltering enum
+ 
+ Result:	Sets magnification and minification
+ 			texture filter.
+@@ -140,7 +140,7 @@ GLvoid CTexture::setFiltering(GLint a_tf
+ 
+ /*-----------------------------------------------
+ 
+-Name:		bindTexture
++Name:	bindTexture
+ 
+ Params:	iTextureUnit - texture unit to bind texture to
+ 

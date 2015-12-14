@@ -1,0 +1,105 @@
+Only in 29_TerrainPt_2_WavingGrass/: heightmap.cpp
+Only in 29_TerrainPt_2_WavingGrass/: heightmap.h
+diff -up 28_FontsPt_2_Upgraded/Lin_OpenGLApp.cpp 29_TerrainPt_2_WavingGrass/Lin_OpenGLApp.cpp
+--- 28_FontsPt_2_Upgraded/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.072309790 +0200
++++ 29_TerrainPt_2_WavingGrass/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.076309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("28_opengl_3_3"))
++	if(!appMain.InitializeApp("29_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("28.) Fonts Pt. 2 - Upgraded - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("29.) Terrain Pt.2 - Waving Grass - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+Binary files 28_FontsPt_2_Upgraded/RenderScene.cpp and 29_TerrainPt_2_WavingGrass/RenderScene.cpp differ
+diff -up 28_FontsPt_2_Upgraded/static_geometry.cpp 29_TerrainPt_2_WavingGrass/static_geometry.cpp
+--- 28_FontsPt_2_Upgraded/static_geometry.cpp	2015-12-14 14:20:08.076309790 +0200
++++ 29_TerrainPt_2_WavingGrass/static_geometry.cpp	2015-12-14 14:20:08.076309790 +0200
+@@ -217,15 +217,6 @@ GLvoid PrepareStaticSceneObjects()
+ 		}
+ 	}
+ 
+-	glm::vec3 vNormal(0.0f, 1.0f, 0.0f);
+-	FOR(i, 6)
+-	{
+-		vboSceneObjects.AddData(&vGround[i], sizeof(glm::vec3));
+-		vboSceneObjects.AddData(&vGroundTexCoords[i], sizeof(glm::vec2));
+-		vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
+-	}
+-
+-
+ 	glGenVertexArrays(1, &uiVAOSceneObjects);
+ 	glBindVertexArray(uiVAOSceneObjects);
+ 	vboSceneObjects.BindVBO();
+diff -up 28_FontsPt_2_Upgraded/texture.cpp 29_TerrainPt_2_WavingGrass/texture.cpp
+--- 28_FontsPt_2_Upgraded/texture.cpp	2015-12-14 14:20:08.076309790 +0200
++++ 29_TerrainPt_2_WavingGrass/texture.cpp	2015-12-14 14:20:08.076309790 +0200
+@@ -85,6 +85,9 @@ Result:	Loads texture from a file, suppo
+ 
+ GLboolean CTexture::LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
+ {
++	if(a_sPath == "data/textures/grass.png")
++		INT A = 5;
++
+ 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+ 	FIBITMAP* dib(0);
+ 
+@@ -294,17 +297,28 @@ GLvoid CTexture::SetWrap()
+ 	glSamplerParameteri(uiSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ }
+ 
++GLvoid CTexture::SetAnisotropyLevel( GLfloat fAnisotropyLevel )
++{
++	glSamplerParameterf(uiSampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, fAnisotropyLevel);
++}
++
+ CTexture tTextures[NUMTEXTURES];
+ 
+ GLvoid LoadAllTextures()
+ {
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"dirt_seamless.jpg", "metal_plate.jpg"};
++	string sTextureNames[] = {"fungus.dds", "sand_grass_02.jpg", "rock_2_4w.jpg", "sand.jpg", "path.png", "scifi_metal.jpg", "ik_brick_6432a.jpg", "grassPack.dds"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+ 		tTextures[i].LoadTexture2D("data/textures/"+sTextureNames[i], true);
+-		tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
++		if(i != 7)tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
++		else
++		{
++			tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_TRILINEAR);
++			tTextures[i].SetWrap();
++			tTextures[i].SetAnisotropyLevel(4.0f);
++		}
+ 	}
+ }
+\ No newline at end of file
+diff -up 28_FontsPt_2_Upgraded/texture.h 29_TerrainPt_2_WavingGrass/texture.h
+--- 28_FontsPt_2_Upgraded/texture.h	2015-12-14 14:20:08.076309790 +0200
++++ 29_TerrainPt_2_WavingGrass/texture.h	2015-12-14 14:20:08.076309790 +0200
+@@ -51,6 +51,8 @@ public:
+ 
+ 	GLvoid DeleteTexture();
+ 
++	GLvoid SetAnisotropyLevel(GLfloat fAnisotropyLevel);
++
+ 	CTexture();
+ private:
+ 
+@@ -64,6 +66,6 @@ private:
+ 	string sPath;
+ };
+ 
+-#define NUMTEXTURES 2
++#define NUMTEXTURES 8
+ extern CTexture tTextures[NUMTEXTURES];
+ GLvoid LoadAllTextures();
+\ No newline at end of file

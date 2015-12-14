@@ -1,0 +1,616 @@
+Only in 24_AnimationPt_1_KeyframeMD2/: anorms.h
+diff -up 23_ParticleSystem/assimp_model.cpp 24_AnimationPt_1_KeyframeMD2/assimp_model.cpp
+--- 23_ParticleSystem/assimp_model.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/assimp_model.cpp	2015-12-14 14:20:08.060309790 +0200
+@@ -112,26 +112,32 @@ GLboolean CAssimpModel::LoadModelFromFil
+ 		GLboolean ok = material->GetTexture(aiTextureType_DIFFUSE, texIndex, &path) == AI_SUCCESS;
+ 		if(!ok)ok = material->GetTexture(aiTextureType_AMBIENT, texIndex, &path) == AI_SUCCESS;
+ 		if(!ok)ok = material->GetTexture(aiTextureType_UNKNOWN, texIndex, &path) == AI_SUCCESS;
+-		if(!ok)ok = material->GetTexture(aiTextureType_AMBIENT, texIndex, &path) == AI_SUCCESS;
+-		if(ok)
++		if(!ok)ok = material->GetTexture(aiTextureType_EMISSIVE, texIndex, &path) == AI_SUCCESS;
++		if(!ok)
++		{
++			string sPutToPath = sFilePath;
++			sPutToPath = sPutToPath.substr(sPutToPath.find_last_of("//")+1);
++			sPutToPath = sPutToPath.substr(0, sPutToPath.find_last_of("."));
++			sPutToPath += ".jpg";
++			path = sPutToPath.c_str();
++		}
++
++		string sDir = GetDirectoryPath(sFilePath);
++		string sTextureName = path.data;
++		string sFullPath = sDir+sTextureName;
++		GLint iTexFound = -1;
++		FOR(j, ESZ(tTextures))if(sFullPath == tTextures[j].GetPath())
++		{
++			iTexFound = j;
++			break;
++		}
++		if(iTexFound != -1)materialRemap[i] = iTexFound;
++		else
+ 		{
+-			string sDir = GetDirectoryPath(sFilePath);
+-			string sTextureName = path.data;
+-			string sFullPath = sDir+sTextureName;
+-			GLint iTexFound = -1;
+-			FOR(j, ESZ(tTextures))if(sFullPath == tTextures[j].GetPath())
+-			{
+-				iTexFound = j;
+-				break;
+-			}
+-			if(iTexFound != -1)materialRemap[i] = iTexFound;
+-			else
+-			{
+-				CTexture tNew;
+-				tNew.LoadTexture2D(sFullPath, true);
+-				materialRemap[i] = ESZ(tTextures);
+-				tTextures.push_back(tNew);
+-			}
++			CTexture tNew;
++			tNew.LoadTexture2D(sFullPath, true);
++			materialRemap[i] = ESZ(tTextures);
++			tTextures.push_back(tNew);
+ 		}
+ 	}
+ 
+diff -up 23_ParticleSystem/heightmap.cpp 24_AnimationPt_1_KeyframeMD2/heightmap.cpp
+--- 23_ParticleSystem/heightmap.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/heightmap.cpp	2015-12-14 14:20:08.060309790 +0200
+@@ -61,7 +61,7 @@ GLboolean CMultiLayeredHeightmap::LoadHe
+ 
+ 	vboHeightmapData.CreateVBO();
+ 	// All vertex data are here (there are iRows*iCols vertices in this heightmap), we will get to normals later
+-	vector< vector< glm::vec3> > vVertexData(iRows, vector<glm::vec3>(iCols));
++	vVertexData = vector< vector< glm::vec3> >(iRows, vector<glm::vec3>(iCols));
+ 	vector< vector< glm::vec2> > vCoordsData(iRows, vector<glm::vec2>(iCols));
+ 
+ 	GLfloat fTextureU = float(iCols)*0.1f;
+@@ -354,4 +354,18 @@ GLint CMultiLayeredHeightmap::GetNumHeig
+ glm::mat4 CMultiLayeredHeightmap::GetScaleMatrix()
+ {
+ 	return glm::scale(glm::mat4(1.0), glm::vec3(vRenderScale));
++}
++
++GLfloat CMultiLayeredHeightmap::GetHeightFromRealVector(glm::vec3 vRealPosition)
++{
++	GLint iColumn = int((vRealPosition.x + vRenderScale.x*0.5f)*float(iCols) / (vRenderScale.x));
++	GLint iRow = int((vRealPosition.z + vRenderScale.z*0.5f)*float(iRows) / (vRenderScale.z));
++	
++	iColumn = min(iColumn, iCols-1);
++	iRow = min(iRow, iRows-1);
++
++	iColumn = max(iColumn, 0);
++	iRow = max(iRow, 0);
++
++	return vVertexData[iRow][iColumn].y*vRenderScale.y;
+ }
+\ No newline at end of file
+diff -up 23_ParticleSystem/heightmap.h 24_AnimationPt_1_KeyframeMD2/heightmap.h
+--- 23_ParticleSystem/heightmap.h	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/heightmap.h	2015-12-14 14:20:08.060309790 +0200
+@@ -36,6 +36,8 @@ public:
+ 
+ 	static CShaderProgram* GetShaderProgram();
+ 
++	GLfloat GetHeightFromRealVector(glm::vec3 vRealPosition);
++
+ 	CMultiLayeredHeightmap();
+ 
+ private:
+@@ -48,6 +50,8 @@ private:
+ 
+ 	glm::vec3 vRenderScale;
+ 
++	vector< vector< glm::vec3> > vVertexData;
++
+ 	CVertexBufferObject vboHeightmapData;
+ 	CVertexBufferObject vboHeightmapIndices;
+ 
+diff -up 23_ParticleSystem/Lin_OpenGLApp.cpp 24_AnimationPt_1_KeyframeMD2/Lin_OpenGLApp.cpp
+--- 23_ParticleSystem/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.060309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("23_opengl_3_3"))
++	if(!appMain.InitializeApp("24_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("23.) Particle System - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("24.) Animation Pt. 1 - Keyframe MD2 - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+Only in 24_AnimationPt_1_KeyframeMD2/: md2model.cpp
+Only in 24_AnimationPt_1_KeyframeMD2/: md2model.h
+diff -up 23_ParticleSystem/particle_system_tf.cpp 24_AnimationPt_1_KeyframeMD2/particle_system_tf.cpp
+--- 23_ParticleSystem/particle_system_tf.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/particle_system_tf.cpp	2015-12-14 14:20:08.060309790 +0200
+@@ -213,11 +213,12 @@ Result:	Sets the projection matrix and v
+ GLvoid CParticleSystemTransformFeedback::SetMatrices(glm::mat4* a_matProjection, glm::vec3 vEye, glm::vec3 vView, glm::vec3 vUpVector)
+ {
+ 	matProjection = *a_matProjection;
+-
+ 	matView = glm::lookAt(vEye, vView, vUpVector);
++
+ 	vView = vView-vEye;
+ 	vView = glm::normalize(vView);
+-	vQuad1 = glm::cross(vView, vUpVector);
++	vQuad1 = glm::cross(vView, glm::vec3(0, 1.0f, 0));
++	if(fabsf(vView.y) < 0.0001f)vQuad1 = glm::cross(vView, glm::vec3(1.0f, 0.0f, 0.0f));
+ 	vQuad1 = glm::normalize(vQuad1);
+ 	vQuad2 = glm::cross(vView, vQuad1);
+ 	vQuad2 = glm::normalize(vQuad2);
+@@ -247,7 +248,7 @@ GLvoid CParticleSystemTransformFeedback:
+ 	fGenLifeRange = a_fGenLifeMax - a_fGenLifeMin;
+ 
+ 	fNextGenerationTime = fEvery;
+-	fElapsedTime = 0.8f;
++	fElapsedTime = 0.0f;
+ 
+ 	iNumToGenerate = a_iNumToGenerate;
+ }
+diff -up 23_ParticleSystem/RenderScene.cpp 24_AnimationPt_1_KeyframeMD2/RenderScene.cpp
+--- 23_ParticleSystem/RenderScene.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/RenderScene.cpp	2015-12-14 14:20:08.060309790 +0200
+@@ -15,6 +15,7 @@
+ #include "material.h"
+ 
+ #include "assimp_model.h"
++#include "md2model.h"
+ 
+ #include "heightmap.h"
+ 
+@@ -22,7 +23,6 @@
+ 
+ #include "particle_system_tf.h"
+ 
+-
+ CVertexBufferObject vboSceneObjects;
+ GLuint uiVAOSceneObjects;
+ 
+@@ -34,7 +34,7 @@ CFlyingCamera cCamera;
+ CDirectionalLight dlSun;
+ 
+ CMaterial matShiny;
+-CAssimpModel amModels[3];
++CAssimpModel amModels[1];
+ 
+ CMultiLayeredHeightmap hmWorld;
+ 
+@@ -43,6 +43,19 @@ GLint iTorusFaces;
+ GLboolean bDisplayNormals = false; // Do not display normals by default
+ 
+ CParticleSystemTransformFeedback psMainParticleSystem;
++CMD2Model md2Models[4];
++animState_t animationStateMain;
++GLint iCurrentModel = 0;
++string sModelNames[] = 
++{
++	"Dr. Freak",
++	"Blade",
++	"Samourai",
++	"HoboGoblin"
++};
++
++animState_t animationStateArmy[15];
++glm::vec3 vArmyPosition[15];
+ 
+ /*-----------------------------------------------
+ 
+@@ -97,32 +110,47 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.LoadSkybox("data/skyboxes/bluefreeze/", "bluefreeze_front.jpg", "bluefreeze_back.jpg", "bluefreeze_right.jpg", "bluefreeze_left.jpg", "bluefreeze_top.jpg", "bluefreeze_top.jpg");
++	sbMainSkybox.LoadSkybox("data/skyboxes/clouds/", "clouds_front.jpg", "clouds_back.jpg", "clouds_right.jpg", "clouds_left.jpg", "clouds_top.jpg", "clouds_top.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f, 0);
+ 
+-	amModels[0].LoadModelFromFile("data/models/house/house.3ds");
+-	amModels[1].LoadModelFromFile("data/models/treasure_chest_obj/treasure_chest.obj");
++	amModels[0].LoadModelFromFile("data/models/treasure_chest_obj/treasure_chest.obj");
+ 	
+ 	CAssimpModel::FinalizeVBO();
+ 	CMultiLayeredHeightmap::LoadTerrainShaderProgram();
+-	hmWorld.LoadHeightMapFromImage("data/worlds/world_like_in_21th_tutorial.bmp");
++	hmWorld.LoadHeightMapFromImage("data/worlds/world.bmp");
++	hmWorld.SetRenderSize(300.0f, 25.0f, 300.0f);
+ 
+ 	matShiny = CMaterial(1.0f, 32.0f);
+ 
+ 	psMainParticleSystem.InitalizeParticleSystem();
+ 
+ 	psMainParticleSystem.SetGeneratorProperties(
+-		glm::vec3(-10.0f, 17.5f, 0.0f), // Where the particles are generated
+-		glm::vec3(-5, 0, -5), // Minimal velocity
+-		glm::vec3(5, 20, 5), // Maximal velocity
+-		glm::vec3(0, -5, 0), // Gravity force applied to particles
+-		glm::vec3(0.0f, 0.5f, 1.0f), // Color (light blue)
++		glm::vec3(-120.0f, 28.1f, -33), // Where the particles are generated
++		glm::vec3(-10, 0, -10), // Minimal velocity
++		glm::vec3(10, 20, 10), // Maximal velocity
++		glm::vec3(0, -10, 0), // Gravity force applied to particles
++		glm::vec3(1.0f, 0.5f, 0.0f), // Color (light blue)
+ 		1.5f, // Minimum lifetime in seconds
+ 		3.0f, // Maximum lifetime in seconds
+-		0.75f, // Rendered size
+-		0.02f, // Spawn every 0.05 seconds
++		0.25f, // Rendered size
++		0.02f, // Spawn every 0.02 seconds
+ 		30); // And spawn 30 particles
++
++	md2Models[0].LoadModel("data/models/drfreak/drfreak.md2");
++	md2Models[1].LoadModel("data/models/blade/Blade.md2");
++	md2Models[2].LoadModel("data/models/samourai/Samourai.md2");
++	md2Models[3].LoadModel("data/models/HoboGoblin/Model.MD2");
++	animationStateMain = md2Models[0].StartAnimation(STAND);
++
++	FOR(i, 3)FOR(j, 5)
++	{
++		animationStateArmy[i*5 + j] = md2Models[1].StartAnimation(rand()% 2 ? ATTACK : (rand()%2 ? STAND : SALUTE));
++		animationStateArmy[i*5 + j].curr_time = -(i+j)*0.15f;
++
++		vArmyPosition[i*5 + j] = glm::vec3(80.0f + j*15.0f, 0, -110+i*15.0f);
++		vArmyPosition[i*5 + j].y = hmWorld.GetHeightFromRealVector(vArmyPosition[i*5 + j])+8.0f;
++	}
+ }
+ 
+ /*-----------------------------------------------
+@@ -135,6 +163,10 @@ Result:  Renders whole scene.
+ 
+ /*---------------------------------------------*/
+ 
++glm::vec3 vModelPosition = glm::vec3(0, 20, 0);
++GLfloat fModelRotation;
++animType_t atCurrentAnimation = STAND;
++
+ GLvoid RenderScene(GLvoid* lpParam)
+ {
+ 	// Typecast lpParam to COpenGLControl pointer
+@@ -143,6 +175,18 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
++	spSkybox.UseProgram();
++
++	spSkybox.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
++	spSkybox.SetUniform("matrices.viewMatrix", cCamera.Look());
++	spSkybox.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", glm::mat4(1.0));
++
++	spSkybox.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
++	spSkybox.SetUniform("gSampler", 0);	
++	spSkybox.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", glm::translate(glm::mat4(1.0), cCamera.vEye));
++
++	sbMainSkybox.RenderSkybox();
++
+ 	spMain.UseProgram();
+ 
+ 	spMain.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
+@@ -153,80 +197,67 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0));
+ 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+-
+-	// This values will set the darkness of whole scene, that's why such name of variable :D
++	// This values set the darkness of whole scene, that's why such name of variable :D
+ 	static GLfloat fAngleOfDarkness = 45.0f;
+ 	// You can play with direction of light with '+' and '-' key
+ 	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
+ 	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
+ 	// Set the directional vector of light
+ 	dlSun.vDirection = glm::vec3(-sin(fAngleOfDarkness*3.1415f/180.0f), -cos(fAngleOfDarkness*3.1415f/180.0f), 0.0f);
+-	
+-	dlSun.iSkybox = 1;
+-	dlSun.SetUniformData(&spMain, "sunLight");
+-
+-	spMain.SetUniform("matrices.modelMatrix", glm::translate(glm::mat4(1.0), cCamera.vEye));
+-	sbMainSkybox.RenderSkybox();
+-
+-	dlSun.iSkybox = 0;
+ 	dlSun.SetUniformData(&spMain, "sunLight");
+ 
+-	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0));
+-
+ 	spMain.SetUniform("vEyePosition", cCamera.vEye);
+ 	matShiny.SetUniformData(&spMain, "matActive");
+-	
+-	// Render a house
+ 
+-	CAssimpModel::BindModelsVAO();
++	glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(vModelPosition));
++	mModel = glm::rotate(mModel, fModelRotation, glm::vec3(0, 1, 0));
++	mModel = glm::rotate(mModel, -90.0f, glm::vec3(1, 0, 0));
++	mModel = glm::scale(mModel, glm::vec3(0.35f, 0.35f, 0.35f));
+ 
+-	glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 17.0f, 0));
+-	mModel = glm::scale(mModel, glm::vec3(8, 8, 8));
++	spMD2Animation.UseProgram();
++	spMD2Animation.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
++	spMD2Animation.SetUniform("matrices.viewMatrix", cCamera.Look());
+ 
+-	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-	amModels[0].RenderModel();
+-	
+-	// ... and a treasure chest
++	tTextures[2].BindTexture();
++	spMD2Animation.SetUniform("gSampler", 0);
++	spMD2Animation.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+ 
+-	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-10.0f, 17.5f, 0));
+-	mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
++	dlSun.SetUniformData(&spMD2Animation, "sunLight");
++	matShiny.SetUniformData(&spMD2Animation, "matActive");
+ 
+-	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-	amModels[1].RenderModel();
++	spMD2Animation.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 
+-	// Render 3 rotated tori to create interesting object
++	md2Models[iCurrentModel].RenderModel(&animationStateMain);
++	md2Models[iCurrentModel].UpdateAnimation(&animationStateMain, appMain.sof(1.0f));
+ 
+-	tTextures[5].BindTexture();
+-	glBindVertexArray(uiVAOSceneObjects);
+-	static GLfloat fGlobalAngle = 0.0f;
+-
+-	FOR(i, 2)
++	FOR(i, 3)FOR(j, 5)
+ 	{
+-		glm::vec3 vCenter = glm::vec3(-40+i*40, 30, -20);
+-		mModel = glm::translate(glm::mat4(1.0), vCenter);
+-		if(i == 0)mModel = glm::rotate(mModel, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		glDrawArrays(GL_TRIANGLES, 0, iTorusFaces*3);
++		mModel = glm::translate(glm::mat4(1.0), vArmyPosition[i*5 + j]);
++		mModel = glm::rotate(mModel, 270.0f, glm::vec3(0, 1, 0));
++		mModel = glm::rotate(mModel, -90.0f, glm::vec3(1, 0, 0));
+ 
+-		mModel = glm::translate(glm::mat4(1.0), vCenter+glm::vec3(0.01f, 0.0f, 0.0f));
+-		if(i == 0)mModel = glm::rotate(mModel, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-		mModel = glm::rotate(mModel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		glDrawArrays(GL_TRIANGLES, 0, iTorusFaces*3);
++		mModel = glm::scale(mModel, glm::vec3(0.35f, 0.35f, 0.35f));
+ 
+-		mModel = glm::translate(glm::mat4(1.0), vCenter+glm::vec3(0.00f, 0.01f, 0.0f));
++		spMD2Animation.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+ 
+-		if(i == 0)mModel = glm::rotate(mModel, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-		mModel = glm::rotate(mModel, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		glDrawArrays(GL_TRIANGLES, 0, iTorusFaces*3);
++		md2Models[1].RenderModel(&animationStateArmy[i*5 + j]);
++		md2Models[1].UpdateAnimation(&animationStateArmy[i*5 + j], appMain.sof(1.0f));
+ 	}
+ 
+-	fGlobalAngle += appMain.sof(50.0f);
++	CAssimpModel::BindModelsVAO();
++
++	spMain.UseProgram();
++	
++	// ... and a treasure chest
++
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-120.0f, 25.1f, -33));
++	mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
++
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++	amModels[0].RenderModel();
+ 
+ 	// Now we're going to render terrain
+ 
+-	hmWorld.SetRenderSize(300.0f, 35.0f, 300.0f);
+ 	CShaderProgram* spTerrain = CMultiLayeredHeightmap::GetShaderProgram();
+ 
+ 	spTerrain->UseProgram();
+@@ -263,56 +294,15 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 		spNormalDisplayer.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
+ 		spNormalDisplayer.SetUniform("matrices.viewMatrix", cCamera.Look());
+ 
+-		CAssimpModel::BindModelsVAO();
+-
+-		// ... Render the house again
+-
+-		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 17.0f, 0));
+-		mModel = glm::scale(mModel, glm::vec3(8, 8, 8));
+-
+-		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[0].RenderModel(GL_POINTS);
+-
+-		// ... and the treasure chest again
+-
+-		mModel = glm::translate(glm::mat4(1.0), glm::vec3(-10.0f, 17.5f, 0));
+-		mModel = glm::scale(mModel, glm::vec3(0.5f, 0.5f, 0.5f));
+-
+-		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[1].RenderModel(GL_POINTS);
+-
+-		glBindVertexArray(uiVAOSceneObjects);
+-
+-		FOR(i, 2)
+-		{
+-			glm::vec3 vCenter = glm::vec3(-40+i*40, 30, -20);
+-			mModel = glm::translate(glm::mat4(1.0), vCenter);
+-			if(i == 0)mModel = glm::rotate(mModel, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-			spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-			glDrawArrays(GL_POINTS, 0, iTorusFaces*3);
+-
+-			mModel = glm::translate(glm::mat4(1.0), vCenter+glm::vec3(0.01f, 0.0f, 0.0f));
+-			if(i == 0)mModel = glm::rotate(mModel, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-			mModel = glm::rotate(mModel, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+-			spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-			glDrawArrays(GL_POINTS, 0, iTorusFaces*3);
+-
+-			mModel = glm::translate(glm::mat4(1.0), vCenter+glm::vec3(0.00f, 0.01f, 0.0f));
+-
+-			if(i == 0)mModel = glm::rotate(mModel, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-			mModel = glm::rotate(mModel, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-			spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-			glDrawArrays(GL_POINTS, 0, iTorusFaces*3);
+-		}
+-
+ 		spNormalDisplayer.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", hmWorld.GetScaleMatrix());
+ 		hmWorld.RenderHeightmapForNormals();
+ 	}
+ 
++	// Render particles
++
+ 	tTextures[6].BindTexture(); 
+ 
+ 	psMainParticleSystem.SetMatrices(oglControl->GetProjectionMatrix(), cCamera.vEye, cCamera.vView, cCamera.vUp);
+-
+ 	psMainParticleSystem.UpdateParticles(appMain.sof(1.0f));
+ 	psMainParticleSystem.RenderParticles();
+ 
+@@ -326,23 +316,83 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	GLint w = oglControl->GetViewportWidth(), h = oglControl->GetViewportHeight();
+ 	
+-	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	spFont2D.SetUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+ 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
+-
+ 	ftFont.PrintFormatted(20, h-30, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-80, 20, "Particles: %d", psMainParticleSystem.GetNumParticles());
++	ftFont.PrintFormatted(20, h-55, 20, "Particles: %d", psMainParticleSystem.GetNumParticles());
++	ftFont.PrintFormatted(20, h-80, 20, "Displaying Normals: %s (Press 'N' to toggle)", bDisplayNormals ? "Yes" : "Nope");
++
++	ftFont.PrintFormatted(20, h-130, 20, "Current Model: %s (Press 'Q' and 'E' to change)", sModelNames[iCurrentModel].c_str());
++	ftFont.PrintFormatted(20, h-155, 20, "Current Animation: %s (Press 'Z' and 'X' to change)", sMD2AnimationNames[atCurrentAnimation].c_str());
++
++	// Handle input
+ 
+-	ftFont.PrintFormatted(20, h-110, 20, "Specular Intensity: %.2f (Press 'Q' and 'E' to change)", matShiny.fSpecularIntensity);
+-	if(Keys::Key('Q'))matShiny.fSpecularIntensity -= appMain.sof(0.2f);
+-	if(Keys::Key('E'))matShiny.fSpecularIntensity += appMain.sof(0.2f);
++	GLboolean bRunning = false;
++	static GLboolean bLastFrameRunning = false;
+ 
+-	ftFont.PrintFormatted(20, h-140, 20, "Specular Power: %.2f (Press 'Z' and 'C' to change)", matShiny.fSpecularPower);
+-	if(Keys::Key('Z'))matShiny.fSpecularPower -= appMain.sof(8.0f);
+-	if(Keys::Key('C'))matShiny.fSpecularPower += appMain.sof(8.0f);
++	if(Keys::Key(VK_UP))
++	{
++		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
++		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
++
++		glm::vec3 vMoveVector(fSine, 0, fCosine);
++
++		vModelPosition += vMoveVector*appMain.sof(30.0f);
++
++		if(animationStateMain.type != RUN)animationStateMain = md2Models[iCurrentModel].StartAnimation(RUN);
++		bRunning = true;
++	}
++	if(Keys::Key(VK_DOWN))
++	{
++		GLfloat fSine = float(sin((fModelRotation+90)*3.1415f/180.0f));
++		GLfloat fCosine = float(cos((fModelRotation+90)*3.1415f/180.0f));
++
++		glm::vec3 vMoveVector(fSine, 0, fCosine);
++
++		vModelPosition -= vMoveVector*appMain.sof(30.0f);
++
++		if(animationStateMain.type != RUN)animationStateMain = md2Models[iCurrentModel].StartAnimation(RUN);
++		bRunning = true;
++	}
++	if(Keys::Key(VK_LEFT))
++		fModelRotation += appMain.sof(135.0f);
++	if(Keys::Key(VK_RIGHT))
++		fModelRotation -= appMain.sof(135.0f);
++	if(Keys::Onekey(VK_RCONTROL))animationStateMain = md2Models[iCurrentModel].StartAnimation(ATTACK);
++
++	vModelPosition.y = hmWorld.GetHeightFromRealVector(vModelPosition)+8.0f;
++
++	if(!bRunning && bLastFrameRunning)animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++	bLastFrameRunning = bRunning;
++
++	if(Keys::Onekey('Z'))
++	{
++		atCurrentAnimation = animType_t( (int(atCurrentAnimation) + int(MAX_ANIMATIONS - 1) - 1) % int(MAX_ANIMATIONS - 1));
++		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++	}
++
++	if(Keys::Onekey('X'))
++	{
++		atCurrentAnimation = animType_t( (int(atCurrentAnimation) + 1) % int(MAX_ANIMATIONS - 1));
++		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++	}
++
++	if(Keys::Onekey('Q'))
++	{
++		iCurrentModel = (iCurrentModel + 3)%4;
++		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++	}
++
++	if(Keys::Onekey('E'))
++	{
++		iCurrentModel = (iCurrentModel + 1)%4;
++		animationStateMain = md2Models[iCurrentModel].StartAnimation(atCurrentAnimation);
++	}
+ 
+-	ftFont.PrintFormatted(20, h-200, 20, "Displaying Normals: %s (Press 'N' to toggle)", bDisplayNormals ? "Yes" : "Nope");
+ 	if(Keys::Onekey('N'))bDisplayNormals = !bDisplayNormals;
+ 
++	if(Keys::Onekey('R'))tTextures[4].ReloadTexture();
++
+ 	glEnable(GL_DEPTH_TEST);	
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+ 
+diff -up 23_ParticleSystem/shaders.cpp 24_AnimationPt_1_KeyframeMD2/shaders.cpp
+--- 23_ParticleSystem/shaders.cpp	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/shaders.cpp	2015-12-14 14:20:08.060309790 +0200
+@@ -10,7 +10,7 @@ CShader::CShader()
+ }
+ 
+ CShader shShaders[NUMSHADERS];
+-CShaderProgram spMain, spOrtho2D, spFont2D, spNormalDisplayer;
++CShaderProgram spMain, spOrtho2D, spFont2D, spNormalDisplayer, spMD2Animation, spSkybox;
+ 
+ /*-----------------------------------------------
+ 
+@@ -27,7 +27,7 @@ GLboolean PrepareShaderPrograms()
+ 	// Load shaders and create shader program
+ 
+ 	string sShaderFileNames[] = {"main_shader.vert", "main_shader.frag", "ortho2D.vert", "ortho2D.frag", "font2D.frag", "dirLight.frag",
+-		"normal_displayer.vert", "normal_displayer.geom", "normal_displayer.frag"
++		"normal_displayer.vert", "normal_displayer.geom", "normal_displayer.frag", "md2anim.vert", "skybox.vert", "skybox.frag"
+ 	};
+ 
+ 	FOR(i, NUMSHADERS)
+@@ -61,6 +61,18 @@ GLboolean PrepareShaderPrograms()
+ 		spNormalDisplayer.AddShaderToProgram(&shShaders[8]);
+ 	if(!spNormalDisplayer.LinkProgram())return false;
+ 
++	spMD2Animation.CreateProgram();
++		spMD2Animation.AddShaderToProgram(&shShaders[9]);
++		spMD2Animation.AddShaderToProgram(&shShaders[1]);
++		spMD2Animation.AddShaderToProgram(&shShaders[5]);
++	if(!spMD2Animation.LinkProgram())return false;
++
++
++	spSkybox.CreateProgram();
++		spSkybox.AddShaderToProgram(&shShaders[10]);
++		spSkybox.AddShaderToProgram(&shShaders[11]);
++	if(!spSkybox.LinkProgram())return false;
++
+ 	return true;
+ }
+  
+diff -up 23_ParticleSystem/shaders.h 24_AnimationPt_1_KeyframeMD2/shaders.h
+--- 23_ParticleSystem/shaders.h	2015-12-14 14:20:08.056309790 +0200
++++ 24_AnimationPt_1_KeyframeMD2/shaders.h	2015-12-14 14:20:08.060309790 +0200
+@@ -87,7 +87,7 @@ private:
+ 
+ GLboolean PrepareShaderPrograms();
+ 
+-#define NUMSHADERS 9
++#define NUMSHADERS 12
+ 
+ extern CShader shShaders[NUMSHADERS];
+-extern CShaderProgram spMain, spOrtho2D, spFont2D, spNormalDisplayer;
+\ No newline at end of file
++extern CShaderProgram spMain, spOrtho2D, spFont2D, spNormalDisplayer, spMD2Animation, spSkybox;
+\ No newline at end of file

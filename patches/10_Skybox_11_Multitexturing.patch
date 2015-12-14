@@ -1,0 +1,240 @@
+diff -up 10_Skybox/flyingCamera.cpp 11_Multitexturing/flyingCamera.cpp
+--- 10_Skybox/flyingCamera.cpp	2015-12-14 15:01:49.360349557 +0200
++++ 11_Multitexturing/flyingCamera.cpp	2015-12-14 14:20:08.020309790 +0200
+@@ -47,7 +47,7 @@ GLvoid CFlyingCamera::rotateWithMouse()
+ 	if(deltaX != 0.0f)
+ 	{
+ 		vView -= vEye;
+-		vView = glm::gtx::rotate_vector::rotate(vView, deltaX, glm::vec3(0.0f, 1.0f, 0.0f));
++		vView = glm::rotate(vView, deltaX, glm::vec3(0.0f, 1.0f, 0.0f));
+ 		vView += vEye;
+ 	}
+ 	if(deltaY != 0.0f)
+@@ -59,7 +59,7 @@ GLvoid CFlyingCamera::rotateWithMouse()
+ 		if(fNewAngle > -89.80f && fNewAngle < 89.80f)
+ 		{
+ 			vView -= vEye;
+-			vView = glm::gtx::rotate_vector::rotate(vView, deltaY, vAxis);
++			vView = glm::rotate(vView, deltaY, vAxis);
+ 			vView += vEye;
+ 		}
+ 	}
+diff -up 10_Skybox/freeTypeFont.cpp 11_Multitexturing/freeTypeFont.cpp
+--- 10_Skybox/freeTypeFont.cpp	2015-12-14 15:01:49.360349557 +0200
++++ 11_Multitexturing/freeTypeFont.cpp	2015-12-14 14:20:08.020309790 +0200
+@@ -5,9 +5,9 @@
+ #include <glm/gtc/matrix_transform.hpp>
+ 
+ #ifdef _DEBUG
+-#pragma comment(lib, "freetype248_D.lib")
++#pragma comment(lib, "freetype249_D.lib")
+ #else
+-#pragma comment(lib, "freetype248.lib")
++#pragma comment(lib, "freetype249.lib")
+ #endif
+ 
+ using namespace std;
+diff -up 10_Skybox/RenderScene.cpp 11_Multitexturing/RenderScene.cpp
+--- 10_Skybox/RenderScene.cpp	2015-12-14 15:01:49.364349557 +0200
++++ 11_Multitexturing/RenderScene.cpp	2015-12-14 15:01:49.368349557 +0200
+@@ -26,7 +26,7 @@ GLuint uiVAOs[1]; // Only one VAO now
+ CShader shShaders[5];
+ CShaderProgram spDirectionalLight, spOrtho2D, spFont2D;
+ 
+-#define NUMTEXTURES 3
++#define NUMTEXTURES 4
+ 
+ CTexture tTextures[NUMTEXTURES];
+ 
+@@ -119,7 +119,7 @@ GLvoid initScene(GLvoid* lpParam)
+ 
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"grass.jpg", "crate.jpg", "metalplate.jpg"};
++	string sTextureNames[] = {"grass.jpg", "aardfdry256_1.jpg", "crate.jpg", "metalplate.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
+ 	{
+@@ -138,7 +138,7 @@ GLvoid initScene(GLvoid* lpParam)
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.setMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.loadSkybox("data/skyboxes/jajlands1/", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
++	sbMainSkybox.loadSkybox("data/skyboxes/jajdesert1/", "jajdesert1_ft.jpg", "jajdesert1_bk.jpg", "jajdesert1_lf.jpg", "jajdesert1_rt.jpg", "jajdesert1_up.jpg", "jajdesert1_dn.jpg");
+ }
+ 
+ /*-----------------------------------------------
+@@ -152,6 +152,7 @@ Result:	Renders whole scene.
+ /*---------------------------------------------*/
+ 
+ GLfloat fGlobalAngle;
++GLfloat fDryAmount = 0.75f;
+ 
+ GLvoid RenderScene(GLvoid* lpParam)
+ {
+@@ -161,38 +162,68 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+ 	glEnable(GL_TEXTURE_2D);
++
+ 	spDirectionalLight.UseProgram();
+ 
++	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++
+ 	spDirectionalLight.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
+ 	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 1.0f); // Full light for skybox
+ 	spDirectionalLight.setUniform("sunLight.vDirection", glm::vec3(0, -1, 0));
+ 
+ 	spDirectionalLight.setUniform("projectionMatrix", oglControl->getProjectionMatrix());
+-	spDirectionalLight.setUniform("gSampler", 0);
++
++	// Set number of textures to 1
++	spDirectionalLight.setUniform("numTextures", 1);
++	// Set sampler 0 texture unit 0
++	spDirectionalLight.setUniform("gSamplers[0]", 0);
++	// Texture unit 0 FULLY contributes in final image
++	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
+ 
+ 	glm::mat4 mModelView = cCamera.look();
+ 	glm::mat4 mModelToCamera;
+ 
++	// Proceed with skybox rendering
++	spDirectionalLight.setUniform("normalMatrix", glm::mat4(1.0));
+ 	spDirectionalLight.setUniform("modelViewMatrix", glm::translate(mModelView, cCamera.vEye));
+ 	sbMainSkybox.renderSkybox();
+ 
++
+ 	glBindVertexArray(uiVAOs[0]);
+ 	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 0.55f);
+ 	spDirectionalLight.setUniform("modelViewMatrix", &mModelView);
+ 	
+ 	// Render ground
+ 
+-	tTextures[0].bindTexture();
++	spDirectionalLight.setUniform("numTextures", 2);
++	// Set sampler 0 texture unit 0
++	spDirectionalLight.setUniform("gSamplers[0]", 0);
++	// Set sampler 1 texture unit 1
++	spDirectionalLight.setUniform("gSamplers[1]", 1);
++	// Set contribution according to desertification factor
++	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f-fDryAmount);
++	spDirectionalLight.setUniform("fTextureContributions[1]", fDryAmount);
++	// Bind texture 0 to texture unit 0
++	tTextures[0].bindTexture(0);
++	// Bind texture 1 to texture unit 1
++	tTextures[1].bindTexture(1);
++	
+ 	glDrawArrays(GL_TRIANGLES, 36, 6);
+ 
+-	tTextures[1].bindTexture();
++	// Render box pile, only 1 texture is needed now
++
++	spDirectionalLight.setUniform("numTextures", 1);
++	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
+ 
+-	SFOR(nb, 1, 9)
++	tTextures[2].bindTexture();
++	const GLint iNumFloors = 5;
++	FOR(floor, iNumFloors)
+ 	{
+-		GLint iCnt = nb > 5 ? 10-nb : nb;
+-		FOR(i, iCnt)
++		GLint iCnt = iNumFloors-floor;
++		GLfloat fSize = iCnt*8.0f;
++		FOR(z, iCnt)FOR(x, iCnt)
+ 		{
+-			glm::vec3 vPos = glm::vec3(-20.0f+nb*8.02f, -6.0f+i*8.02f, -50.0f);
++			glm::vec3 vPos = glm::vec3(-fSize/2+4.0f+x*8.02f, -5.98f+floor*8.02f, -fSize/2+4.0f+z*8.02f);
+ 			mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+ 			mModelToCamera = glm::scale(mModelToCamera, glm::vec3(8.0f, 8.0f, 8.0f));
+ 			// We need to transform normals properly, it's done by transpose of inverse matrix of rotations and scales
+@@ -204,10 +235,10 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	// Render 3 rotated tori to create interesting object
+ 
+-	tTextures[2].bindTexture();
+-	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	tTextures[3].bindTexture();
+ 	
+-	glm::vec3 vPos = glm::vec3(0.0f, 0.0, 40.0f);
++	// Translate them to top of box pile
++	glm::vec3 vPos = glm::vec3(0.0f, float(iNumFloors)*8.0f-1.5f, 0.0f);
+ 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+ 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+ 	spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+@@ -227,7 +258,6 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spDirectionalLight.setUniform("modelViewMatrix", mModelView*mModelToCamera);
+ 	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
+ 
+-
+ 	fGlobalAngle += appMain.sof(100.0f);
+ 	cCamera.update();
+ 
+@@ -238,11 +268,21 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
+ 	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+ 
+-	ftFont.print("www.mbsoftworks.sk", 20, 20);
++	// Get maximal number of texture units;
++	GLint iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
++	GLchar buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
++	ftFont.print(buf, 20, 50, 24);
++	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
+ 
++	// Change level of desertification
++	if(Keys::key('G'))fDryAmount -= appMain.sof(0.2f);
++	if(Keys::key('H'))fDryAmount += appMain.sof(0.2f);
++
++	fDryAmount = min(max(0.0f, fDryAmount), 1.0f);
++
+ 	oglControl->swapBuffers();
+ }
+ 
+@@ -264,7 +304,7 @@ GLvoid releaseScene(GLvoid* lpParam)
+ 	spDirectionalLight.DeleteProgram();
+ 	spOrtho2D.DeleteProgram();
+ 	spFont2D.DeleteProgram();
+-	FOR(i, 4)shShaders[i].DeleteShader();
++	FOR(i, 5)shShaders[i].DeleteShader();
+ 	ftFont.releaseFont();
+ 
+ 	glDeleteVertexArrays(1, uiVAOs);
+diff -up 10_Skybox/Lin_OpenGLApp.cpp 11_Multitexturing/Lin_OpenGLApp.cpp
+--- 10_Skybox/Lin_OpenGLApp.cpp	2015-12-14 15:01:49.368349557 +0200
++++ 11_Multitexturing/Lin_OpenGLApp.cpp	2015-12-14 15:01:49.368349557 +0200
+@@ -182,6 +182,9 @@ GLboolean COpenGLWinApp::createWindow(st
+ 	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+ 	UpdateWindow(hWnd);
+ 
++	// Hide cursor, because of FPS camera
++	ShowCursor(FALSE);
++
+ 	return true;
+ }
+ 
+@@ -282,7 +285,7 @@ long CALLBACK COpenGLWinApp::msgHandlerM
+ 
+ 		case WM_SIZE:
+ 			oglControl.resizeOpenGLViewportFull();
+-			oglControl.setProjection3D(45.0f, float(LOWORD(lParam))/float(HIWORD(lParam)), 0.001f, 1000.0f);
++			oglControl.setProjection3D(45.0f, float(LOWORD(lParam))/float(HIWORD(lParam)), 0.5f, 1000.0f);
+ 			oglControl.setOrtho2D(LOWORD(lParam), HIWORD(lParam));
+ 			break;
+ 
+@@ -319,11 +322,11 @@ Result:	Application messages handler.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.initializeApp("10_opengl_3_3"))
++	if(!appMain.initializeApp("11_opengl_3_3"))
+ 		return 0;
+ 	appMain.registerAppClass(hInstance);
+ 
+-	if(!appMain.createWindow("10.) Skybox - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.createWindow("11.) Multitexturing - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.resetTimer();
+ 

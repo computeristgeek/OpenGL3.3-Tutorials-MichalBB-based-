@@ -1,0 +1,763 @@
+Only in 20_AssimpModelLoading/: assimp_model.cpp
+Only in 20_AssimpModelLoading/: assimp_model.h
+Only in 19_3DPickingPt_2/: fog.cpp
+Only in 19_3DPickingPt_2/: fog.h
+Only in 19_3DPickingPt_2/: framebuffer.cpp
+Only in 19_3DPickingPt_2/: framebuffer.h
+diff -up 19_3DPickingPt_2/Lin_OpenGLApp.cpp 20_AssimpModelLoading/Lin_OpenGLApp.cpp
+--- 19_3DPickingPt_2/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.044309790 +0200
++++ 20_AssimpModelLoading/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("18_opengl_3_3"))
++	if(!appMain.InitializeApp("20_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("18.) 3D Picking pt. 1 - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("20.) Assimp Model Loading - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+Only in 19_3DPickingPt_2/: objModel.cpp
+Only in 19_3DPickingPt_2/: objModel.h
+Only in 19_3DPickingPt_2/: picking.cpp
+Only in 19_3DPickingPt_2/: picking.h
+Only in 19_3DPickingPt_2/: pointLight.cpp
+Only in 19_3DPickingPt_2/: pointLight.h
+diff -up 19_3DPickingPt_2/RenderScene.cpp 20_AssimpModelLoading/RenderScene.cpp
+--- 19_3DPickingPt_2/RenderScene.cpp	2015-12-14 14:20:08.044309790 +0200
++++ 20_AssimpModelLoading/RenderScene.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -11,43 +11,25 @@
+ #include "freeTypeFont.h"
+ 
+ #include "skybox.h"
+-
+-#include "spotLight.h"
+ #include "dirLight.h"
+ 
+-#include "framebuffer.h"
++#include "assimp_model.h"
+ 
+ #include <glm/gtc/matrix_transform.hpp>
+ #include <glm/gtc/type_ptr.hpp>
+ 
+-#include "picking.h"
+-
+-#define NUMTEXTURES 2
+-
+-/* One VBO, where all static data are stored now,
+-in this tutorial vertex is stored as 3 floats for
+-position, 2 floats for texture coordinate and
+-3 floats for normal vector. */
+ 
+ CVertexBufferObject vboSceneObjects;
+-GLuint uiVAOs[1]; // Only one VAO now
++GLuint uiVAOSceneObjects;
+ 
+ CFreeTypeFont ftFont;
+ 
+-CTexture tTextures[NUMTEXTURES];
+ CSkybox sbMainSkybox;
+ CFlyingCamera cCamera;
+ 
+ CDirectionalLight dlSun;
+-CSpotLight slFlashLight;
+-
+-#include "objModel.h"
+-
+-CObjModel mdlAlien;
+-CObjModel mdlSpongeBob;
+-CObjModel mdlThor;
+ 
+-CFramebuffer fboPickBuffer;
++CAssimpModel amModels[3];
+ 
+ /*-----------------------------------------------
+ 
+@@ -66,43 +48,15 @@ GLvoid InitScene(GLvoid* lpParam)
+ {
+ 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+ 
+-	// Prepare all scene objects
+-
+-	vboSceneObjects.CreateVBO();
+-	glGenVertexArrays(1, uiVAOs); // Create one VAO
+-	glBindVertexArray(uiVAOs[0]);
+-
+-	vboSceneObjects.BindVBO();
+-
+-	AddSceneObjects(vboSceneObjects);
+-
+-	vboSceneObjects.UploadDataToGPU(GL_STATIC_DRAW);
+-
+-	// Vertex positions
+-	glEnableVertexAttribArray(0);
+-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), 0);
+-	// Texture coordinates
+-	glEnableVertexAttribArray(1);
+-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)sizeof(glm::vec3));
+-	// Normal vectors
+-	glEnableVertexAttribArray(2);
+-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
+-
++	CreateStaticSceneObjects(&uiVAOSceneObjects, vboSceneObjects);
+ 
+ 	if(!PrepareShaderPrograms())
+ 	{
+ 		PostQuitMessage(0);
+ 		return;
+ 	}
+-	// Load textures
+-
+-	string sTextureNames[] = {"images.jpeg", "blackhole.jpg"};
+-
+-	FOR(i, NUMTEXTURES)
+-	{
+-		tTextures[i].LoadTexture2D("data/textures/"+sTextureNames[i], true);
+-		tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
+-	}
++	
++	LoadAllTextures();
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	glClearDepth(1.0);
+@@ -111,100 +65,19 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	ftFont.LoadSystemFont("arial.ttf", 32);
+ 	ftFont.SetShaderProgram(&spFont2D);
+ 	
+-	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
++	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 20.0f), glm::vec3(0.0f, 10.0f, 19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.LoadSkybox("data/skyboxes/jajdarkland1/", "jajdarkland1_ft.jpg", "jajdarkland1_bk.jpg", "jajdarkland1_lf.jpg", "jajdarkland1_rt.jpg", "jajdarkland1_up.jpg", "jajdarkland1_dn.jpg");
++	sbMainSkybox.LoadSkybox("data/skyboxes/elbrus/", "elbrus_front.jpg", "elbrus_back.jpg", "elbrus_right.jpg", "elbrus_left.jpg", "elbrus_top.jpg", "elbrus_top.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f);
+-	// NEW: Creating spotlight, position and direction will get updated every frame, that's why zero vectors
+-	slFlashLight = CSpotLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 1, 15.0f, 0.017f);
+-
+-	mdlAlien.LoadModel("data/models/alien2_obj/alien2.obj", "alien2.mtl");
+-	mdlSpongeBob.LoadModel("data/models/Spongebob/spongebob_bind.obj", "spongebob_bind.mtl");
+-	mdlThor.LoadModel("data/models/Thor/thor.obj", "thor.mtl");
+-}
+-
+ 
++	amModels[0].LoadModelFromFile("data/models/Wolf/Wolf.obj");
++	amModels[1].LoadModelFromFile("data/models/house/house.3ds");
+ 
+-/*-----------------------------------------------
+-
+-Name:    RenderScene
+-
+-Params:  lpParam - Pointer to anything you want.
+-
+-Result:  Renders whole scene.
+-
+-/*---------------------------------------------*/
+-
+-glm::vec3 vObjectPositions[] =
+-{
+-	glm::vec3(-40.0f, 0, -30.0f),
+-	glm::vec3(0.0f, 0.0f, -30.0f),
+-	glm::vec3(40.0f, 0, -30.0f),
+-	glm::vec3(0.0f, 100.0f, -30.0f),
+-};
+-
+-// Because some of these models aren't centered, we must offset bounding spheres a little
+-
+-glm::vec3 vSpherePositions[] =
+-{
+-	vObjectPositions[0]+glm::vec3(0.0f, 9.0f, 0.0f),
+-	vObjectPositions[1]+glm::vec3(0.0f, 5.0f, -5.0f),
+-	vObjectPositions[2]+glm::vec3(0.0f, 15.0f, 0.0f),
+-	vObjectPositions[3]
+-};
+-
+-GLfloat fSphereRadii[] = {11.0f, 9.2f, 10.0f, 40.0f};
+-
+-/*-----------------------------------------------
+-
+-Name:    RenderBoundingSpheres
+-
+-Params:  mProj - Projection matrix used on scene (just for
+-				 shader, it should be passed nicer way but
+-				 what the heck).
+-
+-Result:  Renders spheres surrounding our scene objects.
+-
+-/*---------------------------------------------*/
+-
+-GLvoid RenderBoundingSpheres(glm::mat4* mProj)
+-{
+-	glBindVertexArray(uiVAOs[0]);
+-	spColor.UseProgram();
+-	spColor.SetUniform("matrices.projectionMatrix", mProj);
+-
+-	glm::vec4 vRed(1.0f, 0.0f, 0.0f, 1.0f); // Red color
+-	spColor.SetUniform("vColor", vRed);
+-
+-	glm::mat4 mView = cCamera.Look();
+-	spColor.SetUniform("matrices.viewMatrix", &mView);
+-
+-	FOR(i, 4)
+-	{
+-		glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0), vSpherePositions[i]);
+-		mModelMatrix = glm::scale(mModelMatrix, glm::vec3(fSphereRadii[i], fSphereRadii[i], fSphereRadii[i]));
+-		spColor.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-
+-		glDrawArrays(GL_TRIANGLES, 6, iSphereFaces*3);
+-	}
+-
++	CAssimpModel::FinalizeVBO();
+ }
+ 
+-GLfloat fGlobalAngle;
+-GLboolean bWireFrame = false;
+-GLboolean bShowBS = true;
+-GLint iSelectedIndex = -1;
+-
+-string sObjectNames[] = 
+-{
+-	"SpongeBob",
+-	"Alien Creature",
+-	"Thor",
+-	"Black Hole",
+-};
+-
+ /*-----------------------------------------------
+ 
+ Name:    RenderScene
+@@ -219,148 +92,69 @@ GLvoid RenderScene(GLvoid* lpParam)
+ {
+ 	// Typecast lpParam to COpenGLControl pointer
+ 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+-
+-	spMain.UseProgram();
+-
+-	glm::mat4 mModelMatrix, mView;
+-
+-	// NEW: Set spotlight parameters
+-
+-	glm::vec3 vSpotLightPos = cCamera.vEye;
+-	glm::vec3 vCameraDir = glm::normalize(cCamera.vView-cCamera.vEye);
+-	// Move down a little
+-	vSpotLightPos.y -= 3.2f;
+-	// Find direction of spotlight
+-	glm::vec3 vSpotLightDir = (vSpotLightPos+vCameraDir*75.0f)-vSpotLightPos;
+-	vSpotLightDir = glm::normalize(vSpotLightDir);
+-	// Find vector of horizontal offset
+-	glm::vec3 vHorVector = glm::cross(cCamera.vView-cCamera.vEye, cCamera.vUp);
+-	vSpotLightPos += vHorVector*3.3f;
+-	// Set it
+-	slFlashLight.vPosition = vSpotLightPos;
+-	slFlashLight.vDirection = vSpotLightDir;
+-	
+-	slFlashLight.SetUniformData(&spMain, "spotLight");
+-
+ 	oglControl->ResizeOpenGLViewportFull();
+ 
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+-
+ 	spMain.UseProgram();
+ 
+ 	spMain.SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
+-	spMain.SetUniform("gSampler", 0);
+-
+-	mView = cCamera.Look();
+-	spMain.SetUniform("matrices.viewMatrix", &mView);
++	spMain.SetUniform("matrices.viewMatrix", cCamera.Look());
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0f), cCamera.vEye);
+-	
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mView*mModelMatrix)));
++	spMain.SetUniform("gSampler", 0);
+ 
+-	CDirectionalLight dlSun2 = dlSun;
++	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0));
++	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0));
++	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+ 
+-	// We set full ambient for skybox, so that its color isn't affected by directional light
++	dlSun.SetUniformData(&spMain, "sunLight");
+ 
+-	dlSun2.fAmbient = 1.0f;
+-	dlSun2.vColor = glm::vec3(0.1f, 0.1f, 0.1f);
+-	dlSun2.SetUniformData(&spMain, "sunLight");
+ 
++	spMain.SetUniform("matrices.modelMatrix", glm::translate(glm::mat4(1.0), cCamera.vEye));
+ 	sbMainSkybox.RenderSkybox();
+ 
+-	glBindVertexArray(uiVAOs[0]);
+-
+-	dlSun.SetUniformData(&spMain, "sunLight");
+-
+-	CDirectionalLight dl2 = dlSun;
+-	dl2.fAmbient = 1.0f;
+-	dl2.SetUniformData(&spMain, "sunLight");
++	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0));
+ 	
+-	if(bWireFrame)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+-	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+-
+-	spMain.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+-	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0f));
+-	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0f));
+ 
+ 	// Render ground
+ 
++	glBindVertexArray(uiVAOSceneObjects);
+ 	tTextures[0].BindTexture();
++
+ 	glDrawArrays(GL_TRIANGLES, 0, 6);
+ 
+-	// Render Black Hole
++	// Render some houses
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), vObjectPositions[3]);
+-	// To make things interesting, let's rotate the black hole
+-	fGlobalAngle += appMain.sof(78.0f);
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	// Lower the sphere radius a little so bounding sphere and actual sphere don't overlap when both rendered
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(fSphereRadii[3]-0.1f, fSphereRadii[3]-0.1f, fSphereRadii[3]-0.1f));
+-
+-	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	tTextures[1].BindTexture();
+-	glDrawArrays(GL_TRIANGLES, 6, iSphereFaces*3);
+-
+-	// Render SpongeBob :D
+-
+-	mModelMatrix = glm::translate(glm::mat4(1.0), vObjectPositions[0]);
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
+-	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	mdlSpongeBob.RenderModel();
+-
+-	// Render strange creature found on internet as free model :D
+-
+-	mModelMatrix = glm::translate(glm::mat4(1.0), vObjectPositions[1]);
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+-	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	mdlAlien.RenderModel();
+-
+-	// Render Thor
+-
+-	mModelMatrix = glm::translate(glm::mat4(1.0),vObjectPositions[2]);
+-	mModelMatrix = glm::rotate(mModelMatrix, -90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
+-	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	mdlThor.RenderModel();
++	CAssimpModel::BindModelsVAO();
+ 
+-	// Check for collisions if we left click the mouse button
+-	if(Keys::Onekey(VK_LBUTTON))
++	FOR(i, 6)
+ 	{
+-		glm::vec3 v1, v2;
+-		Get3DRayUnderMouse(&v1, &v2);
+-		FOR(i, 4)
+-		{
+-			if(RaySphereCollision(vSpherePositions[i], fSphereRadii[i], v1, v2))
+-			{
+-				iSelectedIndex = i;
+-				break;
+-			}
+-		}
+-		GLint a = 5;
++		GLfloat xPosHouse = -80.0f+i*30.0f;
++		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(xPosHouse, 0, 0));
++		mModel = glm::scale(mModel, glm::vec3(3, 3, 3));
++
++		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++		amModels[1].RenderModel();
+ 	}
+ 
+-	// Render bounding spheres
++	// ... and also some wolfs
+ 
+-	if(bShowBS)
++	CAssimpModel::BindModelsVAO();
++
++	FOR(i, 7)
+ 	{
+-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+-		RenderBoundingSpheres(oglControl->GetProjectionMatrix());
++		GLfloat xPosHouse = -75.0f+i*30.0f;
++		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(xPosHouse, 0, 0));
++		mModel = glm::scale(mModel, glm::vec3(1.8f, 1.8f, 1.8f));
++
++		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++		amModels[0].RenderModel();
+ 	}
+ 
+ 	cCamera.Update();
+ 
+ 	// PrGLint something over scene
+ 	
+-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+-	
+ 	spFont2D.UseProgram();
+ 	glDisable(GL_DEPTH_TEST);
+ 	spFont2D.SetUniform("matrices.projMatrix", oglControl->GetOrthoMatrix());
+@@ -370,18 +164,8 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+ 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+-	ftFont.PrintFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
+-	ftFont.PrintFormatted(20, h-55, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-80, 20, "Show bounding spheres: %s (Press 'B' to toggle)", bShowBS ? "On" : "Off");
+-	ftFont.PrintFormatted(20, h-105, 20, "Last object: %s", iSelectedIndex == -1 ? "none" : sObjectNames[iSelectedIndex].c_str());
+-	ftFont.PrintFormatted(20, h-130, 20, "Flashlight: %s (Press 'F' to toggle)", slFlashLight.bOn ? "On" : "Off");
+-
+-	if(Keys::Onekey('Q'))
+-		bWireFrame = !bWireFrame;
+-	if(Keys::Onekey('F'))
+-		slFlashLight.bOn = 1-slFlashLight.bOn;
+-	if(Keys::Onekey('B'))
+-		bShowBS = !bShowBS;
++	ftFont.PrintFormatted(20, h-30, 20, "FPS: %d", oglControl->GetFPS());
++
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+@@ -410,8 +194,6 @@ GLvoid ReleaseScene(GLvoid* lpParam)
+ 	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
+ 	ftFont.DeleteFont();
+ 
+-	glDeleteVertexArrays(1, uiVAOs);
++	glDeleteVertexArrays(1, &uiVAOSceneObjects);
+ 	vboSceneObjects.DeleteVBO();
+-	mdlAlien.DeleteModel();
+-	mdlSpongeBob.DeleteModel();
+ }
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/shaders.cpp 20_AssimpModelLoading/shaders.cpp
+--- 19_3DPickingPt_2/shaders.cpp	2015-12-14 14:20:08.044309790 +0200
++++ 20_AssimpModelLoading/shaders.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -10,7 +10,7 @@ CShader::CShader()
+ }
+ 
+ CShader shShaders[NUMSHADERS];
+-CShaderProgram spMain, spOrtho2D, spFont2D, spColor;
++CShaderProgram spMain, spOrtho2D, spFont2D;
+ 
+ /*-----------------------------------------------
+ 
+@@ -26,9 +26,8 @@ GLboolean PrepareShaderPrograms()
+ {
+ 	// Load shaders and create shader program
+ 
+-	string sShaderFileNames[] = {"main_shader.vert", "main_shader.geom", "main_shader.frag", "ortho2D.vert",
+-		"ortho2D.frag", "font2D.frag", "dirLight.frag", "pointLight.frag", "fog.frag", "color.vert", "color.frag",
+-		"spotLight.frag"
++	string sShaderFileNames[] = {"main_shader.vert", "main_shader.frag", "ortho2D.vert",
++		"ortho2D.frag", "font2D.frag", "dirLight.frag"
+ 	};
+ 
+ 	FOR(i, NUMSHADERS)
+@@ -43,11 +42,7 @@ GLboolean PrepareShaderPrograms()
+ 	spMain.CreateProgram();
+ 	spMain.AddShaderToProgram(&shShaders[0]);
+ 	spMain.AddShaderToProgram(&shShaders[1]);
+-	spMain.AddShaderToProgram(&shShaders[2]);
+-	spMain.AddShaderToProgram(&shShaders[6]);
+-	spMain.AddShaderToProgram(&shShaders[7]);
+-	spMain.AddShaderToProgram(&shShaders[11]); // NEW: Spotlight shader
+-	spMain.LinkProgram();
++	spMain.AddShaderToProgram(&shShaders[5]);
+ 
+ 	if(!spMain.LinkProgram())return false;
+ 
+@@ -57,15 +52,10 @@ GLboolean PrepareShaderPrograms()
+ 	spOrtho2D.LinkProgram();
+ 
+ 	spFont2D.CreateProgram();
+-	spFont2D.AddShaderToProgram(&shShaders[3]);
+-	spFont2D.AddShaderToProgram(&shShaders[5]);
++	spFont2D.AddShaderToProgram(&shShaders[2]);
++	spFont2D.AddShaderToProgram(&shShaders[4]);
+ 	spFont2D.LinkProgram();
+ 
+-	spColor.CreateProgram();
+-	spColor.AddShaderToProgram(&shShaders[9]);
+-	spColor.AddShaderToProgram(&shShaders[10]);
+-	spColor.LinkProgram();
+-
+ 	return true;
+ }
+ 
+@@ -435,3 +425,15 @@ GLvoid CShaderProgram::SetUniform(string
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform1i(iLoc, iValue);
+ }
++
++GLvoid CShaderProgram::SetModelAndNormalMatrix(string sModelMatrixName, string sNormalMatrixName, glm::mat4 mModelMatrix)
++{
++	SetUniform(sModelMatrixName, mModelMatrix);
++	SetUniform(sNormalMatrixName, glm::transpose(glm::inverse(mModelMatrix)));
++}
++
++GLvoid CShaderProgram::SetModelAndNormalMatrix(string sModelMatrixName, string sNormalMatrixName, glm::mat4* mModelMatrix)
++{
++	SetUniform(sModelMatrixName, mModelMatrix);
++	SetUniform(sNormalMatrixName, glm::transpose(glm::inverse(*mModelMatrix)));
++}
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/shaders.h 20_AssimpModelLoading/shaders.h
+--- 19_3DPickingPt_2/shaders.h	2015-12-14 14:20:08.044309790 +0200
++++ 20_AssimpModelLoading/shaders.h	2015-12-14 14:20:08.048309790 +0200
+@@ -74,6 +74,10 @@ public:
+ 	GLvoid SetUniform(string sName, int* iValues, GLint iCount = 1);
+ 	GLvoid SetUniform(string sName, const GLint iValue);
+ 
++	// Model and normal matrix setting ispretty common
++	GLvoid SetModelAndNormalMatrix(string sModelMatrixName, string sNormalMatrixName, glm::mat4 mModelMatrix);
++	GLvoid SetModelAndNormalMatrix(string sModelMatrixName, string sNormalMatrixName, glm::mat4* mModelMatrix);
++
+ 	CShaderProgram();
+ 
+ private:
+@@ -83,7 +87,7 @@ private:
+ 
+ GLboolean PrepareShaderPrograms();
+ 
+-#define NUMSHADERS 12
++#define NUMSHADERS 6
+ 
+ extern CShader shShaders[NUMSHADERS];
+ extern CShaderProgram spMain, spOrtho2D, spFont2D, spColor;
+\ No newline at end of file
+Only in 19_3DPickingPt_2/: spotLight.cpp
+Only in 19_3DPickingPt_2/: spotLight.h
+diff -up 19_3DPickingPt_2/static_geometry.cpp 20_AssimpModelLoading/static_geometry.cpp
+--- 19_3DPickingPt_2/static_geometry.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 20_AssimpModelLoading/static_geometry.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -271,16 +271,23 @@ GLint iSphereFaces;
+ 
+ /*-----------------------------------------------
+ 
+-Name:	AddSceneObjects
++Name:	CreateStaticSceneObjects
+ 
+-Params:	vboDest - VBO where to store objects
++Params:	uiVAO - Vertex Array Object with VBO assigned
++		vboDest - VBO where to store objects
+ 
+ Result: Adds all static objects to scene.
+ 
+ /*---------------------------------------------*/
+ 
+-GLvoid AddSceneObjects(CVertexBufferObject& vboDest)
++GLvoid CreateStaticSceneObjects(GLuint* uiVAO, CVertexBufferObject& vboDest)
+ {
++	vboDest.CreateVBO();
++	glGenVertexArrays(1, uiVAO); // Create one VAO
++	glBindVertexArray(*uiVAO);
++
++	vboDest.BindVBO();
++
+ 	// Add ground to VBO
+ 	FOR(i, 6)
+ 	{
+@@ -290,6 +297,16 @@ GLvoid AddSceneObjects(CVertexBufferObje
+ 		glm::vec3 vGroundNormal(0.0f, 1.0f, 0.0f);
+ 		vboDest.AddData(&vGroundNormal, sizeof(glm::vec3));
+ 	}
++	
++	vboDest.UploadDataToGPU(GL_STATIC_DRAW);
+ 
+-	iSphereFaces = GenerateSphere(vboDest, 1.0f, 12, 12);
++	// Vertex positions
++	glEnableVertexAttribArray(0);
++	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), 0);
++	// Texture coordinates
++	glEnableVertexAttribArray(1);
++	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)sizeof(glm::vec3));
++	// Normal vectors
++	glEnableVertexAttribArray(2);
++	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
+ }
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/static_geometry.h 20_AssimpModelLoading/static_geometry.h
+--- 19_3DPickingPt_2/static_geometry.h	2015-12-14 14:20:08.048309790 +0200
++++ 20_AssimpModelLoading/static_geometry.h	2015-12-14 14:20:08.048309790 +0200
+@@ -4,6 +4,6 @@
+ 
+ GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+ GLint GenerateCylinder(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU = 1.0f, GLfloat fMapV = 1.0f);
+-GLvoid AddSceneObjects(CVertexBufferObject& vboDest);
++GLvoid CreateStaticSceneObjects(GLuint* uiVAO, CVertexBufferObject& vboDest);
+ 
+ extern GLint iSphereFaces;
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/texture.cpp 20_AssimpModelLoading/texture.cpp
+--- 19_3DPickingPt_2/texture.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 20_AssimpModelLoading/texture.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -237,4 +237,63 @@ GLint CTexture::GetBPP()
+ GLuint CTexture::GetTextureID()
+ {
+ 	return uiTexture;
++}
++
++string CTexture::GetPath()
++{
++	return sPath;
++}
++
++GLboolean CTexture::ReloadTexture()
++{
++	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
++	FIBITMAP* dib(0);
++
++	fif = FreeImage_GetFileType(sPath.c_str(), 0); // Check the file signature and deduce its format
++
++	if(fif == FIF_UNKNOWN) // If still unknown, try to guess the file format from the file extension
++		fif = FreeImage_GetFIFFromFilename(sPath.c_str());
++	
++	if(fif == FIF_UNKNOWN) // If still unknown, return failure
++		return false;
++
++	if(FreeImage_FIFSupportsReading(fif)) // Check if the plugin has reading capabilities and load the file
++		dib = FreeImage_Load(fif, sPath.c_str());
++	if(!dib)
++		return false;
++
++	GL_UNSIGNED_BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
++
++	// If somehow one of these failed (they shouldn't), return failure
++	if(bDataPointer == NULL || FreeImage_GetWidth(dib) == 0 || FreeImage_GetHeight(dib) == 0)
++		return false;
++
++	GLenum format;
++	GLint bada = FreeImage_GetBPP(dib);
++	if(FreeImage_GetBPP(dib) == 32)format = GL_RGBA;
++	if(FreeImage_GetBPP(dib) == 24)format = GL_BGR;
++	if(FreeImage_GetBPP(dib) == 8)format = GL_LUMINANCE;
++
++	glBindTexture(GL_TEXTURE_2D, uiTexture);
++	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iWidth, iHeight, format, GL_UNSIGNED_BYTE, bDataPointer);
++	if(bMipMapsGenerated)glGenerateMipmap(GL_TEXTURE_2D);
++	
++	FreeImage_Unload(dib);
++
++	return true; // Success
++}
++
++CTexture tTextures[NUMTEXTURES];
++
++GLvoid LoadAllTextures()
++{
++	// Load textures
++
++	string sTextureNames[] = {"sand_grass_02.jpg"};
++
++	FOR(i, NUMTEXTURES)
++	{
++		tTextures[i].LoadTexture2D("data/textures/"+sTextureNames[i], true);
++		tTextures[i].SetFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
++	}
+ }
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/texture.h 20_AssimpModelLoading/texture.h
+--- 19_3DPickingPt_2/texture.h	2015-12-14 14:20:08.048309790 +0200
++++ 20_AssimpModelLoading/texture.h	2015-12-14 14:20:08.048309790 +0200
+@@ -26,6 +26,8 @@ class CTexture
+ public:
+ 	GLvoid CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLenum format);
+ 	GLvoid CreateFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
++
++	GLboolean ReloadTexture();
+ 	
+ 	GLboolean LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
+ 	GLvoid BindTexture(GLint iTextureUnit = 0);
+@@ -43,6 +45,8 @@ public:
+ 
+ 	GLuint GetTextureID();
+ 
++	string GetPath();
++
+ 	GLvoid DeleteTexture();
+ 
+ 	CTexture();
+@@ -58,3 +62,6 @@ private:
+ 	string sPath;
+ };
+ 
++#define NUMTEXTURES 1
++extern CTexture tTextures[NUMTEXTURES];
++GLvoid LoadAllTextures();
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/vertexBufferObject.cpp 20_AssimpModelLoading/vertexBufferObject.cpp
+--- 19_3DPickingPt_2/vertexBufferObject.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 20_AssimpModelLoading/vertexBufferObject.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -5,6 +5,7 @@
+ CVertexBufferObject::CVertexBufferObject()
+ {
+ 	bDataUploaded = false;
++	uiBuffer = 0;
+ }
+ 
+ /*-----------------------------------------------
+@@ -22,6 +23,7 @@ GLvoid CVertexBufferObject::CreateVBO(GL
+ 	glGenBuffers(1, &uiBuffer);
+ 	data.reserve(a_iSize);
+ 	iSize = a_iSize;
++	iCurrentSize = 0;
+ }
+ 
+ /*-----------------------------------------------
+@@ -141,6 +143,7 @@ Result:	Adds arbitrary data to VBO.
+ GLvoid CVertexBufferObject::AddData(void* ptrData, GLuint uiDataSize)
+ {
+ 	data.insert(data.end(), (GL_UNSIGNED_BYTE*)ptrData, (GL_UNSIGNED_BYTE*)ptrData+uiDataSize);
++	iCurrentSize += uiDataSize;
+ }
+ 
+ /*-----------------------------------------------
+@@ -174,4 +177,18 @@ GLuint CVertexBufferObject::GetBufferID(
+ 	return uiBuffer;
+ }
+ 
++/*-----------------------------------------------
++
++Name:	GetCurrentSize
++
++Params:	none
+ 
++Result: Returns size of data that has been added to
++		the buffer object.
++
++/*---------------------------------------------*/
++
++GLint CVertexBufferObject::GetCurrentSize()
++{
++	return iCurrentSize;
++}
+\ No newline at end of file
+diff -up 19_3DPickingPt_2/vertexBufferObject.h 20_AssimpModelLoading/vertexBufferObject.h
+--- 19_3DPickingPt_2/vertexBufferObject.h	2015-12-14 14:20:08.048309790 +0200
++++ 20_AssimpModelLoading/vertexBufferObject.h	2015-12-14 14:20:08.048309790 +0200
+@@ -27,11 +27,14 @@ public:
+ 	void* GetDataPointer();
+ 	GLuint GetBufferID();
+ 
++	GLint GetCurrentSize();
++
+ 	CVertexBufferObject();
+ 
+ private:
+ 	GLuint uiBuffer;
+ 	GLint iSize;
++	GLint iCurrentSize;
+ 	GLint iBufferType;
+ 	vector<GL_UNSIGNED_BYTE> data;
+ 

@@ -1,0 +1,743 @@
+diff -up 16_RenderingToATexture/framebuffer.cpp 17_Spotlight/framebuffer.cpp
+--- 16_RenderingToATexture/framebuffer.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/framebuffer.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -29,7 +29,7 @@ GLboolean CFramebuffer::CreateFramebuffe
+ 	glGenFramebuffers(1, &uiFramebuffer);
+ 	glBindFramebuffer(GL_FRAMEBUFFER, uiFramebuffer);
+ 
+-	tFramebufferTex.CreateEmptyTexture(a_iWidth, a_iHeight, 24, GL_RGB);
++	tFramebufferTex.CreateEmptyTexture(a_iWidth, a_iHeight, GL_RGB);
+ 
+ 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tFramebufferTex.GetTextureID(), 0);
+ 
+diff -up 16_RenderingToATexture/Lin_OpenGLApp.cpp 17_Spotlight/Lin_OpenGLApp.cpp
+--- 16_RenderingToATexture/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 17_Spotlight/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -321,11 +321,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("16_opengl_3_3"))
++	if(!appMain.InitializeApp("17_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("16.) Rendering To A Texture - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("17.) Spotlight - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+diff -up 16_RenderingToATexture/objModel.cpp 17_Spotlight/objModel.cpp
+--- 16_RenderingToATexture/objModel.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/objModel.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -239,6 +239,7 @@ GLboolean CObjModel::LoadModel(string sF
+ 	bLoaded = true;
+ 
+ 	// Material should be in the same directory as model
++	if(iAttrBitField&2)
+ 	LoadMaterial(GetDirectoryPath(sFileName)+sMtlFileName);
+ 
+ 	return true;
+diff -up 16_RenderingToATexture/RenderScene.cpp 17_Spotlight/RenderScene.cpp
+--- 16_RenderingToATexture/RenderScene.cpp	2015-12-14 14:20:08.032309790 +0200
++++ 17_Spotlight/RenderScene.cpp	2015-12-14 14:20:08.036309790 +0200
+@@ -12,6 +12,7 @@
+ 
+ #include "skybox.h"
+ 
++#include "spotLight.h"
+ #include "dirLight.h"
+ 
+ #include "framebuffer.h"
+@@ -19,7 +20,6 @@
+ #include <glm/gtc/matrix_transform.hpp>
+ #include <glm/gtc/type_ptr.hpp>
+ 
+-#define NUMSHADERS 11
+ #define NUMTEXTURES 3
+ 
+ /* One VBO, where all static data are stored now,
+@@ -30,9 +30,6 @@ position, 2 floats for texture coordinat
+ CVertexBufferObject vboSceneObjects;
+ GLuint uiVAOs[1]; // Only one VAO now
+ 
+-CShader shShaders[NUMSHADERS];
+-CShaderProgram spMain, spOrtho2D, spFont2D, spColor, spMainFB;
+-
+ CFreeTypeFont ftFont;
+ 
+ CTexture tTextures[NUMTEXTURES];
+@@ -40,10 +37,11 @@ CSkybox sbMainSkybox;
+ CFlyingCamera cCamera;
+ 
+ CDirectionalLight dlSun;
++CSpotLight slFlashLight;
+ 
+ #include "objModel.h"
+ 
+-CObjModel mdlThor;
++CObjModel mdlAlien;
+ CObjModel mdlSpongeBob;
+ 
+ CFramebuffer fboTelevision;
+@@ -73,45 +71,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 
+ 	vboSceneObjects.BindVBO();
+ 
+-	// Add cube to VBO
+-
+-	FOR(i, 36)
+-	{
+-		vboSceneObjects.AddData(&vCubeVertices[i], sizeof(glm::vec3));
+-		vboSceneObjects.AddData(&vCubeTexCoords[i%6], sizeof(glm::vec2));
+-		vboSceneObjects.AddData(&vCubeNormals[i/6], sizeof(glm::vec3));
+-	}
+-
+-	// Add ground to VBO
+-
+-	FOR(i, 6)
+-	{
+-		vboSceneObjects.AddData(&vGround[i], sizeof(glm::vec3));
+-		glm::vec2 vCoord = vCubeTexCoords[i] * 50.0f;
+-		vboSceneObjects.AddData(&vCoord, sizeof(glm::vec2));
+-		glm::vec3 vGroundNormal(0.0f, 1.0f, 0.0f);
+-		vboSceneObjects.AddData(&vGroundNormal, sizeof(glm::vec3));
+-	}
+-
+-	// Add building to VBO
+-
+-	FOR(i, 24)
+-	{
+-		vboSceneObjects.AddData(&vBuilding[i], sizeof(glm::vec3));
+-		glm::vec2 vCoord = vCubeTexCoords[i%6]*10.0f;
+-		vboSceneObjects.AddData(&vCoord, sizeof(glm::vec2));
+-		vboSceneObjects.AddData(&vBuildingNormals[i/6], sizeof(glm::vec3));
+-	}
+-
+-	// Add cinema to VBO
+-
+-	FOR(i, 4)
+-	{
+-		vboSceneObjects.AddData(&vCinema[i], sizeof(glm::vec3));
+-		vboSceneObjects.AddData(&vCinemaCoords[i], sizeof(glm::vec2));
+-		glm::vec3 vNormal(0, 0, 1);
+-		vboSceneObjects.AddData(&vNormal, sizeof(glm::vec3));
+-	}
++	AddSceneObjects(vboSceneObjects);
+ 
+ 	vboSceneObjects.UploadDataToGPU(GL_STATIC_DRAW);
+ 
+@@ -125,55 +85,15 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	glEnableVertexAttribArray(2);
+ 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 2*sizeof(glm::vec3)+sizeof(glm::vec2), (void*)(sizeof(glm::vec3)+sizeof(glm::vec2)));
+ 
+-	// Load shaders and create shader program
+ 
+-	string sShaderFileNames[] = {"main_shader.vert", "main_shader.geom", "main_shader.frag", "ortho2D.vert",
+-		"ortho2D.frag", "font2D.frag", "dirLight.frag", "pointLight.frag", "fog.frag", "color.vert", "color.frag",
+-		};
+-
+-	FOR(i, NUMSHADERS)
++	if(!PrepareShaderPrograms())
+ 	{
+-		string sExt = sShaderFileNames[i].substr(ESZ(sShaderFileNames[i])-4, 4);
+-		GLint iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
+-		shShaders[i].LoadShader("data/shaders/"+sShaderFileNames[i], iShaderType);
++		PostQuitMessage(0);
++		return;
+ 	}
+-
+-	// Create shader programs
+-
+-	spMain.CreateProgram();
+-	spMain.AddShaderToProgram(&shShaders[0]);
+-	spMain.AddShaderToProgram(&shShaders[1]);
+-	spMain.AddShaderToProgram(&shShaders[2]);
+-	spMain.AddShaderToProgram(&shShaders[6]);
+-	spMain.AddShaderToProgram(&shShaders[7]);
+-	spMain.LinkProgram();
+-
+-	spOrtho2D.CreateProgram();
+-	spOrtho2D.AddShaderToProgram(&shShaders[3]);
+-	spOrtho2D.AddShaderToProgram(&shShaders[4]);
+-	spOrtho2D.LinkProgram();
+-
+-	spFont2D.CreateProgram();
+-	spFont2D.AddShaderToProgram(&shShaders[3]);
+-	spFont2D.AddShaderToProgram(&shShaders[5]);
+-	spFont2D.LinkProgram();
+-
+-	spColor.CreateProgram();
+-	spColor.AddShaderToProgram(&shShaders[9]);
+-	spColor.AddShaderToProgram(&shShaders[10]);
+-	spColor.LinkProgram();
+-
+-	spMainFB.CreateProgram();
+-	spMainFB.AddShaderToProgram(&shShaders[11]);
+-	spMainFB.AddShaderToProgram(&shShaders[12]);
+-	spMainFB.AddShaderToProgram(&shShaders[13]);
+-	spMainFB.AddShaderToProgram(&shShaders[6]);
+-	spMainFB.AddShaderToProgram(&shShaders[7]);
+-	spMainFB.LinkProgram();
+-
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"Tile41a.jpg", "met_wall01a.jpg", "floor.jpg"};
++	string sTextureNames[] = {"grass.png", "met_wall01a.jpg", "tower.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+@@ -195,13 +115,12 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	sbMainSkybox.LoadSkybox("data/skyboxes/jajdarkland1/", "jajdarkland1_ft.jpg", "jajdarkland1_bk.jpg", "jajdarkland1_lf.jpg", "jajdarkland1_rt.jpg", "jajdarkland1_up.jpg", "jajdarkland1_dn.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f);
++	// NEW: Creating spotlight, position and direction will get updated every frame, that's why zero vectors
++	slFlashLight = CSpotLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 1, 15.0f, 0.017f);
+ 
+-	mdlThor.LoadModel("data/models/Thor/thor.obj", "thor.mtl");
++	mdlAlien.LoadModel("data/models/alien2_obj/alien2.obj", "alien2.mtl");
+ 	mdlSpongeBob.LoadModel("data/models/Spongebob/spongebob_bind.obj", "spongebob_bind.mtl");
+ 
+-	fboTelevision.CreateFramebufferWithTexture(512, 256);
+-	fboTelevision.AddDepthBuffer();
+-	fboTelevision.SetFramebufferTextureFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_TRILINEAR);
+ }
+ 
+ /*-----------------------------------------------
+@@ -222,65 +141,30 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	// Typecast lpParam to COpenGLControl pointer
+ 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
+ 
+-	// Render Thor and The Avengers text into framebuffer
+-	
+-	fboTelevision.BindFramebuffer();
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+ 	spMain.UseProgram();
+-	spMain.SetUniform("matrices.projMatrix", fboTelevision.CalculateProjectionMatrix(45.0f, 0.5f, 1000.0f));
+-	dlSun.SetUniformData(&spMain, "sunLight");
+ 
+-	glm::mat4 mView = glm::lookAt(glm::vec3(0.0f, 0.0f, 160.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+-	spMain.SetUniform("matrices.viewMatrix", &mView);
++	glm::mat4 mModelMatrix, mView;
+ 
+-	spMain.SetUniform("gSampler", 0);
+-	spMain.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+-
+-	static glm::vec3 vThorPosition = glm::vec3(0.0f, -40.0f, -30.0f);
+-	glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0),vThorPosition);
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+-	mdlThor.RenderModel();
+-
+-	// Render ground for Thor
+-
+-	glBindVertexArray(uiVAOs[0]);
+-
+-	spMain.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+-	spMain.SetUniform("matrices.modelMatrix", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -40.0f, 0.0f)));
+-	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0f));
+-
+-	tTextures[2].BindTexture();
+-	glDrawArrays(GL_TRIANGLES, 36, 6);
+-
+-	// PrGLint The Avengers in the center
+-
+-	spFont2D.UseProgram();
+-	glDisable(GL_DEPTH_TEST);
+-	spFont2D.SetUniform("matrices.projMatrix", fboTelevision.CalculateOrthoMatrix());
+-
+-	spFont2D.SetUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	// NEW: Set spotlight parameters
+ 
++	glm::vec3 vSpotLightPos = cCamera.vEye;
++	glm::vec3 vCameraDir = glm::normalize(cCamera.vView-cCamera.vEye);
++	// Move down a little
++	vSpotLightPos.y -= 3.2f;
++	// Find direction of spotlight
++	glm::vec3 vSpotLightDir = (vSpotLightPos+vCameraDir*75.0f)-vSpotLightPos;
++	vSpotLightDir = glm::normalize(vSpotLightDir);
++	// Find vector of horizontal offset
++	glm::vec3 vHorVector = glm::cross(cCamera.vView-cCamera.vEye, cCamera.vUp);
++	vSpotLightPos += vHorVector*3.3f;
++	// Set it
++	slFlashLight.vPosition = vSpotLightPos;
++	slFlashLight.vDirection = vSpotLightDir;
+ 	
+-	GLint iTextWidth = ftFont.GetTextWidth("The Avengers", 40);
+-	ftFont.Print("The Avengers", (fboTelevision.GetWidth()-iTextWidth)/2, fboTelevision.GetHeight()-60, 40);
+-
+-	// Update Thor's position and rotation
+-
+-	vThorPosition.x += appMain.sof(60.0f);
+-	if(vThorPosition.x > 160)vThorPosition.x = -160;
+-	fGlobalAngle += appMain.sof(170.0f);
+-
+-	glEnable(GL_DEPTH_TEST);
++	slFlashLight.SetUniformData(&spMain, "spotLight");
+ 
+-	//******************************
+-	//******************************
+-	//******************************
+-
+-	// Get back to normal rendering, no framebuffer
+-	glBindFramebuffer(GL_FRAMEBUFFER, NULL);
+ 	oglControl->ResizeOpenGLViewportFull();
+ 
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+@@ -305,6 +189,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	// We set full ambient for skybox, so that its color isn't affected by directional light
+ 
+ 	dlSun2.fAmbient = 1.0f;
++	dlSun2.vColor = glm::vec3(0.1f, 0.1f, 0.1f);
+ 	dlSun2.SetUniformData(&spMain, "sunLight");
+ 
+ 	sbMainSkybox.RenderSkybox();
+@@ -312,6 +197,11 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	glBindVertexArray(uiVAOs[0]);
+ 
+ 	dlSun.SetUniformData(&spMain, "sunLight");
++
++	CDirectionalLight dl2 = dlSun;
++	dl2.fAmbient = 1.0f;
++	dl2.vColor = glm::vec3(0.13f, 0.13f, 0.13f);
++	dl2.SetUniformData(&spMain, "sunLight");
+ 	
+ 	if(bWireFrame)glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+ 	else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+@@ -323,27 +213,47 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	// Render ground
+ 
+ 	tTextures[0].BindTexture();
+-	glDrawArrays(GL_TRIANGLES, 36, 6);
++	glDrawArrays(GL_TRIANGLES, 0, 6);
+ 	
+-	// Render building
++	// Render stairs
+ 
+ 	tTextures[1].BindTexture();
+-	glDrawArrays(GL_TRIANGLES, 42, 24);
++	glm::mat4 mTranslated = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, -70));
++	FOR(i, 50)
++	{
++		GLfloat fAngle = i*20.0f;
++		GLfloat fSine = float(sin(fAngle*3.1415f/180.0f));
++		mModelMatrix = glm::translate(mTranslated, glm::vec3(0, float(i)*4.0f, 0));
++		glm::mat4 mRotated = glm::rotate(mModelMatrix, fAngle, glm::vec3(0.0f, 1.0f, 0.0f));
++		spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mRotated)));
++		spMain.SetUniform("matrices.modelMatrix", &mRotated);
++		glDrawArrays(GL_TRIANGLES, 6, 30);
++	}
+ 
+-	// Render cinema
++	// Render tower (cylinder)
+ 
+-	fboTelevision.BindFramebufferTexture(0, true);
+-	glDrawArrays(GL_TRIANGLE_STRIP, 66, 4);
++	tTextures[2].BindTexture();
++	mModelMatrix = glm::translate(mTranslated, glm::vec3(0.0f, 30.0f, 0.0f));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++
++	glDrawArrays(GL_TRIANGLES, 36, iCylinderFaces*3);
+ 
+ 	// Render SpongeBob :D
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(30, 0, 10));
+-	mModelMatrix = glm::rotate(mModelMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20, 20, 20));
++	mModelMatrix = glm::translate(mTranslated, glm::vec3(-20.0f, 0, -30.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(20.0f, 20.0f, 20.0f));
+ 	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
+ 	mdlSpongeBob.RenderModel();
+ 
++	// Render strange creature found on internet as free model :D
++
++	mModelMatrix = glm::translate(mTranslated, glm::vec3(20.0f, 204.0f, -10.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
++	spMain.SetUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spMain.SetUniform("matrices.modelMatrix", &mModelMatrix);
++	mdlAlien.RenderModel();
++
+ 	cCamera.Update();
+ 
+ 	// PrGLint something over scene
+@@ -361,13 +271,22 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	ftFont.PrintFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
+ 	ftFont.PrintFormatted(20, h-55, 20, "FPS: %d", oglControl->GetFPS());
+-	ftFont.PrintFormatted(20, h-80, 20, "Model polygon count (Thor): %d", mdlThor.GetPolygonCount());
+-	ftFont.PrintFormatted(20, h-105, 20, "Model polygon count (SpongeBob): %d", mdlSpongeBob.GetPolygonCount());
++	ftFont.PrintFormatted(20, h-80, 20, "Cutoff angle: %.2f (Press 'E' and 'C' to change)", slFlashLight.fConeAngle);
++	ftFont.PrintFormatted(20, h-105, 20, "Linear attenuation: %.4f (Press 'R' and 'V' to change)", slFlashLight.fLinearAtt);
++	ftFont.PrintFormatted(20, h-130, 20, "Flashlight: %s (Press 'F' to toggle)", slFlashLight.bOn ? "On" : "Off");
++
+ 	if(Keys::Onekey('Q'))
+-	{
+ 		bWireFrame = !bWireFrame;
+-
+-	}
++	if(Keys::Key('R'))
++		slFlashLight.fLinearAtt += appMain.sof(0.01f);
++	if(Keys::Key('V'))
++		slFlashLight.fLinearAtt -= appMain.sof(0.01f);
++	if(Keys::Key('E'))
++		slFlashLight.fConeAngle += appMain.sof(4.0f);
++	if(Keys::Key('C'))
++		slFlashLight.fConeAngle -= appMain.sof(4.0f);
++	if(Keys::Onekey('F'))
++		slFlashLight.bOn = 1-slFlashLight.bOn;
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+@@ -398,7 +317,7 @@ GLvoid ReleaseScene(GLvoid* lpParam)
+ 
+ 	glDeleteVertexArrays(1, uiVAOs);
+ 	vboSceneObjects.DeleteVBO();
+-	mdlThor.DeleteModel();
++	mdlAlien.DeleteModel();
+ 	mdlSpongeBob.DeleteModel();
+ 
+ 	fboTelevision.DeleteFramebuffer();
+diff -up 16_RenderingToATexture/shaders.cpp 17_Spotlight/shaders.cpp
+--- 16_RenderingToATexture/shaders.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/shaders.cpp	2015-12-14 14:20:08.040309790 +0200
+@@ -9,6 +9,66 @@ CShader::CShader()
+ 	bLoaded = false;
+ }
+ 
++CShader shShaders[NUMSHADERS];
++CShaderProgram spMain, spOrtho2D, spFont2D, spColor;
++
++/*-----------------------------------------------
++
++Name:	PrepareShaderPrograms
++
++Params:	none
++
++Result:	Loads all shaders and creates shader programs.
++
++/*---------------------------------------------*/
++
++GLboolean PrepareShaderPrograms()
++{
++	// Load shaders and create shader program
++
++	string sShaderFileNames[] = {"main_shader.vert", "main_shader.geom", "main_shader.frag", "ortho2D.vert",
++		"ortho2D.frag", "font2D.frag", "dirLight.frag", "pointLight.frag", "fog.frag", "color.vert", "color.frag",
++		"spotLight.frag"
++	};
++
++	FOR(i, NUMSHADERS)
++	{
++		string sExt = sShaderFileNames[i].substr(ESZ(sShaderFileNames[i])-4, 4);
++		GLint iShaderType = sExt == "vert" ? GL_VERTEX_SHADER : (sExt == "frag" ? GL_FRAGMENT_SHADER : GL_GEOMETRY_SHADER);
++		shShaders[i].LoadShader("data/shaders/"+sShaderFileNames[i], iShaderType);
++	}
++
++	// Create shader programs
++
++	spMain.CreateProgram();
++	spMain.AddShaderToProgram(&shShaders[0]);
++	spMain.AddShaderToProgram(&shShaders[1]);
++	spMain.AddShaderToProgram(&shShaders[2]);
++	spMain.AddShaderToProgram(&shShaders[6]);
++	spMain.AddShaderToProgram(&shShaders[7]);
++	spMain.AddShaderToProgram(&shShaders[11]); // NEW: Spotlight shader
++	spMain.LinkProgram();
++
++	if(!spMain.LinkProgram())return false;
++
++	spOrtho2D.CreateProgram();
++	spOrtho2D.AddShaderToProgram(&shShaders[3]);
++	spOrtho2D.AddShaderToProgram(&shShaders[4]);
++	spOrtho2D.LinkProgram();
++
++	spFont2D.CreateProgram();
++	spFont2D.AddShaderToProgram(&shShaders[3]);
++	spFont2D.AddShaderToProgram(&shShaders[5]);
++	spFont2D.LinkProgram();
++
++	spColor.CreateProgram();
++	spColor.AddShaderToProgram(&shShaders[9]);
++	spColor.AddShaderToProgram(&shShaders[10]);
++	spColor.LinkProgram();
++
++	return true;
++}
++
+ /*-----------------------------------------------
+ 
+ Name:    LoadShader
+@@ -374,4 +434,4 @@ GLvoid CShaderProgram::SetUniform(string
+ {
+ 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
+ 	glUniform1i(iLoc, iValue);
+-}
+\ No newline at end of file
++}
+diff -up 16_RenderingToATexture/shaders.h 17_Spotlight/shaders.h
+--- 16_RenderingToATexture/shaders.h	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/shaders.h	2015-12-14 14:20:08.040309790 +0200
+@@ -79,4 +79,11 @@ public:
+ private:
+ 	GLuint uiProgram; // ID of program
+ 	GLboolean bLinked; // Whether program was linked and is ready to use
+-};
+\ No newline at end of file
++};
++
++GLboolean PrepareShaderPrograms();
++
++#define NUMSHADERS 12
++
++extern CShader shShaders[NUMSHADERS];
++extern CShaderProgram spMain, spOrtho2D, spFont2D, spColor;
+\ No newline at end of file
+Only in 17_Spotlight/: spotLight.cpp
+Only in 17_Spotlight/: spotLight.h
+diff -up 16_RenderingToATexture/static_geometry.cpp 17_Spotlight/static_geometry.cpp
+--- 16_RenderingToATexture/static_geometry.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/static_geometry.cpp	2015-12-14 14:20:08.040309790 +0200
+@@ -2,6 +2,21 @@
+ 
+ #include "static_geometry.h"
+ 
++/*-----------------------------------------------
++
++Name:	GenerateTorus
++
++Params:	vboDest - VBO where to store torus
++		fRadius - outer radius
++		fTubeRadius - inner radius
++		iSubDivAround - subdivisions around torus
++		iSubDivTube - subdivisions of tube
++
++Result: Generates centered torus with specified
++		parameters and stores it in VBO.
++
++/*---------------------------------------------*/
++
+ GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube)
+ {
+ 	GLfloat fAddAngleAround = 360.0f/(float)iSubDivAround;
+@@ -75,6 +90,82 @@ GLint GenerateTorus(CVertexBufferObject
+ 	return iFacesAdded;
+ }
+ 
++/*-----------------------------------------------
++
++Name:	GenerateCylinder
++
++Params:	vboDest - VBO where to store torus
++		fRadius - outer radius
++		fHeight - height of cylinder
++		iSubDivAround - subdivisions around cylinder
++
++Result: Generates centered opened cylinder and stores
++		it in VBO.
++
++/*---------------------------------------------*/
++
++GLint GenerateCylinder(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU, GLfloat fMapV)
++{
++	GLfloat fAddAngleAround = 360.0f/(float)(iSubDivAround-1);
++
++	GLfloat fCurAngleAround = 0.0f;
++	GLint iStepsAround = 1;
++	const GLfloat PI = float(atan(1.0)*4.0);
++
++	GLint iFacesAdded = 0;
++
++	while(iStepsAround <= iSubDivAround)
++	{
++		GLfloat fSineAround = sin(fCurAngleAround/180.0f*PI);
++		GLfloat fCosineAround = cos(fCurAngleAround/180.0f*PI);
++		glm::vec3 vDir1(fCosineAround, 0.0f, fSineAround);
++		GLfloat fNextAngleAround = fCurAngleAround+fAddAngleAround;
++		GLfloat fNextSineAround = sin(fNextAngleAround/180.0f*PI);
++		GLfloat fNextCosineAround = cos(fNextAngleAround/180.0f*PI);
++		glm::vec3 vDir2(fNextCosineAround, 0.0f, fNextSineAround);
++
++		glm::vec3 vQuadPoints[] = 
++		{
++			glm::vec3(0.0f, fHeight, 0.0f) + vDir1*fRadius,
++			vDir1*fRadius,
++			vDir2*fRadius,
++			glm::vec3(0.0f, fHeight, 0.0f) + vDir2*fRadius
++		};
++
++
++		glm::vec2 vTexCoords[] = 
++		{
++			glm::vec2(fMapU*fCurAngleAround/360.0f, fMapV),
++			glm::vec2(fMapU*fCurAngleAround/360.0f, 0.0f),
++			glm::vec2(fMapU*fNextAngleAround/360.0f, 0.0f),
++			glm::vec2(fMapU*fNextAngleAround/360.0f, fMapV)
++		};
++
++		glm::vec3 vNormals[] = 
++		{
++			vDir1,
++			vDir1,
++			vDir2,
++			vDir2
++		};
++
++		GLint iIndices[] = {0, 1, 2, 2, 3, 0};
++
++		FOR(i, 6)
++		{
++			GLint index = iIndices[i];
++			vboDest.AddData(&vQuadPoints[index], sizeof(glm::vec3));
++			vboDest.AddData(&vTexCoords[index], sizeof(glm::vec2));
++			vboDest.AddData(&vNormals[index], sizeof(glm::vec3));
++		}
++		iFacesAdded += 2; // Keep count of added faces
++
++		fCurAngleAround += fAddAngleAround;
++		iStepsAround++;
++	}
++	return iFacesAdded;
++}
++
+ glm::vec3 vCubeVertices[36] = 
+ {
+ 	// Front face
+@@ -107,28 +198,68 @@ glm::vec3 vGround[6] =
+ 	glm::vec3(-1000, 0, -1000), glm::vec3(-1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, -1000), glm::vec3(-1000, 0, -1000)
+ };
+ 
+-glm::vec3 vBuildingNormals[4] = 
++glm::vec3 vStair[] = 
+ {
+-	glm::vec3(0.0f, 0.0f, 1.0f),
+-	glm::vec3(-1.0f, 0.0f, 0.0f),
+-	glm::vec3(1.0f, 0.0f, 0.0f),
+-	glm::vec3(0.0f, -1.0f, 0.0f)
++	glm::vec3(-40.0f, 4.0f, -15.0f), glm::vec3(0.0f, 4.0f, -15.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(-40.0f, 4.0f, 0.0f), // Top
++	glm::vec3(-40.0f, 4.0f, 0.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-40.0f, 0.0f, 0.0f), // Front
++	glm::vec3(0.0f, 4.0f, -15.0f), glm::vec3(-40.0f, 4.0f, -15.0f), glm::vec3(-40.0f, 0.0f, -15.0f), glm::vec3(0.0f, 0.0f, -15.0f), // Back
++	glm::vec3(-40.0f, 4.0f, -15.0f), glm::vec3(-40.0f, 4.0f, 0.0f), glm::vec3(-40.0f, 0.0f, 0.0f), glm::vec3(-40.0f, 0.0f, -15.0f), // Left
++	glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 4.0f, -15.0f), glm::vec3(0.0f, 0.0f, -15.0f), glm::vec3(0.0f, 0.0f, 0.0f), // Right
+ };
+ 
+-glm::vec3 vBuilding[24] = 
++glm::vec2 vStairCoords[] = 
+ {
+-	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 75.0f, -75.0f),
+-	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(-75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 0.0f, 75.0f), glm::vec3(-75.0f, 0.0f, 75.0f), glm::vec3(-75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 75.0f, -75.0f),
+-	glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, 75.0f), glm::vec3(75.0f, 75.0f, 75.0f),
+-	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 75.0f, -75.0f)
++	glm::vec2(0.0f, 0.9f), glm::vec2(2.0f, 0.9f), glm::vec2(2.0f, 0.0f), glm::vec2(0.0f, 0.0f),
++	glm::vec2(0.0f, 0.2f), glm::vec2(2.0f, 0.2f), glm::vec2(2.0f, 0.0f), glm::vec2(0.0f, 0.0f),
++	glm::vec2(0.0f, 0.2f), glm::vec2(2.0f, 0.2f), glm::vec2(2.0f, 0.0f), glm::vec2(0.0f, 0.0f),
++	glm::vec2(0.0f, 0.2f), glm::vec2(0.9f, 0.2f), glm::vec2(0.9f, 0.0f), glm::vec2(0.0f, 0.0f),
++	glm::vec2(0.0f, 0.2f), glm::vec2(0.9f, 0.2f), glm::vec2(0.9f, 0.0f), glm::vec2(0.0f, 0.0f)
+ };
+ 
+-glm::vec3 vCinema[4] = 
++glm::vec3 vStairNormals[] = 
+ {
+-	glm::vec3(-30.0f, 40.0f, -70.0f), glm::vec3(-30.0f, 10.0f, -70.0f), glm::vec3(30.0f, 40.0f, -70.0f), glm::vec3(30.0f, 10.0f, -70.0f)
++	glm::vec3(0.0f, 1.0f, 0.0f),
++	glm::vec3(0.0f, 0.0f, 1.0f),
++	glm::vec3(0.0f, 0.0f, -1.0f),
++	glm::vec3(-1.0f, 0.0f, 0.0f),
++	glm::vec3(1.0f, 0.0f, 0.0f)
+ };
+ 
+-glm::vec2 vCinemaCoords[4] = 
++GLint iCylinderFaces;
++
++/*-----------------------------------------------
++
++Name:	AddSceneObjects
++
++Params:	vboDest - VBO where to store objects
++
++Result: Adds all static objects to scene.
++
++/*---------------------------------------------*/
++
++GLvoid AddSceneObjects(CVertexBufferObject& vboDest)
+ {
+-	glm::vec2(0, 1), glm::vec2(0, 0), glm::vec2(1, 1), glm::vec2(1, 0)
+-};
+\ No newline at end of file
++	// Add ground to VBO
++	FOR(i, 6)
++	{
++		vboDest.AddData(&vGround[i], sizeof(glm::vec3));
++		glm::vec2 vCoord = vCubeTexCoords[i]*50.0f;
++		vboDest.AddData(&vCoord, sizeof(glm::vec2));
++		glm::vec3 vGroundNormal(0.0f, 1.0f, 0.0f);
++		vboDest.AddData(&vGroundNormal, sizeof(glm::vec3));
++	}
++
++	// Add stair to VBO
++	FOR(i, 5) // i is stair's side, 5 sides are enough (all beside bottom side)
++	{
++		GLint iIndices[] = {0, 1, 2, 2, 3, 0};
++		FOR(j, 6)
++		{
++			vboDest.AddData(&vStair[4*i+iIndices[j]], sizeof(glm::vec3));
++			vboDest.AddData(&vStairCoords[4*i+iIndices[j]], sizeof(glm::vec2));
++			vboDest.AddData(&vStairNormals[i], sizeof(glm::vec3));
++		}
++	}
++
++	iCylinderFaces = GenerateCylinder(vboDest, 60.0f, 250.0f, 15, 8.0f, 15.0f);
++}
+\ No newline at end of file
+diff -up 16_RenderingToATexture/static_geometry.h 17_Spotlight/static_geometry.h
+--- 16_RenderingToATexture/static_geometry.h	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/static_geometry.h	2015-12-14 14:20:08.040309790 +0200
+@@ -13,4 +13,8 @@ extern glm::vec3 vBuilding[24];
+ extern glm::vec3 vCinema[4];
+ extern glm::vec2 vCinemaCoords[4]; 
+ 
+-GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+\ No newline at end of file
++GLint GenerateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
++GLint GenerateCylinder(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fHeight, GLint iSubDivAround, GLfloat fMapU = 1.0f, GLfloat fMapV = 1.0f);
++GLvoid AddSceneObjects(CVertexBufferObject& vboDest);
++
++extern GLint iCylinderFaces;
+\ No newline at end of file
+diff -up 16_RenderingToATexture/texture.cpp 17_Spotlight/texture.cpp
+--- 16_RenderingToATexture/texture.cpp	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/texture.cpp	2015-12-14 14:20:08.040309790 +0200
+@@ -11,7 +11,18 @@ CTexture::CTexture()
+ 	bMipMapsGenerated = false;
+ }
+ 
+-GLvoid CTexture::CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format)
++/*-----------------------------------------------
++
++Name:	CreateEmptyTexture
++
++Params:	a_iWidth, a_iHeight - dimensions
++		format - format of data
++
++Result:	Creates texture from provided data.
++
++/*---------------------------------------------*/
++
++GLvoid CTexture::CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLenum format)
+ {
+ 	glGenTextures(1, &uiTexture);
+ 	glBindTexture(GL_TEXTURE_2D, uiTexture);
+diff -up 16_RenderingToATexture/texture.h 17_Spotlight/texture.h
+--- 16_RenderingToATexture/texture.h	2015-12-14 14:20:08.036309790 +0200
++++ 17_Spotlight/texture.h	2015-12-14 14:20:08.040309790 +0200
+@@ -24,7 +24,7 @@ Purpose:	Wraps OpenGL texture
+ class CTexture
+ {
+ public:
+-	GLvoid CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format);
++	GLvoid CreateEmptyTexture(GLint a_iWidth, GLint a_iHeight, GLenum format);
+ 	GLvoid CreateFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
+ 	
+ 	GLboolean LoadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);

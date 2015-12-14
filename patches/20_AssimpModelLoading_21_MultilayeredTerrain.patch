@@ -1,0 +1,237 @@
+diff -up 20_AssimpModelLoading/common_header.h 21_MultilayeredTerrain/common_header.h
+--- 20_AssimpModelLoading/common_header.h	2015-12-14 14:20:08.048309790 +0200
++++ 21_MultilayeredTerrain/common_header.h	2015-12-14 14:20:08.052309790 +0200
+@@ -16,6 +16,8 @@ using namespace std;
+ 
+ #include <GL/glew.h>
+ #include <glm/glm.hpp>
++#include <glm/gtc/matrix_transform.hpp>
++#include <glm/gtc/type_ptr.hpp>
+ 
+ // Some useful defines
+ 
+diff -up 20_AssimpModelLoading/dirLight.cpp 21_MultilayeredTerrain/dirLight.cpp
+--- 20_AssimpModelLoading/dirLight.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 21_MultilayeredTerrain/dirLight.cpp	2015-12-14 14:20:08.052309790 +0200
+@@ -9,6 +9,7 @@ CDirectionalLight::CDirectionalLight()
+ 
+ 	fAmbient = 0.25f;
+ }
++
+ CDirectionalLight::CDirectionalLight(glm::vec3 a_vColor, glm::vec3 a_vDirection, GLfloat a_fAmbient)
+ {
+ 	vColor = a_vColor;
+Only in 21_MultilayeredTerrain/: heightmap.cpp
+Only in 21_MultilayeredTerrain/: heightmap.h
+diff -up 20_AssimpModelLoading/Lin_OpenGLApp.cpp 21_MultilayeredTerrain/Lin_OpenGLApp.cpp
+--- 20_AssimpModelLoading/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 21_MultilayeredTerrain/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -319,11 +319,11 @@ Result:	Application entry point.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.InitializeApp("20_opengl_3_3"))
++	if(!appMain.InitializeApp("21_opengl_3_3"))
+ 		return 0;
+ 	appMain.RegisterAppClass(hInstance);
+ 
+-	if(!appMain.CreateAppWindow("20.) Assimp Model Loading - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.CreateAppWindow("21.) Multilayered Terrain - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.ResetTimer();
+ 
+diff -up 20_AssimpModelLoading/RenderScene.cpp 21_MultilayeredTerrain/RenderScene.cpp
+--- 20_AssimpModelLoading/RenderScene.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 21_MultilayeredTerrain/RenderScene.cpp	2015-12-14 14:20:08.048309790 +0200
+@@ -15,8 +15,7 @@
+ 
+ #include "assimp_model.h"
+ 
+-#include <glm/gtc/matrix_transform.hpp>
+-#include <glm/gtc/type_ptr.hpp>
++#include "heightmap.h"
+ 
+ 
+ CVertexBufferObject vboSceneObjects;
+@@ -31,6 +30,8 @@ CDirectionalLight dlSun;
+ 
+ CAssimpModel amModels[3];
+ 
++CMultiLayeredHeightmap hmWorld;
++
+ /*-----------------------------------------------
+ 
+ Name:    InitScene
+@@ -42,14 +43,10 @@ Result:  Initializes OpenGL features tha
+ 
+ /*---------------------------------------------*/
+ 
+-#include "static_geometry.h"
+-
+ GLvoid InitScene(GLvoid* lpParam)
+ {
+ 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+ 
+-	CreateStaticSceneObjects(&uiVAOSceneObjects, vboSceneObjects);
+-
+ 	if(!PrepareShaderPrograms())
+ 	{
+ 		PostQuitMessage(0);
+@@ -65,7 +62,7 @@ GLvoid InitScene(GLvoid* lpParam)
+ 	ftFont.LoadSystemFont("arial.ttf", 32);
+ 	ftFont.SetShaderProgram(&spFont2D);
+ 	
+-	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 20.0f), glm::vec3(0.0f, 10.0f, 19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
++	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
+ 
+ 	sbMainSkybox.LoadSkybox("data/skyboxes/elbrus/", "elbrus_front.jpg", "elbrus_back.jpg", "elbrus_right.jpg", "elbrus_left.jpg", "elbrus_top.jpg", "elbrus_top.jpg");
+@@ -74,8 +71,10 @@ GLvoid InitScene(GLvoid* lpParam)
+ 
+ 	amModels[0].LoadModelFromFile("data/models/Wolf/Wolf.obj");
+ 	amModels[1].LoadModelFromFile("data/models/house/house.3ds");
+-
+ 	CAssimpModel::FinalizeVBO();
++
++	CMultiLayeredHeightmap::LoadTerrainShaderProgram();
++	hmWorld.LoadHeightMapFromImage("data/worlds/consider_this_question.bmp");
+ }
+ 
+ /*-----------------------------------------------
+@@ -107,50 +106,68 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spMain.SetUniform("matrices.normalMatrix", glm::mat4(1.0));
+ 	spMain.SetUniform("vColor", glm::vec4(1, 1, 1, 1));
+ 
++	// This values will set the darkness of whole scene, that's why such name of variable :D
++	static GLfloat fAngleOfDarkness = 45.0f;
++	// You can play with direction of light with '+' and '-' key
++	if(Keys::Key(VK_ADD))fAngleOfDarkness += appMain.sof(90);
++	if(Keys::Key(VK_SUBTRACT))fAngleOfDarkness -= appMain.sof(90);
++	// Set the directional vector of light
++	dlSun.vDirection = glm::vec3(-sin(fAngleOfDarkness*3.1415f/180.0f), -cos(fAngleOfDarkness*3.1415f/180.0f), 0.0f);
+ 	dlSun.SetUniformData(&spMain, "sunLight");
+ 
+-
+ 	spMain.SetUniform("matrices.modelMatrix", glm::translate(glm::mat4(1.0), cCamera.vEye));
+ 	sbMainSkybox.RenderSkybox();
+ 
+ 	spMain.SetUniform("matrices.modelMatrix", glm::mat4(1.0));
+ 	
++	// Render a house
+ 
+-	// Render ground
++	CAssimpModel::BindModelsVAO();
+ 
+-	glBindVertexArray(uiVAOSceneObjects);
+-	tTextures[0].BindTexture();
++	glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(40.0f, 17.0f, 0));
++	mModel = glm::scale(mModel, glm::vec3(8, 8, 8)); // Casino :D
+ 
+-	glDrawArrays(GL_TRIANGLES, 0, 6);
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++	amModels[1].RenderModel();
+ 
+-	// Render some houses
++	// ... and also ONE wolf now only :P
+ 
+-	CAssimpModel::BindModelsVAO();
++	mModel = glm::translate(glm::mat4(1.0), glm::vec3(-20.0f, 22.0f, 50));
++	mModel = glm::scale(mModel, glm::vec3(2.8f, 2.8f, 2.8f));
+ 
+-	FOR(i, 6)
+-	{
+-		GLfloat xPosHouse = -80.0f+i*30.0f;
+-		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(xPosHouse, 0, 0));
+-		mModel = glm::scale(mModel, glm::vec3(3, 3, 3));
++	spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
++	amModels[0].RenderModel();
+ 
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[1].RenderModel();
+-	}
+ 
+-	// ... and also some wolfs
++	// Now we're going to render terrain
+ 
+-	CAssimpModel::BindModelsVAO();
++	hmWorld.SetRenderSize(300.0f, 35.0f, 300.0f);
++	CShaderProgram* spTerrain = CMultiLayeredHeightmap::GetShaderProgram();
+ 
+-	FOR(i, 7)
+-	{
+-		GLfloat xPosHouse = -75.0f+i*30.0f;
+-		glm::mat4 mModel = glm::translate(glm::mat4(1.0), glm::vec3(xPosHouse, 0, 0));
+-		mModel = glm::scale(mModel, glm::vec3(1.8f, 1.8f, 1.8f));
++	spTerrain->UseProgram();
++
++	spTerrain->SetUniform("matrices.projMatrix", oglControl->GetProjectionMatrix());
++	spTerrain->SetUniform("matrices.viewMatrix", cCamera.Look());
+ 
+-		spMain.SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", mModel);
+-		amModels[0].RenderModel();
++	// We bind all 5 textures - 3 of them are textures for layers, 1 texture is a "path" texture, and last one is
++	// the places in heightmap where path should be and how intense should it be
++	FOR(i, 5)
++	{
++		GLchar sSamplerName[256];
++		sprintf(sSamplerName, "gSampler[%d]", i);
++		tTextures[i].BindTexture(i);
++		spTerrain->SetUniform(sSamplerName, i);
+ 	}
+ 
++	// ... set some uniforms
++	spTerrain->SetModelAndNormalMatrix("matrices.modelMatrix", "matrices.normalMatrix", glm::mat4(1.0));
++	spTerrain->SetUniform("vColor", glm::vec4(1, 1, 1, 1));
++
++	dlSun.SetUniformData(spTerrain, "sunLight");
++
++	// ... and finally render heightmap
++	hmWorld.RenderHeightmap();
++
+ 	cCamera.Update();
+ 
+ 	// PrGLint something over scene
+@@ -165,7 +182,7 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	ftFont.Print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+ 	ftFont.PrintFormatted(20, h-30, 20, "FPS: %d", oglControl->GetFPS());
+-
++	ftFont.PrintFormatted(20, h-80, 20, "Heightmap size: %dx%d", hmWorld.GetNumHeightmapRows(), hmWorld.GetNumHeightmapCols());
+ 
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::Onekey(VK_ESCAPE))PostQuitMessage(0);
+@@ -196,4 +213,7 @@ GLvoid ReleaseScene(GLvoid* lpParam)
+ 
+ 	glDeleteVertexArrays(1, &uiVAOSceneObjects);
+ 	vboSceneObjects.DeleteVBO();
++
++	hmWorld.ReleaseHeightmap();
++	CMultiLayeredHeightmap::ReleaseTerrainShaderProgram();
+ }
+\ No newline at end of file
+Only in 20_AssimpModelLoading/: static_geometry.cpp
+Only in 20_AssimpModelLoading/: static_geometry.h
+diff -up 20_AssimpModelLoading/texture.cpp 21_MultilayeredTerrain/texture.cpp
+--- 20_AssimpModelLoading/texture.cpp	2015-12-14 14:20:08.048309790 +0200
++++ 21_MultilayeredTerrain/texture.cpp	2015-12-14 14:20:08.052309790 +0200
+@@ -289,7 +289,7 @@ GLvoid LoadAllTextures()
+ {
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"sand_grass_02.jpg"};
++	string sTextureNames[] = {"fungus.dds", "sand_grass_02.jpg", "rock_2_4w.jpg", "sand.jpg", "path.png"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+diff -up 20_AssimpModelLoading/texture.h 21_MultilayeredTerrain/texture.h
+--- 20_AssimpModelLoading/texture.h	2015-12-14 14:20:08.048309790 +0200
++++ 21_MultilayeredTerrain/texture.h	2015-12-14 14:20:08.052309790 +0200
+@@ -62,6 +62,6 @@ private:
+ 	string sPath;
+ };
+ 
+-#define NUMTEXTURES 1
++#define NUMTEXTURES 5
+ extern CTexture tTextures[NUMTEXTURES];
+ GLvoid LoadAllTextures();
+\ No newline at end of file

@@ -1,0 +1,610 @@
+diff -up 12_FogOutside/flyingCamera.h 13_PointLights/flyingCamera.h
+--- 12_FogOutside/flyingCamera.h	2015-12-14 14:20:08.020309790 +0200
++++ 13_PointLights/flyingCamera.h	2015-12-14 14:20:08.024309790 +0200
+@@ -26,5 +26,3 @@ private:
+ 	glm::vec2 pCur; // For mosue rotation
+ 	GLint iForw, iBack, iLeft, iRight;
+ };
+-
+-extern CFlyingCamera fcMain;
+\ No newline at end of file
+diff -up 12_FogOutside/Lin_OpenGLApp.cpp 13_PointLights/Lin_OpenGLApp.cpp
+--- 12_FogOutside/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 13_PointLights/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -182,7 +182,6 @@ GLboolean COpenGLWinApp::createWindow(st
+ 	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+ 	UpdateWindow(hWnd);
+ 
+-
+ 	ShowCursor(FALSE);
+ 
+ 	return true;
+@@ -322,11 +321,11 @@ Result:	Application messages handler.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.initializeApp("12_opengl_3_3"))
++	if(!appMain.initializeApp("13_opengl_3_3"))
+ 		return 0;
+ 	appMain.registerAppClass(hInstance);
+ 
+-	if(!appMain.createWindow("12.) Fog Outside - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.createWindow("13.) Point Lights - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.resetTimer();
+ 
+diff -up 12_FogOutside/RenderScene.cpp 13_PointLights/RenderScene.cpp
+--- 12_FogOutside/RenderScene.cpp	2015-12-14 14:20:08.020309790 +0200
++++ 13_PointLights/RenderScene.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -15,8 +15,8 @@
+ #include <glm/gtc/matrix_transform.hpp>
+ #include <glm/gtc/type_ptr.hpp>
+ 
+-#define NUMSHADERS 6
+-#define NUMTEXTURES 3
++#define NUMSHADERS 10
++#define NUMTEXTURES 4
+ 
+ /* One VBO, where all static data are stored now,
+ in this tutorial vertex is stored as 3 floats for
+@@ -24,10 +24,11 @@ position, 2 floats for texture coordinat
+ 3 floats for normal vector. */
+ 
+ CVertexBufferObject vboSceneObjects;
++
+ GLuint uiVAOs[1]; // Only one VAO now
+ 
+ CShader shShaders[NUMSHADERS];
+-CShaderProgram spFogAndLight, spOrtho2D, spFont2D;
++CShaderProgram spPointLights, spOrtho2D, spFont2D, spColor;
+ 
+ CTexture tTextures[NUMTEXTURES];
+ 
+@@ -39,12 +40,12 @@ CSkybox sbMainSkybox;
+ 
+ /*-----------------------------------------------
+ 
+-Name:	initScene
++Name:    initScene
+ 
+-Params:	lpParam - Pointer to anything you want.
++Params:  lpParam - Pointer to anything you want.
+ 
+-Result:	Initializes OpenGL features that will
+-			be used.
++Result:  Initializes OpenGL features that will
++         be used.
+ 
+ /*---------------------------------------------*/
+ 
+@@ -76,12 +77,22 @@ GLvoid initScene(GLvoid* lpParam)
+ 	FOR(i, 6)
+ 	{
+ 		vboSceneObjects.addData(&vGround[i], sizeof(glm::vec3));
+-		vCubeTexCoords[i] *= 100.0f;
+-		vboSceneObjects.addData(&vCubeTexCoords[i%6], sizeof(glm::vec2));
++		glm::vec2 vCoord = vCubeTexCoords[i] * 100.0f;
++		vboSceneObjects.addData(&vCoord, sizeof(glm::vec2));
+ 		glm::vec3 vGroundNormal(0.0f, 1.0f, 0.0f);
+ 		vboSceneObjects.addData(&vGroundNormal, sizeof(glm::vec3));
+ 	}
+ 
++	// Add building to VBO
++
++	FOR(i, 24)
++	{
++		vboSceneObjects.addData(&vBuilding[i], sizeof(glm::vec3));
++		glm::vec2 vCoord = vCubeTexCoords[i%6]*10.0f;
++		vboSceneObjects.addData(&vCoord, sizeof(glm::vec2));
++		vboSceneObjects.addData(&vBuildingNormals[i/6], sizeof(glm::vec3));
++	}
++
+ 	iTorusFaces = generateTorus(vboSceneObjects, 7.0f, 2.0f, 20, 20);
+ 	vboSceneObjects.uploadDataToGPU(GL_STATIC_DRAW);
+ 
+@@ -102,13 +113,19 @@ GLvoid initScene(GLvoid* lpParam)
+ 	shShaders[2].LoadShader("data/shaders/ortho2D.vert", GL_VERTEX_SHADER);
+ 	shShaders[3].LoadShader("data/shaders/ortho2D.frag", GL_FRAGMENT_SHADER);
+ 	shShaders[4].LoadShader("data/shaders/font2D.frag", GL_FRAGMENT_SHADER);
+-	shShaders[5].LoadShader("data/shaders/fog.frag", GL_FRAGMENT_SHADER);
+-
+-	spFogAndLight.CreateProgram();
+-	spFogAndLight.addShaderToProgram(&shShaders[0]);
+-	spFogAndLight.addShaderToProgram(&shShaders[1]);
+-	spFogAndLight.addShaderToProgram(&shShaders[5]);
+-	spFogAndLight.linkProgram();
++	shShaders[5].LoadShader("data/shaders/directionalLight.frag", GL_FRAGMENT_SHADER);
++	shShaders[6].LoadShader("data/shaders/pointLight.frag", GL_FRAGMENT_SHADER);
++	shShaders[7].LoadShader("data/shaders/fog.frag", GL_FRAGMENT_SHADER);
++
++	shShaders[8].LoadShader("data/shaders/color.vert", GL_VERTEX_SHADER);
++	shShaders[9].LoadShader("data/shaders/color.frag", GL_FRAGMENT_SHADER);
++
++	spPointLights.CreateProgram();
++	spPointLights.addShaderToProgram(&shShaders[0]);
++	spPointLights.addShaderToProgram(&shShaders[1]); 
++	spPointLights.addShaderToProgram(&shShaders[5]);
++	spPointLights.addShaderToProgram(&shShaders[6]);
++	spPointLights.linkProgram();
+ 
+ 	spOrtho2D.CreateProgram();
+ 	spOrtho2D.addShaderToProgram(&shShaders[2]);
+@@ -120,11 +137,16 @@ GLvoid initScene(GLvoid* lpParam)
+ 	spFont2D.addShaderToProgram(&shShaders[4]);
+ 	spFont2D.linkProgram();
+ 
++	spColor.CreateProgram();
++	spColor.addShaderToProgram(&shShaders[8]);
++	spColor.addShaderToProgram(&shShaders[9]);
++	spColor.linkProgram();
++
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"grass.jpg", "crate.jpg", "metalplate.jpg"};
++	string sTextureNames[] = {"grass.jpg", "crate.jpg", "metalplate.jpg", "stone_wall.jpg"};
+ 
+-	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
++	FOR(i, NUMTEXTURES)
+ 	{
+ 		tTextures[i].loadTexture2D("data/textures/"+sTextureNames[i], true);
+ 		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
+@@ -138,7 +160,7 @@ GLvoid initScene(GLvoid* lpParam)
+ 	ftFont.loadSystemFont("arial.ttf", 32);
+ 	ftFont.setShaderProgram(&spFont2D);
+ 	
+-	cCamera = CFlyingCamera(glm::vec3(-75.0f, 10.0f, 120.0f), glm::vec3(-75.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
++	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.setMovingKeys('W', 'S', 'A', 'D');
+ 
+ 	sbMainSkybox.loadSkybox("data/skyboxes/jajlands1/", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
+@@ -146,17 +168,17 @@ GLvoid initScene(GLvoid* lpParam)
+ 
+ /*-----------------------------------------------
+ 
+-Name:	RenderScene
++Name:    RenderScene
+ 
+-Params:	lpParam - Pointer to anything you want.
++Params:  lpParam - Pointer to anything you want.
+ 
+-Result:	Renders whole scene.
++Result:  Renders whole scene.
+ 
+ /*---------------------------------------------*/
+ 
+ GLfloat fGlobalAngle;
+ 
+-#define FOG_EQUATION_LINEAR		0
++#define FOG_EQUATION_LINEAR	0
+ #define FOG_EQUATION_EXP		1
+ #define FOG_EQUATION_EXP2		2
+ 
+@@ -169,6 +191,26 @@ namespace FogParameters
+ 	GLint iFogEquation = FOG_EQUATION_EXP; // 0 = linear, 1 = exp, 2 = exp2
+ };
+ 
++glm::vec3 vLightPos = glm::vec3(0.0f, 10.0f, 20.0f);
++
++GLvoid renderColoredCube()
++{
++	glm::vec3 vColors[] = 
++	{
++		glm::vec3(1.0f, 0.0f, 0.0f),
++		glm::vec3(0.0f, 1.0f, 0.0f),
++		glm::vec3(0.0f, 0.0f, 1.0f),
++		glm::vec3(1.0f, 1.0f, 0.0f),
++		glm::vec3(0.0f, 1.0f, 1.0f),
++		glm::vec3(1.0f, 0.0f, 1.0f)
++	};
++	FOR(i, 6)
++	{
++		spColor.setUniform("vColor", glm::vec4(vColors[i].x, vColors[i].y, vColors[i].z, 1.0f));
++		glDrawArrays(GL_TRIANGLES, i*6, 6);
++	}
++}
++
+ GLvoid RenderScene(GLvoid* lpParam)
+ {
+ 	// Typecast lpParam to COpenGLControl pointer
+@@ -177,91 +219,120 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
+ 	glEnable(GL_TEXTURE_2D);
+-	spFogAndLight.UseProgram();
++	spPointLights.UseProgram();
+ 
+-	spFogAndLight.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
+-	spFogAndLight.setUniform("sunLight.fAmbientIntensity", 1.0f); // Full light for skybox
+-	spFogAndLight.setUniform("sunLight.vDirection", glm::vec3(0, -1, 0));
++	spPointLights.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
++	spPointLights.setUniform("sunLight.fAmbientIntensity", 0.5f);
++	spPointLights.setUniform("sunLight.fStrength", 0.5f);
++	spPointLights.setUniform("sunLight.vDirection", glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0));
+ 
+-	spFogAndLight.setUniform("matrices.projectionMatrix", oglControl->getProjectionMatrix());
+-	spFogAndLight.setUniform("gSampler", 0);
++	spPointLights.setUniform("matrices.projectionMatrix", oglControl->getProjectionMatrix());
++	spPointLights.setUniform("gSampler", 0);
+ 
+-	glm::mat4 mModelView = cCamera.look();
+-	glm::mat4 mModelToCamera;
++	glm::mat4 mView = cCamera.look();
++	spPointLights.setUniform("matrices.viewMatrix", &mView);
++	spPointLights.setUniform("matrices.modelMatrix", glm::mat4(1.0f));
+ 
+-	spFogAndLight.setUniform("fogParams.iEquation", FogParameters::iFogEquation);
+-	spFogAndLight.setUniform("fogParams.vFogColor", FogParameters::vFogColor);
+-
+-	if(FogParameters::iFogEquation == FOG_EQUATION_LINEAR)
+-	{
+-		spFogAndLight.setUniform("fogParams.fStart", FogParameters::fStart);
+-		spFogAndLight.setUniform("fogParams.fEnd", FogParameters::fEnd);
+-	}
+-	else
+-		spFogAndLight.setUniform("fogParams.fDensity", FogParameters::fDensity);
+-
+-	spFogAndLight.setUniform("matrices.modelViewMatrix", glm::translate(mModelView, cCamera.vEye));
++	glm::mat4 mModelMatrix = glm::translate(glm::mat4(1.0f), cCamera.vEye);
++	
++	spPointLights.setUniform("matrices.modelMatrix", &mModelMatrix);
++	spPointLights.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mView*mModelMatrix)));
+ 	sbMainSkybox.renderSkybox();
+ 
+ 	glBindVertexArray(uiVAOs[0]);
+-	spFogAndLight.setUniform("sunLight.fAmbientIntensity", 0.55f);
+-	spFogAndLight.setUniform("matrices.modelViewMatrix", &mModelView);
++	spPointLights.setUniform("sunLight.fAmbientIntensity", 0.05f);
++	spPointLights.setUniform("sunLight.fStrength", 0.2f);
++
++	spPointLights.setUniform("ptLight.vColor", glm::vec3(0.0f, 0.0f, 1.0f));
++	spPointLights.setUniform("ptLight.vPosition", vLightPos);
++	spPointLights.setUniform("ptLight.fAmbient", 0.15f);
++	static GLfloat fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
++	if(Keys::key('P'))fConst += appMain.sof(0.2f);
++	if(Keys::key('O'))fConst -= appMain.sof(0.2f);
++	if(Keys::key('L'))fLineaer += appMain.sof(0.01f);
++	if(Keys::key('K'))fLineaer -= appMain.sof(0.01f);
++	if(Keys::key('M'))fExp += appMain.sof(0.0001f);
++	if(Keys::key('N'))fExp -= appMain.sof(0.0001f);
++
++	if(Keys::key(VK_LEFT))vLightPos.x -= appMain.sof(30.0f);
++	if(Keys::key(VK_RIGHT))vLightPos.x += appMain.sof(30.0f);
++	if(Keys::key(VK_NEXT))vLightPos.y -= appMain.sof(30.0f);
++	if(Keys::key(VK_PRIOR))vLightPos.y += appMain.sof(30.0f);
++	if(Keys::key(VK_UP))vLightPos.z -= appMain.sof(30.0f);
++	if(Keys::key(VK_DOWN))vLightPos.z += appMain.sof(30.0f);
++
++	spPointLights.setUniform("ptLight.fConstantAtt", fConst);
++	spPointLights.setUniform("ptLight.fLinearAtt", fLineaer);
++	spPointLights.setUniform("ptLight.fExpAtt", fExp);
+ 	
+ 	// Render ground
+ 
++	spPointLights.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
++	spPointLights.setUniform("matrices.modelMatrix", glm::mat4(1.0f));
++	spPointLights.setUniform("matrices.normalMatrix", glm::mat4(1.0f));
+ 	tTextures[0].bindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 36, 6);
+ 
+-	// Create a nice spiral from boxes
++	tTextures[3].bindTexture();
++	glDrawArrays(GL_TRIANGLES, 42, 24);
++
++	// Create a box pile inside "building"
+ 
+ 	tTextures[1].bindTexture();
+ 
+-	GLfloat dx[] = {1.0f, 0.0f, -1.0f, 0.0f};
+-	GLfloat dz[] = {0.0f, -1.0f, 0.0f, 1.0f};
+-	GLint iCurDir = 0;
+-	glm::vec3 vBoxPos(0.0f, 7.48f, 0.0f);
+-	const GLint iSpiralLevels = 12;
+-	SFOR(i, 1, iSpiralLevels)
++	SFOR(nb, 1, 9)
+ 	{
+-		FOR(j, i)
++		GLint iCnt = nb > 5 ? 10-nb : nb;
++		FOR(i, iCnt)
+ 		{
+-			mModelToCamera = glm::translate(glm::mat4(1.0), vBoxPos);
+-			mModelToCamera = glm::scale(mModelToCamera, glm::vec3(15.0f, 15.0f, 15.0f));
++			glm::vec3 vPos = glm::vec3(-25.0f+nb*8.02f, 4.0f+i*8.02f, 0.0f);
++			mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
++			mModelMatrix = glm::scale(mModelMatrix, glm::vec3(8.0f, 8.0f, 8.0f));
+ 			// We need to transform normals properly, it's done by transpose of inverse matrix of rotations and scales
+-			spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-			spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
++			spPointLights.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++			spPointLights.setUniform("matrices.modelMatrix", mModelMatrix);
+ 			glDrawArrays(GL_TRIANGLES, 0, 36);
+-
+-			vBoxPos += glm::vec3(15.02f*dx[iCurDir], 0.0f, 15.02f*dz[iCurDir]);
+ 		}
+-		iCurDir = (iCurDir+1)%4;
+ 	}
+ 
+ 	// Render 3 rotated tori to create interesting object
+ 
+ 	tTextures[2].bindTexture();
+-	spFogAndLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+ 	
+ 	// Now it's gonna GLfloat in the air
+ 	glm::vec3 vPos = glm::vec3(0.0f, 50.0, 0.0f);
+-	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+-	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-	spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+-	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
+-
+-	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+-	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModelToCamera = glm::rotate(mModelToCamera, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+-	spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-	spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+-	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
+-
+-	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
+-	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle+90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spFogAndLight.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
+-	spFogAndLight.setUniform("matrices.modelViewMatrix", mModelView*mModelToCamera);
+-	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
++	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
++	spPointLights.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spPointLights.setUniform("matrices.modelMatrix", &mModelMatrix);
++	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
++	mModelMatrix = glm::rotate(mModelMatrix, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
++	spPointLights.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spPointLights.setUniform("matrices.modelMatrix", &mModelMatrix);
++	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle+90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
++	spPointLights.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
++	spPointLights.setUniform("matrices.modelMatrix", &mModelMatrix);
++	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
++
++
++	spColor.UseProgram();
++	spColor.setUniform("matrices.projectionMatrix", oglControl->getProjectionMatrix());
++	spColor.setUniform("matrices.viewMatrix", mView);
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), vLightPos);
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(1.0f, 0.0f, 0.0f));
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 0.0f, 1.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));
++
++	spColor.setUniform("matrices.modelMatrix", mModelMatrix);
++	renderColoredCube();
+ 
+ 	fGlobalAngle += appMain.sof(100.0f);
+ 	cCamera.update();
+@@ -270,39 +341,15 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	spFont2D.UseProgram();
+ 	glDisable(GL_DEPTH_TEST);
+-	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
+ 	spFont2D.setUniform("matrices.projectionMatrix", oglControl->getOrthoMatrix());
+ 
+-	spFont2D.setUniform("vColor", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+-	ftFont.printFormatted(20, h-20, 24, "Current fog equation: %s (Press F to change)", FogParameters::iFogEquation == 0 ? "Linear" : (FogParameters::iFogEquation == 1 ? "Exp" : "Exp2"));
+-	if(FogParameters::iFogEquation == 0)
+-	{
+-		ftFont.printFormatted(20, h-50, 24, "Fog start: %.4f (Press + and - to change)", FogParameters::fStart);
+-		ftFont.printFormatted(20, h-80, 24, "Fog end: %.4f  (Press PGUP and PGDN to change)", FogParameters::fEnd);
+-		if(Keys::key(VK_ADD))
+-			FogParameters::fStart += appMain.sof(15.0f);
+-		if(Keys::key(VK_SUBTRACT))
+-			FogParameters::fStart -= appMain.sof(15.0f);
+-
+-		if(Keys::key(VK_PRIOR))
+-			FogParameters::fEnd += appMain.sof(15.0f);
+-		if(Keys::key(VK_NEXT))
+-			FogParameters::fEnd -= appMain.sof(15.0f);
+-	}
+-	else
+-	{
+-		ftFont.printFormatted(20, h-50, 24, "Fog density: %.4f (Press + and - to change)", FogParameters::fDensity);
+-		if(Keys::key(VK_ADD))
+-			FogParameters::fDensity +=	appMain.sof(0.01f);
+-		if(Keys::key(VK_SUBTRACT))
+-			FogParameters::fDensity -= appMain.sof(0.01f);
+-	}
+-
+-	if(Keys::onekey('F'))FogParameters::iFogEquation = (FogParameters::iFogEquation+1)%3;
+-
+-	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
++	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
++	
++	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+ 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
+ 
++	ftFont.printFormatted(20, h-30, 20, "ATTENUATIONS:\nConst: %.4f\nLinear: %.4f\nExp: %.6f", fConst, fLineaer, fExp);
++
+ 	glEnable(GL_DEPTH_TEST);
+ 	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
+ 
+@@ -311,11 +358,11 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ /*-----------------------------------------------
+ 
+-Name:	releaseScene
++Name:    releaseScene
+ 
+-Params:	lpParam - Pointer to anything you want.
++Params:  lpParam - Pointer to anything you want.
+ 
+-Result:	Releases OpenGL scene.
++Result:  Releases OpenGL scene.
+ 
+ /*---------------------------------------------*/
+ 
+@@ -324,7 +371,7 @@ GLvoid releaseScene(GLvoid* lpParam)
+ 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
+ 	sbMainSkybox.releaseSkybox();
+ 
+-	spFogAndLight.DeleteProgram();
++	spPointLights.DeleteProgram();
+ 	spOrtho2D.DeleteProgram();
+ 	spFont2D.DeleteProgram();
+ 	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
+diff -up 12_FogOutside/shaders.cpp 13_PointLights/shaders.cpp
+--- 12_FogOutside/shaders.cpp	2015-12-14 14:20:08.024309790 +0200
++++ 13_PointLights/shaders.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -11,10 +11,10 @@ CShader::CShader()
+ 
+ /*-----------------------------------------------
+ 
+-Name:	LoadShader
++Name:    LoadShader
+ 
+-Params:	sFile - path to a file
+-		a_iType - type of shader (fragment, vertex, geometry)
++Params:  sFile - path to a file
++         a_iType - type of shader (fragment, vertex, geometry)
+ 
+ Result:	Loads and compiles shader.
+ 
+@@ -22,15 +22,9 @@ Result:	Loads and compiles shader.
+ 
+ GLboolean CShader::LoadShader(string sFile, GLint a_iType)
+ {
+-	FILE* fp = fopen(sFile.c_str(), "rt");
+-	if(!fp)return false;
+-
+-	// Get all lines from a file
+-
+ 	vector<string> sLines;
+-	GLchar sLine[255];
+-	while(fgets(sLine, 255, fp))sLines.push_back(sLine);
+-	fclose(fp);
++
++	if(!getLinesFromFile(sFile, false, &sLines))return false;
+ 
+ 	const char** sProgram = new const char*[ESZ(sLines)];
+ 	FOR(i, ESZ(sLines))sProgram[i] = sLines[i].c_str();
+@@ -49,7 +43,70 @@ GLboolean CShader::LoadShader(string sFi
+ 	iType = a_iType;
+ 	bLoaded = true;
+ 
+-	return 1;
++	return true;
++}
++
++/*-----------------------------------------------
++
++Name:    getLinesFromFile
++
++Params:  sFile - path to a file
++         bIncludePart - whether to add include part only
++         vResult - vector of strings to store result to
++
++Result:  Loads and adds include part.
++
++/*---------------------------------------------*/
++
++GLboolean CShader::getLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult)
++{
++	FILE* fp = fopen(sFile.c_str(), "rt");
++	if(!fp)return false;
++
++	string sDirectory;
++	GLint slashIndex = -1;
++	RFOR(i, ESZ(sFile)-1)
++	{
++		if(sFile[i] == '/' || sFile[i] == '/')
++		{
++			slashIndex = i;
++			break;
++		}
++	}
++
++	sDirectory = sFile.substr(0, slashIndex+1);
++
++	// Get all lines from a file
++
++	GLchar sLine[255];
++
++	GLboolean bInIncludePart = false;
++
++	while(fgets(sLine, 255, fp))
++	{
++		stringstream ss(sLine);
++		string sFirst;
++		ss >> sFirst;
++		if(sFirst == "#include")
++		{
++			string sFileName;
++			ss >> sFileName;
++			if(ESZ(sFileName) > 0 && sFileName[0] == '\"' && sFileName[ESZ(sFileName)-1] == '\"')
++			{
++				sFileName = sFileName.substr(1, ESZ(sFileName)-2);
++				getLinesFromFile(sDirectory+sFileName, true, vResult);
++			}
++		}
++		else if(sFirst == "#include_part")
++			bInIncludePart = true;
++		else if(sFirst == "#definition_part")
++			bInIncludePart = false;
++		else if(!bIncludePart || (bIncludePart && bInIncludePart))
++			vResult->push_back(sLine);
++	}
++	fclose(fp);
++
++	return true;
+ }
+ 
+ /*-----------------------------------------------
+diff -up 12_FogOutside/shaders.h 13_PointLights/shaders.h
+--- 12_FogOutside/shaders.h	2015-12-14 14:20:08.024309790 +0200
++++ 13_PointLights/shaders.h	2015-12-14 14:20:08.024309790 +0200
+@@ -15,6 +15,8 @@ public:
+ 	GLboolean LoadShader(string sFile, GLint a_iType);
+ 	GLvoid DeleteShader();
+ 
++	GLboolean getLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult);
++
+ 	GLboolean isLoaded();
+ 	GLuint getShaderID();
+ 
+diff -up 12_FogOutside/static_geometry.cpp 13_PointLights/static_geometry.cpp
+--- 12_FogOutside/static_geometry.cpp	2015-12-14 14:20:08.024309790 +0200
++++ 13_PointLights/static_geometry.cpp	2015-12-14 14:20:08.024309790 +0200
+@@ -105,4 +105,20 @@ glm::vec3 vCubeNormals[6] =
+ glm::vec3 vGround[6] = 
+ {
+ 	glm::vec3(-1000, 0, -1000), glm::vec3(50, 0, -1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(-1000, 0, 1000), glm::vec3(-1000, 0, -1000)
++};
++
++glm::vec3 vBuildingNormals[4] = 
++{
++	glm::vec3(0.0f, 0.0f, 1.0f),
++	glm::vec3(-1.0f, 0.0f, 0.0f),
++	glm::vec3(1.0f, 0.0f, 0.0f),
++	glm::vec3(0.0f, -1.0f, 0.0f)
++};
++
++glm::vec3 vBuilding[24] = 
++{
++	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 75.0f, -75.0f),
++	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(-75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 0.0f, 75.0f), glm::vec3(-75.0f, 0.0f, 75.0f), glm::vec3(-75.0f, 0.0f, -75.0f), glm::vec3(-75.0f, 75.0f, -75.0f),
++	glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, -75.0f), glm::vec3(75.0f, 0.0f, 75.0f), glm::vec3(75.0f, 75.0f, 75.0f),
++	glm::vec3(-75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, -75.0f), glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 75.0f, 75.0f), glm::vec3(-75.0f, 75.0f, -75.0f)
+ };
+\ No newline at end of file
+diff -up 12_FogOutside/static_geometry.h 13_PointLights/static_geometry.h
+--- 12_FogOutside/static_geometry.h	2015-12-14 14:20:08.024309790 +0200
++++ 13_PointLights/static_geometry.h	2015-12-14 14:20:08.024309790 +0200
+@@ -7,4 +7,7 @@ extern glm::vec2 vCubeTexCoords[6];
+ extern glm::vec3 vCubeNormals[6];
+ extern glm::vec3 vGround[6];
+ 
++extern glm::vec3 vBuildingNormals[4];
++extern glm::vec3 vBuilding[24];
++
+ GLint generateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube);
+\ No newline at end of file

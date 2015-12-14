@@ -1,0 +1,222 @@
+diff -up 14_GeometryShaders/Lin_OpenGLApp.cpp 15_OBJModelLoader/Lin_OpenGLApp.cpp
+--- 14_GeometryShaders/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 15_OBJModelLoader/Lin_OpenGLApp.cpp	2015-12-14 14:20:08.028309790 +0200
+@@ -321,11 +321,11 @@ Result:	Application messages handler.
+ 
+ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, GLint iShow)
+ {
+-	if(!appMain.initializeApp("14_opengl_3_3"))
++	if(!appMain.initializeApp("15_opengl_3_3"))
+ 		return 0;
+ 	appMain.registerAppClass(hInstance);
+ 
+-	if(!appMain.createWindow("14.) Geometry Shaders - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
++	if(!appMain.createWindow("15.) OBJ Model Loader - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+ 		return 0;
+ 	appMain.resetTimer();
+ 
+Only in 15_OBJModelLoader/: objModel.cpp
+Only in 15_OBJModelLoader/: objModel.h
+diff -up 14_GeometryShaders/RenderScene.cpp 15_OBJModelLoader/RenderScene.cpp
+--- 14_GeometryShaders/RenderScene.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 15_OBJModelLoader/RenderScene.cpp	2015-12-14 14:20:08.028309790 +0200
+@@ -18,7 +18,7 @@
+ #include <glm/gtc/type_ptr.hpp>
+ 
+ #define NUMSHADERS 11
+-#define NUMTEXTURES 4
++#define NUMTEXTURES 1
+ 
+ /* One VBO, where all static data are stored now,
+ in this tutorial vertex is stored as 3 floats for
+@@ -39,6 +39,11 @@ CFlyingCamera cCamera;
+ 
+ CDirectionalLight dlSun;
+ 
++#include "objModel.h"
++
++CObjModel mdlThor;
++CObjModel mdlSpongeBob;
++
+ /*-----------------------------------------------
+ 
+ Name:    initScene
+@@ -148,7 +153,7 @@ GLvoid initScene(GLvoid* lpParam)
+ 
+ 	// Load textures
+ 
+-	string sTextureNames[] = {"Tile41a.jpg", "crate.jpg", "metalplate.jpg", "stone_wall.jpg"};
++	string sTextureNames[] = {"Tile41a.jpg"};
+ 
+ 	FOR(i, NUMTEXTURES)
+ 	{
+@@ -167,9 +172,12 @@ GLvoid initScene(GLvoid* lpParam)
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera.setMovingKeys('W', 'S', 'A', 'D');
+ 
+-	sbMainSkybox.loadSkybox("data/skyboxes/jajsundown1/", "jajsundown1_ft.jpg", "jajsundown1_bk.jpg", "jajsundown1_lf.jpg", "jajsundown1_rt.jpg", "jajsundown1_up.jpg", "jajsundown1_dn.jpg");
++	sbMainSkybox.loadSkybox("data/skyboxes/jajdarkland1/", "jajdarkland1_ft.jpg", "jajdarkland1_bk.jpg", "jajdarkland1_lf.jpg", "jajdarkland1_rt.jpg", "jajdarkland1_up.jpg", "jajdarkland1_dn.jpg");
+ 
+ 	dlSun = CDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(sqrt(2.0f)/2, -sqrt(2.0f)/2, 0), 0.5f);
++
++	mdlThor.loadModel("data/models/Thor/thor.obj", "thor.mtl");
++	mdlSpongeBob.loadModel("data/models/Spongebob/spongebob_bind.obj", "spongebob_bind.mtl");
+ }
+ 
+ /*-----------------------------------------------
+@@ -183,7 +191,6 @@ Result:  Renders whole scene.
+ /*---------------------------------------------*/
+ 
+ GLfloat fGlobalAngle;
+-GLfloat fBender = 0.75f;
+ GLboolean bWireFrame = false;
+ 
+ GLvoid RenderScene(GLvoid* lpParam)
+@@ -197,10 +204,6 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 
+ 	spMain.UseProgram();
+ 
+-	spMain.setUniform("fBender", fBender);
+-	if(Keys::key('X'))fBender += appMain.sof(2.0f);
+-	if(Keys::key('Z'))fBender -= appMain.sof(2.0f);
+-
+ 	spMain.setUniform("matrices.projMatrix", oglControl->getProjectionMatrix());
+ 	spMain.setUniform("gSampler", 0);
+ 
+@@ -236,53 +239,23 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spMain.setUniform("matrices.normalMatrix", glm::mat4(1.0f));
+ 	tTextures[0].bindTexture();
+ 	glDrawArrays(GL_TRIANGLES, 36, 6);
+-
+-	tTextures[3].bindTexture();
+-	glDrawArrays(GL_TRIANGLES, 42, 24);
+-
+-	// Create a box pile inside "building"
+-
+-	tTextures[1].bindTexture();
+-
+-	SFOR(nb, 1, 9)
+-	{
+-		GLint iCnt = nb > 5 ? 10-nb : nb;
+-		FOR(i, iCnt)
+-		{
+-			glm::vec3 vPos = glm::vec3(-25.0f+nb*8.02f, 4.0f+i*8.02f, 0.0f);
+-			mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
+-			mModelMatrix = glm::scale(mModelMatrix, glm::vec3(8.0f, 8.0f, 8.0f));
+-			// We need to transform normals properly, it's done by transpose of inverse matrix of rotations and scales
+-			spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-			spMain.setUniform("matrices.modelMatrix", mModelMatrix);
+-			glDrawArrays(GL_TRIANGLES, 0, 36);
+-		}
+-	}
+-
+-	// Render 3 rotated tori to create interesting object
+-
+-	tTextures[2].bindTexture();
+ 	
+-	// Now it's gonna GLfloat in the air
+-	glm::vec3 vPos = glm::vec3(0.0f, 50.0, 0.0f);
+-	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+-	spMain.setUniform("matrices.modelMatrix", &mModelMatrix);
+-	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
++	// Render Thor
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+-	mModelMatrix = glm::rotate(mModelMatrix, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(-60, 0, 0));
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle+90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+ 	spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.setUniform("matrices.modelMatrix", &mModelMatrix);
+-	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
++	mdlThor.renderModel();
+ 
+-	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
+-	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle+90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
++	// Render SpongeBob :D
++
++	mModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(60, 0, 0));
++	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle+180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
++	mModelMatrix = glm::scale(mModelMatrix, glm::vec3(50, 50, 50));
+ 	spMain.setUniform("matrices.normalMatrix", glm::transpose(glm::inverse(mModelMatrix)));
+ 	spMain.setUniform("matrices.modelMatrix", &mModelMatrix);
+-	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
++	mdlSpongeBob.renderModel();
+ 
+ 	fGlobalAngle += appMain.sof(100.0f);
+ 	cCamera.update();
+@@ -300,9 +273,9 @@ GLvoid RenderScene(GLvoid* lpParam)
+ 	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+ 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
+ 
+-	ftFont.printFormatted(20, h-30, 20, "Bender Value: %.3f  (Hold Z and X to change)", fBender);
+-	ftFont.printFormatted(20, h-55, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
+-
++	ftFont.printFormatted(20, h-30, 20, "Polygon Mode: %s (Press Q to toggle)", bWireFrame ? "Wireframe" : "Normal");
++	ftFont.printFormatted(20, h-55, 20, "FPS: %d", oglControl->getFPS());
++	ftFont.printFormatted(20, h-80, 20, "Model polygon count: %d", mdlThor.getPolygonCount());
+ 	if(Keys::onekey('Q'))
+ 	{
+ 		bWireFrame = !bWireFrame;
+@@ -338,4 +311,6 @@ GLvoid releaseScene(GLvoid* lpParam)
+ 
+ 	glDeleteVertexArrays(1, uiVAOs);
+ 	vboSceneObjects.releaseVBO();
++	mdlThor.releaseModel();
++	mdlSpongeBob.releaseModel();
+ }
+\ No newline at end of file
+diff -up 14_GeometryShaders/static_geometry.cpp 15_OBJModelLoader/static_geometry.cpp
+--- 14_GeometryShaders/static_geometry.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 15_OBJModelLoader/static_geometry.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -104,7 +104,7 @@ glm::vec3 vCubeNormals[6] =
+ 
+ glm::vec3 vGround[6] = 
+ {
+-	glm::vec3(-1000, 0, -1000), glm::vec3(50, 0, -1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(-1000, 0, 1000), glm::vec3(-1000, 0, -1000)
++	glm::vec3(-1000, 0, -1000), glm::vec3(-1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, 1000), glm::vec3(1000, 0, -1000), glm::vec3(-1000, 0, -1000)
+ };
+ 
+ glm::vec3 vBuildingNormals[4] = 
+diff -up 14_GeometryShaders/texture.cpp 15_OBJModelLoader/texture.cpp
+--- 14_GeometryShaders/texture.cpp	2015-12-14 14:20:08.028309790 +0200
++++ 15_OBJModelLoader/texture.cpp	2015-12-14 14:20:08.032309790 +0200
+@@ -28,18 +28,14 @@ GLvoid CTexture::createFromData(GL_UNSIG
+ 	// Generate an OpenGL texture ID for this texture
+ 	glGenTextures(1, &uiTexture);
+ 	glBindTexture(GL_TEXTURE_2D, uiTexture);
+-
+-	if(format == GL_RGB || format == GL_BGR) // We must handle this because of internal format parameter
+-	{
++	if(format == GL_RGBA || format == GL_BGRA)
++		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, bData);
++	// We must handle this because of internal format parameter
++	else if(format == GL_RGB || format == GL_BGR)
+ 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, bData);
+-		if(bGenerateMipMaps)glGenerateMipmap(GL_TEXTURE_2D);
+-	}
+ 	else
+-	{
+ 		glTexImage2D(GL_TEXTURE_2D, 0, format, a_iWidth, a_iHeight, 0, format, GL_UNSIGNED_BYTE, bData);
+-		if(bGenerateMipMaps)glGenerateMipmap(GL_TEXTURE_2D);
+-	}
+-
++	if(bGenerateMipMaps)glGenerateMipmap(GL_TEXTURE_2D);
+ 	glGenSamplers(1, &uiSampler);
+ 
+ 	sPath = "";
+@@ -85,7 +81,11 @@ GLboolean CTexture::loadTexture2D(string
+ 	if(bDataPointer == NULL || FreeImage_GetWidth(dib) == 0 || FreeImage_GetHeight(dib) == 0)
+ 		return false;
+ 
+-	GLenum format = FreeImage_GetBPP(dib) == 24 ? GL_BGR : FreeImage_GetBPP(dib) == 8 ? GL_LUMINANCE : 0;
++	GLenum format;
++	GLint bada = FreeImage_GetBPP(dib);
++	if(FreeImage_GetBPP(dib) == 32)format = GL_RGBA;
++	if(FreeImage_GetBPP(dib) == 24)format = GL_BGR;
++	if(FreeImage_GetBPP(dib) == 8)format = GL_LUMINANCE;
+ 	createFromData(bDataPointer, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib), FreeImage_GetBPP(dib), format, bGenerateMipMaps);
+ 	
+ 	FreeImage_Unload(dib);
