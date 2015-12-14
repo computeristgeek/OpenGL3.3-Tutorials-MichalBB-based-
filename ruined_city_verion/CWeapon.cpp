@@ -43,7 +43,7 @@ CVector3 getIntersectionEnemy(CVector3 vFrom, CVector3 vTo, CVector3 vBest)
 		if(fDist < 1.5f)
 		{
 			GLfloat fLen = 1.5f - fDist;
-			CVector3 vPoGLint = vClosest - vDir * fLen;
+			CVector3 vPoint = vClosest - vDir * fLen;
 			fDist = vecDist(vPoint, vFrom);
 			if(fDist < fLowest)
 			{

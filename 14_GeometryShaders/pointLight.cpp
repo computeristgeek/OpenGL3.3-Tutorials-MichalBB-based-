@@ -31,9 +31,9 @@ CPointLight::CPointLight(glm::vec3 a_vColor, glm::vec3 a_vPosition, GLfloat a_fA
 Name:	setUniformData
 
 Params:	spProgram - shader program
-		sLightVarName - name of poGLint light variable
+		sLightVarName - name of point light variable
 
-Result:	Sets all poGLint light data.
+Result:	Sets all point light data.
 
 /*---------------------------------------------*/
 

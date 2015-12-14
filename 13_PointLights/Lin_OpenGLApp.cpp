@@ -325,7 +325,7 @@ GLint WINAPI WinMain(GLvoid* hInstance, GLvoid* hPrevInstance, LPSTR sCmdLine, G
 		return 0;
 	appMain.registerAppClass(hInstance);
 
-	if(!appMain.createWindow("13.) PoGLint Lights - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
+	if(!appMain.createWindow("13.) Point Lights - Tutorial by Michal Bubnar (www.mbsoftworks.sk)"))
 		return 0;
 	appMain.resetTimer();
 

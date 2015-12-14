@@ -676,7 +676,7 @@ GLvoid renderSolidTorus( GLdouble dInnerRadius, GLdouble dOuterRadius, GLGLint n
   double spsi, cpsi, sphi, cphi ;
 
   /*
-   * Increment the number of sides and rings to allow for one more poGLint than surface
+   * Increment the number of sides and rings to allow for one more point than surface
    */
   nSides ++ ;
   nRings ++ ;
@@ -890,7 +890,7 @@ GLvoid renderWireTetrahedron( GLvoid )
    * |r0| = |r1| = |r2| = |r3| = 1
    * Distance between any two points is 2 sqrt(6) / 3
    *
-   * Normals:  The unit normals are simply the negative of the coordinates of the poGLint not on the surface.
+   * Normals:  The unit normals are simply the negative of the coordinates of the point not on the surface.
    */
 
   double r0[3] = {             1.0,             0.0,             0.0 } ;
@@ -918,7 +918,7 @@ GLvoid renderSolidTetrahedron( GLvoid )
    * |r0| = |r1| = |r2| = |r3| = 1
    * Distance between any two points is 2 sqrt(6) / 3
    *
-   * Normals:  The unit normals are simply the negative of the coordinates of the poGLint not on the surface.
+   * Normals:  The unit normals are simply the negative of the coordinates of the point not on the surface.
    */
 
   double r0[3] = {             1.0,             0.0,             0.0 } ;

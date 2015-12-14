@@ -124,7 +124,7 @@ GLvoid Soldier::Draw()
 			}
 		}
 	}
-	glm::vec2 mp; // Create Mouse PoGLint structure
+	glm::vec2 mp; // Create Mouse Point structure
 	GetCursorPos(&mp); // Get position of cursor
 	mvShoot.x=-27+(float)mp.x/14.8f; // Calculate crosshair's position
 	mvShoot.y=20-(float)mp.y/14.8f;

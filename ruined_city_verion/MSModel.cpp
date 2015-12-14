@@ -333,9 +333,9 @@ GLvoid CMSModel::renderModel(CAnimData* aData)
 				glNormal3f(vNorm.x, vNorm.y, vNorm.z);
 				FOR(k, 3)
 				{
-					CVector3 vPoGLint = vVerts1[j*3 + k];
+					CVector3 vPoint = vVerts1[j*3 + k];
 					CVector2 vCoord = vCoords1[j*3 + k];
-					if(vVerts2 != NULL && !(aAnims[iAnim].bKFData[iKF2] & 1))vPoGLint += (vVerts2[j*3 + k] - vVerts1[j*3 + k]) * fScale;
+					if(vVerts2 != NULL && !(aAnims[iAnim].bKFData[iKF2] & 1))vPoint += (vVerts2[j*3 + k] - vVerts1[j*3 + k]) * fScale;
 					if(vCoords2 != NULL && !(aAnims[iAnim].bKFData[iKF2] & 1))vCoord += (vCoords2[j*3 + k] - vCoords1[j*3 + k]) * fScale;
 					
 					glTexCoord2f(vCoord.x, vCoord.y);

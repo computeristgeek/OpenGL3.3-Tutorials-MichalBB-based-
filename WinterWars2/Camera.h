@@ -34,7 +34,7 @@ public:
 	// This moves the camera's view by the mouse movements (First person view)
 	GLvoid SetViewByMouse(); 
 
-	// This rotates the camera around a poGLint (I.E. your character).
+	// This rotates the camera around a point (I.E. your character).
 	GLvoid RotateAroundPoint(CVector3 vCenter, GLfloat X, GLfloat Y, GLfloat Z);
 
 

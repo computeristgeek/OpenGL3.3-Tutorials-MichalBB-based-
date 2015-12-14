@@ -104,10 +104,10 @@ Result:  Checks if a ray given by two points
 
 GLboolean RaySphereCollision(glm::vec3 vSphereCenter, GLfloat fSphereRadius, glm::vec3 vA, glm::vec3 vB)
 {
-	// Create the vector from end poGLint vA to center of sphere
+	// Create the vector from end point vA to center of sphere
 	glm::vec3 vDirToSphere = vSphereCenter - vA;
 
-	// Create a normalized direction vector from end poGLint vA to end poGLint vB
+	// Create a normalized direction vector from end point vA to end point vB
 	glm::vec3 vLineDir = glm::normalize(vB-vA);
 
 	// Find length of line segment
@@ -117,16 +117,16 @@ GLboolean RaySphereCollision(glm::vec3 vSphereCenter, GLfloat fSphereRadius, glm
 	GLfloat t = glm::dot(vDirToSphere, vLineDir);
 
 	glm::vec3 vClosestPoint;
-	// If our projected distance from vA is less than or equal to 0, the closest poGLint is vA
+	// If our projected distance from vA is less than or equal to 0, the closest point is vA
 	if (t <= 0.0f)
-		vClosestPoGLint = vA;
-	// If our projected distance from vA is greater thatn line length, closest poGLint is vB
+		vClosestPoint = vA;
+	// If our projected distance from vA is greater thatn line length, closest point is vB
 	else if (t >= fLineLength)
-		vClosestPoGLint = vB;
-	// Otherwise calculate the poGLint on the line using t and return it
+		vClosestPoint = vB;
+	// Otherwise calculate the point on the line using t and return it
 	else
-		vClosestPoGLint = vA+vLineDir*t;
+		vClosestPoint = vA+vLineDir*t;
 
-	// Now just check if closest poGLint is within radius of sphere
+	// Now just check if closest point is within radius of sphere
 	return glm::distance(vSphereCenter, vClosestPoint) <= fSphereRadius;
 }

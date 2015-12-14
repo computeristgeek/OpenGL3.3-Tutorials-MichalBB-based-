@@ -7,14 +7,14 @@
 Class:	CPointLight
 
 Purpose: Support class for adding
-		poGLint lights to scene.
+		point lights to scene.
 
 ********************************/
 
 class CPointLight
 {
 public:
-	glm::vec3 vColor; // Color of poGLint light
+	glm::vec3 vColor; // Color of point light
 	glm::vec3 vPosition; // and position
 
 	GLfloat fAmbient;

@@ -218,7 +218,7 @@ GLvoid RenderScene(GLvoid* lpParam)
 	glm::mat4 mModel;
 	if(bShadowsOn) // So if the shadows are on
 	{
-		// We are going to render scene from the light's poGLint of view
+		// We are going to render scene from the light's point of view
 		fboShadowMap.BindFramebuffer();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		spShadowMapper.UseProgram();

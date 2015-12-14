@@ -5,7 +5,7 @@
 GLvoid axisRotation(GLfloat fAngle, CVector3 vAxis, CVector3 &vPoint, CVector3 vCenter)
 {
 	CVector3 vNewView;
-	CVector3 vView = vPoGLint - vCenter;
+	CVector3 vView = vPoint - vCenter;
 
 	// Calculate the sine and cosine of the angle once
 	GLfloat cosTheta = (float)cos(fAngle);
@@ -30,7 +30,7 @@ GLvoid axisRotation(GLfloat fAngle, CVector3 vAxis, CVector3 &vPoint, CVector3 v
 
 	// Now we just add the newly rotated vector to our position to set
 	// our new rotated view of our camera.
-	vPoGLint = vCenter + vNewView;
+	vPoint = vCenter + vNewView;
 }
 
 //====================
