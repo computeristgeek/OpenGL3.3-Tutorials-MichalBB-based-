@@ -9,7 +9,7 @@ CVertexBufferObject::CVertexBufferObject()
 
 /*-----------------------------------------------
 
-Name:	createVBO
+Name:		createVBO
 
 Params:	a_iSize - initial size of buffer
 
@@ -43,12 +43,12 @@ GLvoid CVertexBufferObject::releaseVBO()
 
 /*-----------------------------------------------
 
-Name:	mapBufferToMemory
+Name:		mapBufferToMemory
 
 Params:	iUsageHGLint - GL_READ_ONLY, GL_WRITE_ONLY...
 
 Result:	Maps whole buffer data to memory and
-		returns pointer to data.
+			returns pointer to data.
 
 /*---------------------------------------------*/
 
@@ -61,12 +61,12 @@ void* CVertexBufferObject::mapBufferToMemory(GLint iUsageHint)
 
 /*-----------------------------------------------
 
-Name:	mapSubBufferToMemory
+Name:		mapSubBufferToMemory
 
 Params:	iUsageHGLint - GL_READ_ONLY, GL_WRITE_ONLY...
-		uiOffset - data offset (from where should
-					data be mapped).
-		uiLength - length of data
+			uiOffset - data offset (from where should
+							data be mapped).
+			uiLength - length of data
 
 Result:	Maps specified part of buffer to memory.
 
@@ -81,7 +81,7 @@ void* CVertexBufferObject::mapSubBufferToMemory(GLint iUsageHint, GLuint uiOffse
 
 /*-----------------------------------------------
 
-Name:	unmapBuffer
+Name:		unmapBuffer
 
 Params:	none
 
@@ -96,7 +96,7 @@ GLvoid CVertexBufferObject::unmapBuffer()
 
 /*-----------------------------------------------
 
-Name:	bindVBO
+Name:		bindVBO
 
 Params:	a_iBufferType - buffer type (GL_ARRAY_BUFFER, ...)
 
@@ -112,7 +112,7 @@ GLvoid CVertexBufferObject::bindVBO(GLint a_iBufferType)
 
 /*-----------------------------------------------
 
-Name:	uploadDataToGPU
+Name:		uploadDataToGPU
 
 Params:	iUsageHGLint - GL_STATIC_DRAW, GL_DYNAMIC_DRAW...
 
@@ -140,12 +140,12 @@ Result:	Adds arbitrary data to VBO.
 
 GLvoid CVertexBufferObject::addData(void* ptrData, GLuint uiDataSize)
 {
-	data.insert(data.end(), (GL_UNSIGNED_BYTE*)ptrData, (GL_UNSIGNED_BYTE*)ptrData+uiDataSize);
+	data.insert(data.end(), (uint8_t*)ptrData, (uint8_t*)ptrData+uiDataSize);
 }
 
 /*-----------------------------------------------
 
-Name:	getDataPointer
+Name:		getDataPointer
 
 Params:	none
 
@@ -161,7 +161,7 @@ void* CVertexBufferObject::getDataPointer()
 
 /*-----------------------------------------------
 
-Name:	getBuffer
+Name:		getBuffer
 
 Params:	none
 

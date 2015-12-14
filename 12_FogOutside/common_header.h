@@ -1,7 +1,7 @@
 // Header files of frequent usage
-
+#include <cstdio>
+#include <iostream>
 #include <ctime>
-#include <windows.h>
 
 #include <algorithm>
 #include <cmath>
@@ -25,3 +25,5 @@ using namespace std;
 #define RSFOR(q,s,e) for(GLint q=s;q>=e;q--)
 
 #define ESZ(elem) (int)elem.size()
+
+#define MessageBox(hWnd,msg,msgTitle,icon) cerr<<msgTitle<<":"<<msg<<endl;
