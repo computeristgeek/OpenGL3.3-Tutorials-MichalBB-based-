@@ -24,7 +24,7 @@ Purpose:	Wraps OpenGL texture
 class CTexture
 {
 public:
-	GLvoid createFromData(BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
+	GLvoid createFromData(uint8_t* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps = false);
 	GLboolean loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps = false);
 	GLvoid bindTexture(GLint iTextureUnit = 0);
 

@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 #include "flyingCamera.h"
 
 #include <glm/gtx/rotate_vector.hpp>
@@ -36,10 +36,11 @@ Result:	Checks for moving of mouse and rotates
 
 GLvoid CFlyingCamera::rotateWithMouse()
 {
-	GetCursorPos(&pCur);
-	RECT rRect; GetWindowRect(appMain.hWnd, &rRect);
-	GLint iCentX = (rRect.left+rRect.right)>>1,
-		iCentY = (rRect.top+rRect.bottom)>>1;
+	glfwGetCursorPos(appMain.hWnd, &pCur[0],&pCur[1]);
+	GLint width, height;
+	glfwGetFramebufferSize(appMain.hWnd,&width,&height);
+	GLint iCentX = width/2,
+		iCentY = height/2;
 
 	GLfloat deltaX = (float)(iCentX-pCur.x)*fSensitivity;
 	GLfloat deltaY = (float)(iCentY-pCur.y)*fSensitivity;
@@ -47,7 +48,7 @@ GLvoid CFlyingCamera::rotateWithMouse()
 	if(deltaX != 0.0f)
 	{
 		vView -= vEye;
-		vView = glm::gtx::rotate_vector::rotate(vView, deltaX, glm::vec3(0.0f, 1.0f, 0.0f));
+		vView = glm::rotate(vView, deltaX, glm::vec3(0.0f, 1.0f, 0.0f));
 		vView += vEye;
 	}
 	if(deltaY != 0.0f)
@@ -59,11 +60,11 @@ GLvoid CFlyingCamera::rotateWithMouse()
 		if(fNewAngle > -89.80f && fNewAngle < 89.80f)
 		{
 			vView -= vEye;
-			vView = glm::gtx::rotate_vector::rotate(vView, deltaY, vAxis);
+			vView = glm::rotate(vView, deltaY, vAxis);
 			vView += vEye;
 		}
 	}
-	SetCursorPos(iCentX, iCentY);
+	glfwSetCursorPos(appMain.hWnd, iCentX, iCentY);
 }
 
 /*-----------------------------------------------
@@ -144,23 +145,23 @@ GLvoid CFlyingCamera::update()
 {
 	rotateWithMouse();
 
-	// Get view direction
-	glm::vec3 vMove = vView-vEye;
-	vMove = glm::normalize(vMove);
-	vMove *= fSpeed;
+////////// Get view direction
+////////glm::vec3 vMove = vView-vEye;
+////////vMove = glm::normalize(vMove);
+////////vMove *= fSpeed;
 
-	glm::vec3 vStrafe = glm::cross(vView-vEye, vUp);
-	vStrafe = glm::normalize(vStrafe);
-	vStrafe *= fSpeed;
+////////glm::vec3 vStrafe = glm::cross(vView-vEye, vUp);
+////////vStrafe = glm::normalize(vStrafe);
+////////vStrafe *= fSpeed;
 
-	GLint iMove = 0;
-	glm::vec3 vMoveBy;
-	// Get vector of move
-	if(Keys::key(iForw))vMoveBy += vMove*appMain.sof(1.0f);
-	if(Keys::key(iBack))vMoveBy -= vMove*appMain.sof(1.0f);
-	if(Keys::key(iLeft))vMoveBy -= vStrafe*appMain.sof(1.0f);
-	if(Keys::key(iRight))vMoveBy += vStrafe*appMain.sof(1.0f);
-	vEye += vMoveBy; vView += vMoveBy;
+////////GLint iMove = 0;
+////////glm::vec3 vMoveBy;
+////////// Get vector of move
+////////if(Keys::key(iForw))vMoveBy += vMove*appMain.sof(1.0f);
+////////if(Keys::key(iBack))vMoveBy -= vMove*appMain.sof(1.0f);
+////////if(Keys::key(iLeft))vMoveBy -= vStrafe*appMain.sof(1.0f);
+////////if(Keys::key(iRight))vMoveBy += vStrafe*appMain.sof(1.0f);
+////////vEye += vMoveBy; vView += vMoveBy;
 }
 
 /*-----------------------------------------------
@@ -176,10 +177,9 @@ Result:	Sets mouse cursor back to the center of
 
 GLvoid CFlyingCamera::resetMouse()
 {
-	RECT rRect; GetWindowRect(appMain.hWnd, &rRect);
-	GLint iCentX = (rRect.left+rRect.right)>>1,
-		iCentY = (rRect.top+rRect.bottom)>>1;
-	SetCursorPos(iCentX, iCentY);
+	GLint width, height;
+	glfwGetFramebufferSize(appMain.hWnd,&width,&height);
+	glfwSetCursorPos(appMain.hWnd, 0, 0);
 }
 
 /*-----------------------------------------------
