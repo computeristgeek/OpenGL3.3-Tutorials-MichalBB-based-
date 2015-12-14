@@ -339,7 +339,6 @@ Result:	Mouse Position Callback
 GLvoid mousepos_CB(GLFWwindow* hWnd, double xpos, double ypos)
 {
 	cCamera.update();
-	RenderScene(&appMain.oglControl);
 }
 
 /*-----------------------------------------------
