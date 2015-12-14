@@ -15,6 +15,7 @@ The original code can be found in branch: *original*. The code in master is curr
 10. Skybox
 11. Multitexturing
 12. Fog Outside*
+
 *Disclaimer: I couldn't find a repository for Michal on github so I pushed these with him as an author and added him as a collaborator, the code and the tutorials are free [here](http://www.mbsoftworks.sk/index.php?page=tutorials&series=1)*
 
 ![1.) Creating OpenGL 3.3 Window](http://www.mbsoftworks.sk/content/tutorials/opengl3_3/scrshots/01_opengl3_3.jpg)
