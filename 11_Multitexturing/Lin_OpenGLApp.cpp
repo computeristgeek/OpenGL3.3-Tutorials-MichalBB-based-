@@ -124,6 +124,8 @@ GLboolean COpenGLWinApp::CreateAppWindow(string sTitle)
 		MessageBox(*hWnd, "Could Not Set Fullscreen", "Fullscreen Error", MB_ICONERROR);
 		return false;
 	}
+
+	glfwSetInputMode(hWnd,GLFW_CURSOR,GLFW_CURSOR_HIDDEN);
 	return true;
 }
 

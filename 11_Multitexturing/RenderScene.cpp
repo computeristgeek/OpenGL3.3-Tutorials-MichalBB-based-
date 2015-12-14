@@ -26,7 +26,7 @@ GLuint uiVAOs[1]; // Only one VAO now
 CShader shShaders[5];
 CShaderProgram spDirectionalLight, spOrtho2D, spFont2D;
 
-#define NUMTEXTURES 3
+#define NUMTEXTURES 4
 
 CTexture tTextures[NUMTEXTURES];
 
@@ -121,7 +121,7 @@ GLvoid InitScene(GLvoid* lpParam)
 
 	// Load textures
 
-	string sTextureNames[] = {"grass.jpg", "crate.jpg", "metalplate.jpg"};
+	string sTextureNames[] = {"grass.jpg", "aardfdry256_1.jpg", "crate.jpg", "metalplate.jpg"};
 
 	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
 	{
@@ -140,7 +140,7 @@ GLvoid InitScene(GLvoid* lpParam)
 	cCamera = CFlyingCamera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
 	//cCamera.setMovingKeys('W', 'S', 'A', 'D'); moved to key_CB
 
-	sbMainSkybox.loadSkybox("data/skyboxes/jajlands1/", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
+	sbMainSkybox.loadSkybox("data/skyboxes/jajdesert1/", "jajdesert1_ft.jpg", "jajdesert1_bk.jpg", "jajdesert1_lf.jpg", "jajdesert1_rt.jpg", "jajdesert1_up.jpg", "jajdesert1_dn.jpg");
 }
 
 /*-----------------------------------------------
@@ -154,6 +154,7 @@ Result:	Renders whole scene.
 /*---------------------------------------------*/
 
 GLfloat fGlobalAngle;
+GLfloat fDryAmount = 0.75f;
 
 GLvoid RenderScene(GLvoid* lpParam)
 {
@@ -165,18 +166,29 @@ GLvoid RenderScene(GLvoid* lpParam)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
+
 	spDirectionalLight.UseProgram();
+
+	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	spDirectionalLight.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 1.0f); // Full light for skybox
 	spDirectionalLight.setUniform("sunLight.vDirection", glm::vec3(0, -1, 0));
 
 	spDirectionalLight.setUniform("projectionMatrix", oglControl->getProjectionMatrix());
-	spDirectionalLight.setUniform("gSampler", 0);
+
+	// Set number of textures to 1
+	spDirectionalLight.setUniform("numTextures", 1);
+	// Set sampler 0 texture unit 0
+	spDirectionalLight.setUniform("gSamplers[0]", 0);
+	// Texture unit 0 FULLY contributes in final image
+	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
 
 	glm::mat4 mModelView = cCamera.look();
 	glm::mat4 mModelToCamera;
 
+	// Proceed with skybox rendering
+	spDirectionalLight.setUniform("normalMatrix", glm::mat4(1.0));
 	spDirectionalLight.setUniform("modelViewMatrix", glm::translate(mModelView, cCamera.vEye));
 	sbMainSkybox.renderSkybox();
 
@@ -186,17 +198,35 @@ GLvoid RenderScene(GLvoid* lpParam)
 	
 	// Render ground
 
-	tTextures[0].bindTexture();
+	spDirectionalLight.setUniform("numTextures", 2);
+	// Set sampler 0 texture unit 0
+	spDirectionalLight.setUniform("gSamplers[0]", 0);
+	// Set sampler 1 texture unit 1
+	spDirectionalLight.setUniform("gSamplers[1]", 1);
+	// Set contribution according to desertification factor
+	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f-fDryAmount);
+	spDirectionalLight.setUniform("fTextureContributions[1]", fDryAmount);
+	// Bind texture 0 to texture unit 0
+	tTextures[0].bindTexture(0);
+	// Bind texture 1 to texture unit 1
+	tTextures[1].bindTexture(1);
+	
 	glDrawArrays(GL_TRIANGLES, 36, 6);
 
-	tTextures[1].bindTexture();
+	// Render box pile, only 1 texture is needed now
 
-	SFOR(nb, 1, 9)
+	spDirectionalLight.setUniform("numTextures", 1);
+	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
+
+	tTextures[2].bindTexture();
+	const GLint iNumFloors = 5;
+	FOR(floor, iNumFloors)
 	{
-		GLint iCnt = nb > 5 ? 10-nb : nb;
-		FOR(i, iCnt)
+		GLint iCnt = iNumFloors-floor;
+		GLfloat fSize = iCnt*8.0f;
+		FOR(z, iCnt)FOR(x, iCnt)
 		{
-			glm::vec3 vPos = glm::vec3(-20.0f+nb*8.02f, -6.0f+i*8.02f, -50.0f);
+			glm::vec3 vPos = glm::vec3(-fSize/2+4.0f+x*8.02f, -5.98f+floor*8.02f, -fSize/2+4.0f+z*8.02f);
 			mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 			mModelToCamera = glm::scale(mModelToCamera, glm::vec3(8.0f, 8.0f, 8.0f));
 			// We need to transform normals properly, it's done by transpose of inverse matrix of rotations and scales
@@ -208,10 +238,10 @@ GLvoid RenderScene(GLvoid* lpParam)
 
 	// Render 3 rotated tori to create interesting object
 
-	tTextures[2].bindTexture();
-	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	tTextures[3].bindTexture();
 	
-	glm::vec3 vPos = glm::vec3(0.0f, 0.0, 40.0f);
+	// Translate them to top of box pile
+	glm::vec3 vPos = glm::vec3(0.0f, float(iNumFloors)*8.0f-1.5f, 0.0f);
 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 	spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
@@ -240,9 +270,15 @@ GLvoid RenderScene(GLvoid* lpParam)
 	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
 	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
-	ftFont.print("www.mbsoftworks.sk", 20, 20);
+	// Get maximal number of texture units;
+	GLint iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
+	GLchar buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
+	ftFont.print(buf, 20, 50, 24);
+	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
 
 	glEnable(GL_DEPTH_TEST);
+
+	fDryAmount = min(max(0.0f, fDryAmount), 1.0f);
 
 	oglControl->SwapBuffersM();
 }
@@ -265,7 +301,7 @@ GLvoid ReleaseScene(GLvoid* lpParam)
 	spDirectionalLight.DeleteProgram();
 	spOrtho2D.DeleteProgram();
 	spFont2D.DeleteProgram();
-	FOR(i, 4)shShaders[i].DeleteShader();
+	FOR(i, 5)shShaders[i].DeleteShader();
 	ftFont.releaseFont();
 
 	glDeleteVertexArrays(1, uiVAOs);
@@ -301,6 +337,11 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 				cout<<"Normal Exit:^C Pressed"<<endl;
 				glfwSetWindowShouldClose(hWnd, GL_TRUE);
 			}
+			break;
+		case 'G': case 'H':
+			// Change level of desertification
+			if(key=='G')fDryAmount -= appMain.sof(0.2f);
+			if(key=='H')fDryAmount += appMain.sof(0.2f);
 			break;
 		case 'W': case 'S': case 'A': case 'D':
 			// Get view direction
@@ -357,7 +398,7 @@ GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
 {
 	glfwMakeContextCurrent(hWnd);
 	appMain.oglControl.ResizeOpenGLViewportFull();
-	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.001f, 1000.0f);
+	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.5f, 1000.0f);
 	appMain.oglControl.setOrtho2D(width, height);
 }
 

@@ -1,9 +1,9 @@
 CC=g++ -I/usr/include/freetype2/
 CFLAGS=-ggdb -Wall
 
-all:Skybox
+all:Multitexturing
 
-Skybox:OpenGLControl.o Lin_OpenGLApp.o shaders.o vertexBufferObject.o texture.o flyingCamera.o static_geometry.o freeTypeFont.o skybox.o RenderScene.o
+Multitexturing:OpenGLControl.o Lin_OpenGLApp.o shaders.o vertexBufferObject.o texture.o flyingCamera.o static_geometry.o freeTypeFont.o skybox.o RenderScene.o
 	$(CC) -o $@ $(CFLAGS) $^ -lGLEW -lGLU -lglfw3 -lrt -lXrandr -lXinerama -lXi -lXcursor -lGL -lm -ldl -lXrender -ldrm -lXdamage -lX11-xcb -lxcb-glx -lxcb-dri2 -lxcb-dri3 -lxcb-present -lxcb-sync -lxshmfence -lXxf86vm -lXfixes -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp -lfreeimage -lfreetype
 OpenGLControl.o: OpenGLControl.cpp OpenGLControl.h common_header.h
 
