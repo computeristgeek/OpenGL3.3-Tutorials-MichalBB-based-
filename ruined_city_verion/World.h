@@ -43,7 +43,7 @@ public:
 	CFPSCamera(CVector3 svEye, CVector3 svView, CVector3 svUp, GLfloat sfHeight, GLfloat sfSense, GLfloat sfSpeed);
 
 private:
-	POINT pMPCur;
+	glm::vec2 pMPCur;
 	GLint iForw, iBack, iLeft, iRight;
 };
 

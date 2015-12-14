@@ -23,6 +23,6 @@ public:
 	CFlyingCamera(glm::vec3 a_vEye, glm::vec3 a_vView, glm::vec3 a_vUp, GLfloat a_fSpeed, GLfloat a_fSensitivity);
 
 private:
-	POINT pCur; // For mosue rotation
+	glm::vec2 pCur; // For mosue rotation
 	GLint iForw, iBack, iLeft, iRight;
 };

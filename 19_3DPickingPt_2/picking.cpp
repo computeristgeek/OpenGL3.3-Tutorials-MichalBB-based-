@@ -52,7 +52,7 @@ Result:  Returns i-th RGB color.
 
 GLint GetPickedColorIndexUnderMouse()
 {
-	POINT mp; GetCursorPos(&mp);
+	glm::vec2 mp; GetCursorPos(&mp);
 	ScreenToClient(appMain.hWnd, &mp);
 	RECT rect; GetClientRect(appMain.hWnd, &rect);
 	mp.y = rect.bottom-mp.y;
@@ -78,7 +78,7 @@ Result:  Retrieves 3D ray under cursor from near
 
 GLvoid Get3DRayUnderMouse(glm::vec3* v1, glm::vec3* v2)
 {
-	POINT mp; GetCursorPos(&mp);
+	glm::vec2 mp; GetCursorPos(&mp);
 	ScreenToClient(appMain.hWnd, &mp);
 	RECT rect; GetClientRect(appMain.hWnd, &rect);
 	mp.y = rect.bottom-mp.y;

@@ -32,7 +32,7 @@ public:
 	CCamera(CVector3 svEye, CVector3 svView, CVector3 svUp, GLfloat sfSense, GLfloat sfSpeed);
 
 private:
-	POINT pMPCur;
+	glm::vec2 pMPCur;
 	GLint iForw, iBack, iLeft, iRight;
 };
 

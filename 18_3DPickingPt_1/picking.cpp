@@ -53,7 +53,7 @@ Result:  Returns i-th RGB color.
 
 GLint GetPickedColorIndexUnderMouse()
 {
-	POINT mp; GetCursorPos(&mp);
+	glm::vec2 mp; GetCursorPos(&mp);
 	ScreenToClient(appMain.hWnd, &mp);
 	RECT rect; GetClientRect(appMain.hWnd, &rect);
 	mp.y = rect.bottom-mp.y;

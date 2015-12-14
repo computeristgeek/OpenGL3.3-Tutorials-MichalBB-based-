@@ -69,7 +69,7 @@ GLvoid CCamera::PositionCamera(GLfloat positionX, GLfloat positionY, GLfloat pos
 	GLfloat angleZ;				
 GLvoid CCamera::SetViewByMouse()
 {
-	POINT mousePos;									// This is a window structure that holds an X and Y
+	glm::vec2 mousePos;									// This is a window structure that holds an X and Y
 	GLint middleX = SCREEN_WIDTH >> 1;				// This is a binary shift to get half the width
 	GLint middleY = SCREEN_HEIGHT >> 1;				// This is a binary shift to get half the height
 
