@@ -2,6 +2,20 @@
 
 #include "static_geometry.h"
 
+/*-----------------------------------------------
+
+Name:	generateTorus
+
+Params:	vboDest - VBO to store data in
+		fRadius - total radius
+		fTubeRadius - tube radius
+		iSubDivAround - subdivisions around torus
+		iSubDivTube - subdivisions of tube
+
+Result:	Generates a torus.
+
+/*---------------------------------------------*/
+
 GLint generateTorus(CVertexBufferObject &vboDest, GLfloat fRadius, GLfloat fTubeRadius, GLint iSubDivAround, GLint iSubDivTube)
 {
 	GLfloat fAddAngleAround = 360.0f/(float)iSubDivAround;

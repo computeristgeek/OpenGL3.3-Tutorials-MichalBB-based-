@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 #include "shaders.h"
 #include "texture.h"
@@ -26,7 +26,7 @@ GLuint uiVAOs[1]; // Only one VAO now
 CShader shShaders[5];
 CShaderProgram spDirectionalLight, spOrtho2D, spFont2D;
 
-#define NUMTEXTURES 4
+#define NUMTEXTURES 3
 
 CTexture tTextures[NUMTEXTURES];
 
@@ -38,12 +38,12 @@ CSkybox sbMainSkybox;
 
 /*-----------------------------------------------
 
-Name:		initScene
+Name:	InitScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Initializes OpenGL features that will
-			be used.
+		be used.
 
 /*---------------------------------------------*/
 
@@ -51,8 +51,10 @@ Result:	Initializes OpenGL features that will
 
 GLint iTorusFaces;
 
-GLvoid initScene(GLvoid* lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
+	// For now, we just clear color to light blue,
+	// to see if OpenGL context is working
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	vboSceneObjects.createVBO();
@@ -96,34 +98,34 @@ GLvoid initScene(GLvoid* lpParam)
 
 	// Load shaders and create shader programs
 
-	shShaders[0].loadShader("data\\shaders\\shader.vert", GL_VERTEX_SHADER);
-	shShaders[1].loadShader("data\\shaders\\shader.frag", GL_FRAGMENT_SHADER);
-	shShaders[2].loadShader("data\\shaders\\ortho2D.vert", GL_VERTEX_SHADER);
-	shShaders[3].loadShader("data\\shaders\\ortho2D.frag", GL_FRAGMENT_SHADER);
-	shShaders[4].loadShader("data\\shaders\\font2D.frag", GL_FRAGMENT_SHADER);
+	shShaders[0].LoadShader("data/shaders/shader.vert", GL_VERTEX_SHADER);
+	shShaders[1].LoadShader("data/shaders/shader.frag", GL_FRAGMENT_SHADER);
+	shShaders[2].LoadShader("data/shaders/ortho2D.vert", GL_VERTEX_SHADER);
+	shShaders[3].LoadShader("data/shaders/ortho2D.frag", GL_FRAGMENT_SHADER);
+	shShaders[4].LoadShader("data/shaders/font2D.frag", GL_FRAGMENT_SHADER);
+	
+	spDirectionalLight.CreateProgram();
+	spDirectionalLight.AddShaderToProgram(&shShaders[0]);
+	spDirectionalLight.AddShaderToProgram(&shShaders[1]);
+	spDirectionalLight.LinkProgram();
 
-	spDirectionalLight.createProgram();
-	spDirectionalLight.addShaderToProgram(&shShaders[0]);
-	spDirectionalLight.addShaderToProgram(&shShaders[1]);
-	spDirectionalLight.linkProgram();
+	spOrtho2D.CreateProgram();
+	spOrtho2D.AddShaderToProgram(&shShaders[2]);
+	spOrtho2D.AddShaderToProgram(&shShaders[3]);
+	spOrtho2D.LinkProgram();
 
-	spOrtho2D.createProgram();
-	spOrtho2D.addShaderToProgram(&shShaders[2]);
-	spOrtho2D.addShaderToProgram(&shShaders[3]);
-	spOrtho2D.linkProgram();
-
-	spFont2D.createProgram();
-	spFont2D.addShaderToProgram(&shShaders[2]);
-	spFont2D.addShaderToProgram(&shShaders[4]);
-	spFont2D.linkProgram();
+	spFont2D.CreateProgram();
+	spFont2D.AddShaderToProgram(&shShaders[2]);
+	spFont2D.AddShaderToProgram(&shShaders[4]);
+	spFont2D.LinkProgram();
 
 	// Load textures
 
-	string sTextureNames[] = {"grass.jpg", "aardfdry256_1.jpg", "crate.jpg", "metalplate.jpg"};
+	string sTextureNames[] = {"grass.jpg", "crate.jpg", "metalplate.jpg"};
 
 	FOR(i, NUMTEXTURES) // I know that FOR cycle is useless now, but it was easier to rewrite :)
 	{
-		tTextures[i].loadTexture2D("data\\textures\\"+sTextureNames[i], true);
+		tTextures[i].loadTexture2D("data/textures/"+sTextureNames[i], true);
 		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 	}
 
@@ -136,58 +138,47 @@ GLvoid initScene(GLvoid* lpParam)
 	ftFont.setShaderProgram(&spFont2D);
 	
 	cCamera = CFlyingCamera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
-	cCamera.setMovingKeys('W', 'S', 'A', 'D');
+	//cCamera.setMovingKeys('W', 'S', 'A', 'D'); moved to key_CB
 
-	sbMainSkybox.loadSkybox("data\\skyboxes\\jajdesert1\\", "jajdesert1_ft.jpg", "jajdesert1_bk.jpg", "jajdesert1_lf.jpg", "jajdesert1_rt.jpg", "jajdesert1_up.jpg", "jajdesert1_dn.jpg");
+	sbMainSkybox.loadSkybox("data/skyboxes/jajlands1/", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
 }
 
 /*-----------------------------------------------
 
-Name:	renderScene
+Name:	RenderScene
 
-Params:	lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
 Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
 GLfloat fGlobalAngle;
-GLfloat fDryAmount = 0.75f;
 
-GLvoid renderScene(GLvoid* lpParam)
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
+	oglControl->MakeCurrent();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
-
-	spDirectionalLight.useProgram();
-
-	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	spDirectionalLight.UseProgram();
 
 	spDirectionalLight.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 1.0f); // Full light for skybox
 	spDirectionalLight.setUniform("sunLight.vDirection", glm::vec3(0, -1, 0));
 
 	spDirectionalLight.setUniform("projectionMatrix", oglControl->getProjectionMatrix());
-
-	// Set number of textures to 1
-	spDirectionalLight.setUniform("numTextures", 1);
-	// Set sampler 0 texture unit 0
-	spDirectionalLight.setUniform("gSamplers[0]", 0);
-	// Texture unit 0 FULLY contributes in final image
-	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
+	spDirectionalLight.setUniform("gSampler", 0);
 
 	glm::mat4 mModelView = cCamera.look();
 	glm::mat4 mModelToCamera;
 
-	// Proceed with skybox rendering
-	spDirectionalLight.setUniform("normalMatrix", glm::mat4(1.0));
 	spDirectionalLight.setUniform("modelViewMatrix", glm::translate(mModelView, cCamera.vEye));
 	sbMainSkybox.renderSkybox();
-
 
 	glBindVertexArray(uiVAOs[0]);
 	spDirectionalLight.setUniform("sunLight.fAmbientIntensity", 0.55f);
@@ -195,35 +186,17 @@ GLvoid renderScene(GLvoid* lpParam)
 	
 	// Render ground
 
-	spDirectionalLight.setUniform("numTextures", 2);
-	// Set sampler 0 texture unit 0
-	spDirectionalLight.setUniform("gSamplers[0]", 0);
-	// Set sampler 1 texture unit 1
-	spDirectionalLight.setUniform("gSamplers[1]", 1);
-	// Set contribution according to desertification factor
-	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f-fDryAmount);
-	spDirectionalLight.setUniform("fTextureContributions[1]", fDryAmount);
-	// Bind texture 0 to texture unit 0
-	tTextures[0].bindTexture(0);
-	// Bind texture 1 to texture unit 1
-	tTextures[1].bindTexture(1);
-	
+	tTextures[0].bindTexture();
 	glDrawArrays(GL_TRIANGLES, 36, 6);
 
-	// Render box pile, only 1 texture is needed now
+	tTextures[1].bindTexture();
 
-	spDirectionalLight.setUniform("numTextures", 1);
-	spDirectionalLight.setUniform("fTextureContributions[0]", 1.0f);
-
-	tTextures[2].bindTexture();
-	const GLint iNumFloors = 5;
-	FOR(floor, iNumFloors)
+	SFOR(nb, 1, 9)
 	{
-		GLint iCnt = iNumFloors-floor;
-		GLfloat fSize = iCnt*8.0f;
-		FOR(z, iCnt)FOR(x, iCnt)
+		GLint iCnt = nb > 5 ? 10-nb : nb;
+		FOR(i, iCnt)
 		{
-			glm::vec3 vPos = glm::vec3(-fSize/2+4.0f+x*8.02f, -5.98f+floor*8.02f, -fSize/2+4.0f+z*8.02f);
+			glm::vec3 vPos = glm::vec3(-20.0f+nb*8.02f, -6.0f+i*8.02f, -50.0f);
 			mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 			mModelToCamera = glm::scale(mModelToCamera, glm::vec3(8.0f, 8.0f, 8.0f));
 			// We need to transform normals properly, it's done by transpose of inverse matrix of rotations and scales
@@ -235,10 +208,10 @@ GLvoid renderScene(GLvoid* lpParam)
 
 	// Render 3 rotated tori to create interesting object
 
-	tTextures[3].bindTexture();
+	tTextures[2].bindTexture();
+	spDirectionalLight.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	
-	// Translate them to top of box pile
-	glm::vec3 vPos = glm::vec3(0.0f, float(iNumFloors)*8.0f-1.5f, 0.0f);
+	glm::vec3 vPos = glm::vec3(0.0f, 0.0, 40.0f);
 	mModelToCamera = glm::translate(glm::mat4(1.0), vPos);
 	mModelToCamera = glm::rotate(mModelToCamera, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 	spDirectionalLight.setUniform("normalMatrix", glm::transpose(glm::inverse(mModelToCamera)));
@@ -259,36 +232,24 @@ GLvoid renderScene(GLvoid* lpParam)
 	glDrawArrays(GL_TRIANGLES, 42, iTorusFaces*3);
 
 	fGlobalAngle += appMain.sof(100.0f);
-	cCamera.update();
 
 	// PrGLint something over scene
 
-	spFont2D.useProgram();
+	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.setUniform("projectionMatrix", oglControl->getOrthoMatrix());
 	spFont2D.setUniform("vColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
 
-	// Get maximal number of texture units;
-	GLint iMaxTextureUnits; glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &iMaxTextureUnits);
-	GLchar buf[255]; sprintf(buf, "Max Texture Units: %d", iMaxTextureUnits);
-	ftFont.print(buf, 20, 50, 24);
-	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
+	ftFont.print("www.mbsoftworks.sk", 20, 20);
 
 	glEnable(GL_DEPTH_TEST);
-	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
 
-	// Change level of desertification
-	if(Keys::key('G'))fDryAmount -= appMain.sof(0.2f);
-	if(Keys::key('H'))fDryAmount += appMain.sof(0.2f);
-
-	fDryAmount = min(max(0.0f, fDryAmount), 1.0f);
-
-	oglControl->swapBuffers();
+	oglControl->SwapBuffersM();
 }
 
 /*-----------------------------------------------
 
-Name:	releaseScene
+Name:	ReleaseScene
 
 Params:	lpParam - Pointer to anything you want.
 
@@ -296,17 +257,122 @@ Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(GLvoid* lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();
 
-	spDirectionalLight.deleteProgram();
-	spOrtho2D.deleteProgram();
-	spFont2D.deleteProgram();
-	FOR(i, 5)shShaders[i].deleteShader();
+	spDirectionalLight.DeleteProgram();
+	spOrtho2D.DeleteProgram();
+	spFont2D.DeleteProgram();
+	FOR(i, 4)shShaders[i].DeleteShader();
 	ftFont.releaseFont();
 
 	glDeleteVertexArrays(1, uiVAOs);
 	vboSceneObjects.releaseVBO();
+}
+
+/*-----------------------------------------------
+
+Name:	key_CB
+
+Params:	[in]	window	The window that received the event.
+	[in]	key	The keyboard key that was pressed or released.
+	[in]	scancode	The system-specific scancode of the key.
+	[in]	action	GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+	[in]	mods	Bit field describing which modifier keys were held down
+
+Result:	Keyboard Callback
+
+/*---------------------------------------------*/
+
+GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
+{
+	glfwMakeContextCurrent(hWnd);
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			cout<<"Normal Exit:ESC Pressed"<<endl;
+			glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			break;
+		case 'C':
+			if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+			{
+				cout<<"Normal Exit:^C Pressed"<<endl;
+				glfwSetWindowShouldClose(hWnd, GL_TRUE);
+			}
+			break;
+		case 'W': case 'S': case 'A': case 'D':
+			// Get view direction
+			glm::vec3 vMove = cCamera.vView-cCamera.vEye;
+			vMove = glm::normalize(vMove);
+			vMove *= cCamera.fSpeed;
+
+			glm::vec3 vStrafe = glm::cross(cCamera.vView-cCamera.vEye, cCamera.vUp);
+			vStrafe = glm::normalize(vStrafe);
+			vStrafe *= cCamera.fSpeed;
+
+			GLint iMove = 0;
+			glm::vec3 vMoveBy;
+			// Get vector of move
+			if(key=='W')vMoveBy += vMove*appMain.sof(1.0f);
+			if(key=='S')vMoveBy -= vMove*appMain.sof(1.0f);
+			if(key=='A')vMoveBy -= vStrafe*appMain.sof(1.0f);
+			if(key=='D')vMoveBy += vStrafe*appMain.sof(1.0f);
+			cCamera.vEye += vMoveBy; cCamera.vView += vMoveBy;
+			break;
+	}
+}
+
+/*-----------------------------------------------
+
+Name:	mousepos_CB
+
+Params:	[in]	hWnd	The window that received the event.
+	[in]	xpos	The new x-coordinate, in screen coordinates, of the cursor.
+	[in]	ypos	The new y-coordinate, in screen coordinates, of the cursor.
+
+Result:	Mouse Position Callback
+
+/*---------------------------------------------*/
+
+GLvoid mousepos_CB(GLFWwindow* hWnd, double xpos, double ypos)
+{
+	cCamera.update();
+}
+
+/*-----------------------------------------------
+
+Name:	framebuffer_CB
+
+Params:	[in]	window	The window whose framebuffer was resized.
+	[in]	width	The new width, in pixels, of the framebuffer.
+	[in]	height	The new height, in pixels, of the framebuffer.
+
+Result:	Frame Buffer Size Callback
+
+/*---------------------------------------------*/
+
+GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
+{
+	glfwMakeContextCurrent(hWnd);
+	appMain.oglControl.ResizeOpenGLViewportFull();
+	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.001f, 1000.0f);
+	appMain.oglControl.setOrtho2D(width, height);
+}
+
+/*-----------------------------------------------
+
+Name:	error_CB
+
+Params:	[in]	error	An error code.
+	[in]	description	A UTF-8 encoded string describing the error.
+
+Result:	Error Callback
+
+/*---------------------------------------------*/
+
+void error_CB(int error, const char* description)
+{
+	cerr<<"Error "<<hex<<error<<":"<<description<<endl;
 }
