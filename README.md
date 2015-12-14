@@ -1,6 +1,20 @@
 # OpenGL3.3-Tutorials-MichalBB-based-
 OpenGL3.3 Tutorials based on MichalBB's Website, I plan on starting with his code, develop linux-style code and Makefiles, then perhaps branch off with different projects and tutorials. I chose Michal's code because it is very well written and he made fabulous tutorials on [his website](http://www.mbsoftworks.sk), a good place to start branching off of.
 
+The original code can be found in branch: *original*. The code in master is currently being migrated from WIN32 to GLFW3 (I am running Linux).
+*Currently Migrated and Tested: 
+1. Creating OpenGL 3.3 Window
+2. First Triangle
+3. Shaders Are Coming
+4. Going 3D With Transformations
+5. Indexed Drawing
+6. Textures
+7. Blending Basics
+8. Simple Lighting
+9. Fonts And Ortho Projection
+10. Skybox
+11. Multitexturing
+12. Fog Outside*
 *Disclaimer: I couldn't find a repository for Michal on github so I pushed these with him as an author and added him as a collaborator, the code and the tutorials are free [here](http://www.mbsoftworks.sk/index.php?page=tutorials&series=1)*
 
 ![1.) Creating OpenGL 3.3 Window](http://www.mbsoftworks.sk/content/tutorials/opengl3_3/scrshots/01_opengl3_3.jpg)
