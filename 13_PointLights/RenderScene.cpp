@@ -1,6 +1,6 @@
 #include "common_header.h"
 
-#include "win_OpenGLApp.h"
+#include "Lin_OpenGLApp.h"
 
 #include "shaders.h"
 #include "texture.h"
@@ -24,7 +24,6 @@ position, 2 floats for texture coordinate and
 3 floats for normal vector. */
 
 CVertexBufferObject vboSceneObjects;
-
 GLuint uiVAOs[1]; // Only one VAO now
 
 CShader shShaders[NUMSHADERS];
@@ -40,12 +39,12 @@ CSkybox sbMainSkybox;
 
 /*-----------------------------------------------
 
-Name:    initScene
+Name:	InitScene
 
-Params:  lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
-Result:  Initializes OpenGL features that will
-         be used.
+Result:	Initializes OpenGL features that will
+		be used.
 
 /*---------------------------------------------*/
 
@@ -53,8 +52,10 @@ Result:  Initializes OpenGL features that will
 
 GLint iTorusFaces;
 
-GLvoid initScene(GLvoid* lpParam)
+GLvoid InitScene(GLvoid* lpParam)
 {
+	// For now, we just clear color to light blue,
+	// to see if OpenGL context is working
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	vboSceneObjects.createVBO();
@@ -108,39 +109,39 @@ GLvoid initScene(GLvoid* lpParam)
 
 	// Load shaders and create shader programs
 
-	shShaders[0].loadShader("data\\shaders\\shader.vert", GL_VERTEX_SHADER);
-	shShaders[1].loadShader("data\\shaders\\shader.frag", GL_FRAGMENT_SHADER);
-	shShaders[2].loadShader("data\\shaders\\ortho2D.vert", GL_VERTEX_SHADER);
-	shShaders[3].loadShader("data\\shaders\\ortho2D.frag", GL_FRAGMENT_SHADER);
-	shShaders[4].loadShader("data\\shaders\\font2D.frag", GL_FRAGMENT_SHADER);
-	shShaders[5].loadShader("data\\shaders\\directionalLight.frag", GL_FRAGMENT_SHADER);
-	shShaders[6].loadShader("data\\shaders\\pointLight.frag", GL_FRAGMENT_SHADER);
-	shShaders[7].loadShader("data\\shaders\\fog.frag", GL_FRAGMENT_SHADER);
+	shShaders[0].LoadShader("data/shaders/shader.vert", GL_VERTEX_SHADER);
+	shShaders[1].LoadShader("data/shaders/shader.frag", GL_FRAGMENT_SHADER);
+	shShaders[2].LoadShader("data/shaders/ortho2D.vert", GL_VERTEX_SHADER);
+	shShaders[3].LoadShader("data/shaders/ortho2D.frag", GL_FRAGMENT_SHADER);
+	shShaders[4].LoadShader("data/shaders/font2D.frag", GL_FRAGMENT_SHADER);
+	shShaders[5].LoadShader("data/shaders/directionalLight.frag", GL_FRAGMENT_SHADER);
+	shShaders[6].LoadShader("data/shaders/pointLight.frag", GL_FRAGMENT_SHADER);
+	shShaders[7].LoadShader("data/shaders/fog.frag", GL_FRAGMENT_SHADER);
 
-	shShaders[8].loadShader("data\\shaders\\color.vert", GL_VERTEX_SHADER);
-	shShaders[9].loadShader("data\\shaders\\color.frag", GL_FRAGMENT_SHADER);
+	shShaders[8].LoadShader("data/shaders/color.vert", GL_VERTEX_SHADER);
+	shShaders[9].LoadShader("data/shaders/color.frag", GL_FRAGMENT_SHADER);
 
-	spPointLights.createProgram();
-	spPointLights.addShaderToProgram(&shShaders[0]);
-	spPointLights.addShaderToProgram(&shShaders[1]); 
-	spPointLights.addShaderToProgram(&shShaders[5]);
-	spPointLights.addShaderToProgram(&shShaders[6]);
-	spPointLights.linkProgram();
+	spPointLights.CreateProgram();
+	spPointLights.AddShaderToProgram(&shShaders[0]);
+	spPointLights.AddShaderToProgram(&shShaders[1]); 
+	spPointLights.AddShaderToProgram(&shShaders[5]);
+	spPointLights.AddShaderToProgram(&shShaders[6]);
+	spPointLights.LinkProgram();
 
-	spOrtho2D.createProgram();
-	spOrtho2D.addShaderToProgram(&shShaders[2]);
-	spOrtho2D.addShaderToProgram(&shShaders[3]);
-	spOrtho2D.linkProgram();
+	spOrtho2D.CreateProgram();
+	spOrtho2D.AddShaderToProgram(&shShaders[2]);
+	spOrtho2D.AddShaderToProgram(&shShaders[3]);
+	spOrtho2D.LinkProgram();
 
-	spFont2D.createProgram();
-	spFont2D.addShaderToProgram(&shShaders[2]);
-	spFont2D.addShaderToProgram(&shShaders[4]);
-	spFont2D.linkProgram();
+	spFont2D.CreateProgram();
+	spFont2D.AddShaderToProgram(&shShaders[2]);
+	spFont2D.AddShaderToProgram(&shShaders[4]);
+	spFont2D.LinkProgram();
 
-	spColor.createProgram();
-	spColor.addShaderToProgram(&shShaders[8]);
-	spColor.addShaderToProgram(&shShaders[9]);
-	spColor.linkProgram();
+	spColor.CreateProgram();
+	spColor.AddShaderToProgram(&shShaders[8]);
+	spColor.AddShaderToProgram(&shShaders[9]);
+	spColor.LinkProgram();
 
 	// Load textures
 
@@ -148,7 +149,7 @@ GLvoid initScene(GLvoid* lpParam)
 
 	FOR(i, NUMTEXTURES)
 	{
-		tTextures[i].loadTexture2D("data\\textures\\"+sTextureNames[i], true);
+		tTextures[i].loadTexture2D("data/textures/"+sTextureNames[i], true);
 		tTextures[i].setFiltering(TEXTURE_FILTER_MAG_BILINEAR, TEXTURE_FILTER_MIN_BILINEAR_MIPMAP);
 	}
 
@@ -161,24 +162,24 @@ GLvoid initScene(GLvoid* lpParam)
 	ftFont.setShaderProgram(&spFont2D);
 	
 	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
-	cCamera.setMovingKeys('W', 'S', 'A', 'D');
+	//cCamera.setMovingKeys('W', 'S', 'A', 'D'); moved to key_CB
 
-	sbMainSkybox.loadSkybox("data\\skyboxes\\jajlands1\\", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
+	sbMainSkybox.loadSkybox("data/skyboxes/jajlands1/", "jajlands1_ft.jpg", "jajlands1_bk.jpg", "jajlands1_lf.jpg", "jajlands1_rt.jpg", "jajlands1_up.jpg", "jajlands1_dn.jpg");
 }
 
 /*-----------------------------------------------
 
-Name:    renderScene
+Name:	RenderScene
 
-Params:  lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to OpenGL Control
 
-Result:  Renders whole scene.
+Result:	Renders whole scene.
 
 /*---------------------------------------------*/
 
 GLfloat fGlobalAngle;
 
-#define FOG_EQUATION_LINEAR	0
+#define FOG_EQUATION_LINEAR		0
 #define FOG_EQUATION_EXP		1
 #define FOG_EQUATION_EXP2		2
 
@@ -211,15 +212,19 @@ GLvoid renderColoredCube()
 	}
 }
 
-GLvoid renderScene(GLvoid* lpParam)
+static GLfloat fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
+
+GLvoid RenderScene(GLvoid* lpParam)
 {
 	// Typecast lpParam to COpenGLControl pointer
 	COpenGLControl* oglControl = (COpenGLControl*)lpParam;
 
+	oglControl->MakeCurrent();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_TEXTURE_2D);
-	spPointLights.useProgram();
+	spPointLights.UseProgram();
 
 	spPointLights.setUniform("sunLight.vColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	spPointLights.setUniform("sunLight.fAmbientIntensity", 0.5f);
@@ -246,25 +251,11 @@ GLvoid renderScene(GLvoid* lpParam)
 	spPointLights.setUniform("ptLight.vColor", glm::vec3(0.0f, 0.0f, 1.0f));
 	spPointLights.setUniform("ptLight.vPosition", vLightPos);
 	spPointLights.setUniform("ptLight.fAmbient", 0.15f);
-	static GLfloat fConst = 0.3f, fLineaer = 0.007f, fExp = 0.00008f;
-	if(Keys::key('P'))fConst += appMain.sof(0.2f);
-	if(Keys::key('O'))fConst -= appMain.sof(0.2f);
-	if(Keys::key('L'))fLineaer += appMain.sof(0.01f);
-	if(Keys::key('K'))fLineaer -= appMain.sof(0.01f);
-	if(Keys::key('M'))fExp += appMain.sof(0.0001f);
-	if(Keys::key('N'))fExp -= appMain.sof(0.0001f);
-
-	if(Keys::key(VK_LEFT))vLightPos.x -= appMain.sof(30.0f);
-	if(Keys::key(VK_RIGHT))vLightPos.x += appMain.sof(30.0f);
-	if(Keys::key(VK_NEXT))vLightPos.y -= appMain.sof(30.0f);
-	if(Keys::key(VK_PRIOR))vLightPos.y += appMain.sof(30.0f);
-	if(Keys::key(VK_UP))vLightPos.z -= appMain.sof(30.0f);
-	if(Keys::key(VK_DOWN))vLightPos.z += appMain.sof(30.0f);
 
 	spPointLights.setUniform("ptLight.fConstantAtt", fConst);
 	spPointLights.setUniform("ptLight.fLinearAtt", fLineaer);
 	spPointLights.setUniform("ptLight.fExpAtt", fExp);
-	
+
 	// Render ground
 
 	spPointLights.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -299,7 +290,7 @@ GLvoid renderScene(GLvoid* lpParam)
 
 	tTextures[2].bindTexture();
 	
-	// Now it's gonna GLfloat in the air
+	// Now it's gonna float in the air
 	glm::vec3 vPos = glm::vec3(0.0f, 50.0, 0.0f);
 	mModelMatrix = glm::translate(glm::mat4(1.0), vPos);
 	mModelMatrix = glm::rotate(mModelMatrix, fGlobalAngle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -321,7 +312,7 @@ GLvoid renderScene(GLvoid* lpParam)
 	glDrawArrays(GL_TRIANGLES, 66, iTorusFaces*3);
 
 
-	spColor.useProgram();
+	spColor.UseProgram();
 	spColor.setUniform("matrices.projectionMatrix", oglControl->getProjectionMatrix());
 	spColor.setUniform("matrices.viewMatrix", mView);
 
@@ -335,48 +326,172 @@ GLvoid renderScene(GLvoid* lpParam)
 	renderColoredCube();
 
 	fGlobalAngle += appMain.sof(100.0f);
-	cCamera.update();
 
-	// PrGLint something over scene
+	// Print something over scene
 
-	spFont2D.useProgram();
+	spFont2D.UseProgram();
 	glDisable(GL_DEPTH_TEST);
 	spFont2D.setUniform("matrices.projectionMatrix", oglControl->getOrthoMatrix());
 
 	GLint w = oglControl->getViewportWidth(), h = oglControl->getViewportHeight();
-	
+
 	spFont2D.setUniform("vColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	ftFont.print("www.mbsoftworks.sk", 20, 20, 24);
 
 	ftFont.printFormatted(20, h-30, 20, "ATTENUATIONS:\nConst: %.4f\nLinear: %.4f\nExp: %.6f", fConst, fLineaer, fExp);
 
 	glEnable(GL_DEPTH_TEST);
-	if(Keys::onekey(VK_ESCAPE))PostQuitMessage(0);
 
-	oglControl->swapBuffers();
+	oglControl->SwapBuffersM();
 }
 
 /*-----------------------------------------------
 
-Name:    releaseScene
+Name:	ReleaseScene
 
-Params:  lpParam - Pointer to anything you want.
+Params:	lpParam - Pointer to anything you want.
 
-Result:  Releases OpenGL scene.
+Result:	Releases OpenGL scene.
 
 /*---------------------------------------------*/
 
-GLvoid releaseScene(GLvoid* lpParam)
+GLvoid ReleaseScene(GLvoid* lpParam)
 {
 	FOR(i, NUMTEXTURES)tTextures[i].releaseTexture();
 	sbMainSkybox.releaseSkybox();
 
-	spPointLights.deleteProgram();
-	spOrtho2D.deleteProgram();
-	spFont2D.deleteProgram();
-	FOR(i, NUMSHADERS)shShaders[i].deleteShader();
+	spPointLights.DeleteProgram();
+	spOrtho2D.DeleteProgram();
+	spFont2D.DeleteProgram();
+	FOR(i, NUMSHADERS)shShaders[i].DeleteShader();
 	ftFont.releaseFont();
 
 	glDeleteVertexArrays(1, uiVAOs);
 	vboSceneObjects.releaseVBO();
+}
+
+/*-----------------------------------------------
+
+Name:	key_CB
+
+Params:	[in]	window	The window that received the event.
+	[in]	key	The keyboard key that was pressed or released.
+	[in]	scancode	The system-specific scancode of the key.
+	[in]	action	GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
+	[in]	mods	Bit field describing which modifier keys were held down
+
+Result:	Keyboard Callback
+
+/*---------------------------------------------*/
+
+GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
+{
+	GLint w = appMain.oglControl.getViewportWidth(), h = appMain.oglControl.getViewportHeight();
+	glfwMakeContextCurrent(hWnd);
+	switch(key)
+	{
+	case GLFW_KEY_ESCAPE:
+		cout<<"Normal Exit:ESC Pressed"<<endl;
+		glfwSetWindowShouldClose(hWnd, GL_TRUE);
+		break;
+	case 'C':
+		if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+		{
+			cout<<"Normal Exit:^C Pressed"<<endl;
+			glfwSetWindowShouldClose(hWnd, GL_TRUE);
+		}
+		break;
+	case 'P': case 'O': case 'L':
+	case 'K': case 'M': case 'N':
+	case GLFW_KEY_LEFT: case GLFW_KEY_RIGHT:
+	case GLFW_KEY_UP: case GLFW_KEY_DOWN:
+	case GLFW_KEY_PAGE_UP: case GLFW_KEY_PAGE_DOWN:
+		if(key=='P')fConst += appMain.sof(0.2f);
+		if(key=='O')fConst -= appMain.sof(0.2f);
+		if(key=='L')fLineaer += appMain.sof(0.01f);
+		if(key=='K')fLineaer -= appMain.sof(0.01f);
+		if(key=='M')fExp += appMain.sof(0.0001f);
+		if(key=='N')fExp -= appMain.sof(0.0001f);
+
+		if(key==GLFW_KEY_LEFT)vLightPos.x -= appMain.sof(30.0f);
+		if(key==GLFW_KEY_RIGHT)vLightPos.x += appMain.sof(30.0f);
+		if(key==GLFW_KEY_PAGE_DOWN)vLightPos.y -= appMain.sof(30.0f);
+		if(key==GLFW_KEY_PAGE_UP)vLightPos.y += appMain.sof(30.0f);
+		if(key==GLFW_KEY_UP)vLightPos.z -= appMain.sof(30.0f);
+		if(key==GLFW_KEY_DOWN)vLightPos.z += appMain.sof(30.0f);
+	
+		break;
+	case 'W': case 'S': case 'A': case 'D':
+		// Get view direction
+		glm::vec3 vMove = cCamera.vView-cCamera.vEye;
+		vMove = glm::normalize(vMove);
+		vMove *= cCamera.fSpeed;
+
+		glm::vec3 vStrafe = glm::cross(cCamera.vView-cCamera.vEye, cCamera.vUp);
+		vStrafe = glm::normalize(vStrafe);
+		vStrafe *= cCamera.fSpeed;
+
+		GLint iMove = 0;
+		glm::vec3 vMoveBy;
+		// Get vector of move
+		if(key=='W')vMoveBy += vMove*appMain.sof(1.0f);
+		if(key=='S')vMoveBy -= vMove*appMain.sof(1.0f);
+		if(key=='A')vMoveBy -= vStrafe*appMain.sof(1.0f);
+		if(key=='D')vMoveBy += vStrafe*appMain.sof(1.0f);
+		cCamera.vEye += vMoveBy; cCamera.vView += vMoveBy;
+		break;
+	}
+}
+
+/*-----------------------------------------------
+
+Name:	mousepos_CB
+
+Params:	[in]	hWnd	The window that received the event.
+	[in]	xpos	The new x-coordinate, in screen coordinates, of the cursor.
+	[in]	ypos	The new y-coordinate, in screen coordinates, of the cursor.
+
+Result:	Mouse Position Callback
+
+/*---------------------------------------------*/
+
+GLvoid mousepos_CB(GLFWwindow* hWnd, double xpos, double ypos)
+{
+	cCamera.update();
+}
+
+/*-----------------------------------------------
+
+Name:	framebuffer_CB
+
+Params:	[in]	window	The window whose framebuffer was resized.
+	[in]	width	The new width, in pixels, of the framebuffer.
+	[in]	height	The new height, in pixels, of the framebuffer.
+
+Result:	Frame Buffer Size Callback
+
+/*---------------------------------------------*/
+
+GLvoid framebuffer_CB(GLFWwindow* hWnd, int width, int height)
+{
+	glfwMakeContextCurrent(hWnd);
+	appMain.oglControl.ResizeOpenGLViewportFull();
+	appMain.oglControl.setProjection3D(45.0f, float(width)/float(height), 0.5f, 1000.0f);
+	appMain.oglControl.setOrtho2D(width, height);
+}
+
+/*-----------------------------------------------
+
+Name:	error_CB
+
+Params:	[in]	error	An error code.
+	[in]	description	A UTF-8 encoded string describing the error.
+
+Result:	Error Callback
+
+/*---------------------------------------------*/
+
+void error_CB(int error, const char* description)
+{
+	cerr<<"Error "<<hex<<error<<":"<<description<<endl;
 }

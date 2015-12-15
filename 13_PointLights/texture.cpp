@@ -13,17 +13,17 @@ CTexture::CTexture()
 
 /*-----------------------------------------------
 
-Name:	createFromData
+Name:		createFromData
 
 Params:	a_sPath - path to the texture
-		format - format of data
-		bGenerateMipMaps - whether to create mipmaps
+				format - format of data
+				bGenerateMipMaps - whether to create mipmaps
 
 Result:	Creates texture from provided data.
 
 /*---------------------------------------------*/
 
-GLvoid CTexture::createFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
+GLvoid CTexture::createFromData(uint8_t* bData, GLint a_iWidth, GLint a_iHeight, GLint a_iBPP, GLenum format, GLboolean bGenerateMipMaps)
 {
 	// Generate an OpenGL texture ID for this texture
 	glGenTextures(1, &uiTexture);
@@ -51,13 +51,13 @@ GLvoid CTexture::createFromData(GL_UNSIGNED_BYTE* bData, GLint a_iWidth, GLint a
 
 /*-----------------------------------------------
 
-Name:	loadTexture2D
+Name:		loadTexture2D
 
 Params:	a_sPath - path to the texture
 		bGenerateMipMaps - whether to create mipmaps
 
 Result:	Loads texture from a file, supports most
-		graphics formats.
+			graphics formats.
 
 /*---------------------------------------------*/
 
@@ -71,7 +71,7 @@ GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 	if(fif == FIF_UNKNOWN) // If still unknown, try to guess the file format from the file extension
 		fif = FreeImage_GetFIFFromFilename(a_sPath.c_str());
 	
-	if(fif == FIF_UNKNOWN) // If still unknown, return failure
+	if(fif == FIF_UNKNOWN) // If still unkown, return failure
 		return false;
 
 	if(FreeImage_FIFSupportsReading(fif)) // Check if the plugin has reading capabilities and load the file
@@ -79,7 +79,7 @@ GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 	if(!dib)
 		return false;
 
-	GL_UNSIGNED_BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
+	uint8_t* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
 
 	// If somehow one of these failed (they shouldn't), return failure
 	if(bDataPointer == NULL || FreeImage_GetWidth(dib) == 0 || FreeImage_GetHeight(dib) == 0)
@@ -102,12 +102,12 @@ GLvoid CTexture::setSamplerParameter(GLenum parameter, GLenum value)
 
 /*-----------------------------------------------
 
-Name:	setFiltering
+Name:		setFiltering
 
 Params:	tfMagnification - mag. filter, must be from
-							ETextureFiltering enum
-		tfMinification - min. filter, must be from
-							ETextureFiltering enum
+									ETextureFiltering enum
+			tfMinification - min. filter, must be from
+									ETextureFiltering enum
 
 Result:	Sets magnification and minification
 			texture filter.
@@ -140,7 +140,7 @@ GLvoid CTexture::setFiltering(GLint a_tfMagnification, GLint a_tfMinification)
 
 /*-----------------------------------------------
 
-Name:	bindTexture
+Name:		bindTexture
 
 Params:	iTextureUnit - texture unit to bind texture to
 

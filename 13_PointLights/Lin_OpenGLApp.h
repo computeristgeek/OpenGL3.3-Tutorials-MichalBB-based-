@@ -1,45 +1,35 @@
 #pragma once
 
-#include "openGLControl.h"
+#include "OpenGLControl.h"
 
 class COpenGLWinApp
 {
 public:
-	GLuint hWnd; // Handle to application window
+	GLFWwindow* hWnd; // Handle to application window
 	COpenGLControl oglControl; // OpenGL Control
 
-	GLvoid resetTimer();
-	GLvoid updateTimer();
+	GLvoid ResetTimer();
+	GLvoid UpdateTimer();
 	GLfloat sof(GLfloat fVal);
 
-	GLboolean initializeApp(string a_sAppName);
-	GLvoid registerAppClass(GLvoid* hAppInstance);
-	GLboolean createWindow(string sTitle);
+	GLboolean InitializeApp(string a_sAppName);
+	GLvoid RegisterAppClass(GLvoid* hAppInstance);
+	GLboolean CreateAppWindow(string sTitle);
 	
-	GLvoid appBody();
-	GLvoid shutdown();
+	GLvoid AppBody();
+	GLvoid Shutdown();
 
-	GLvoid* getInstance();
-
-	long CALLBACK msgHandlerMain(GLuint hWnd, GLuint uiMsg, GLuint wParam, long lParam);
+	GLvoid* GetInstance();
 
 private:
 	GLvoid* hInstance; // Application's instance
 	string sAppName;
-	void* hMutex;
 
 	GLboolean bAppActive; // To check if application is active (not minimized)
 	clock_t tLastFrame;
 	GLfloat fFrameInterval;
 };
 
-namespace Keys
-{
-	GLint key(GLint iKey);
-	GLint onekey(GLint iKey);
-	extern GLchar kp[256];
-}
-
 extern COpenGLWinApp appMain;
 
-GLvoid initScene(GLvoid*), renderScene(GLvoid*), releaseScene(GLvoid*);
+GLvoid InitScene(void*), RenderScene(void*), ReleaseScene(void*),key_CB(GLFWwindow*,int,int,int,int), mousepos_CB(GLFWwindow*,double,double), framebuffer_CB(GLFWwindow*,int,int),error_CB(int,const char*);
