@@ -115,9 +115,9 @@ GLboolean COpenGLWinApp::CreateAppWindow(string sTitle)
 	{
 		hWnd = glfwCreateWindow(800, 600, sTitle.c_str(), NULL, NULL);
 	}
-	framebuffer_CB(hWnd,800,600); // to initiate resize for glViewport
-
 	if(!oglControl.InitOpenGL(hInstance, hWnd, 3, 3, InitScene, RenderScene, ReleaseScene, &oglControl))return false;
+
+	framebuffer_CB(hWnd,800,600); // to initiate resize for glViewport
 
 	if (!hWnd)
 	{
