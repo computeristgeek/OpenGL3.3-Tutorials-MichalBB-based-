@@ -40,7 +40,7 @@ GLboolean CTexture::loadTexture2D(string a_sPath, GLboolean bGenerateMipMaps)
 	if(!dib)
 		return false;
 
-	GL_UNSIGNED_BYTE* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
+	uint8_t* bDataPointer = FreeImage_GetBits(dib); // Retrieve the image data
 	
 	iWidth = FreeImage_GetWidth(dib); // Get the image width and height
 	iHeight = FreeImage_GetHeight(dib);
