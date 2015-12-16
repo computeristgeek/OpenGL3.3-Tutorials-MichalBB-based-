@@ -11,16 +11,16 @@ CShader::CShader()
 
 /*-----------------------------------------------
 
-Name:    loadShader
+Name:	loadShader
 
-Params:  sFile - path to a file
-         a_iType - type of shader (fragment, vertex, geometry)
+Params:	sFile - path to a file
+		a_iType - type of shader (fragment, vertex, geometry)
 
 Result:	Loads and compiles shader.
 
 /*---------------------------------------------*/
 
-GLboolean CShader::loadShader(string sFile, GLint a_iType)
+GLboolean CShader::LoadShader(string sFile, GLint a_iType)
 {
 	vector<string> sLines;
 
@@ -69,14 +69,14 @@ Result:  Loads and adds include part.
 
 GLboolean CShader::getLinesFromFile(string sFile, GLboolean bIncludePart, vector<string>* vResult)
 {
-	FILE* fp = fopen(sFile.c_str(), "rt");
+	FILE* fp = fopen(sFile.c_str(), "r");
 	if(!fp)return false;
 
 	string sDirectory;
 	GLint slashIndex = -1;
 	RFOR(i, ESZ(sFile)-1)
 	{
-		if(sFile[i] == '\\' || sFile[i] == '/')
+		if(sFile[i] == '/' || sFile[i] == '/')
 		{
 			slashIndex = i;
 			break;
@@ -120,7 +120,7 @@ GLboolean CShader::getLinesFromFile(string sFile, GLboolean bIncludePart, vector
 
 /*-----------------------------------------------
 
-Name:	isLoaded
+Name:	IsLoaded
 
 Params:	none
 
@@ -128,14 +128,14 @@ Result:	True if shader was loaded and compiled.
 
 /*---------------------------------------------*/
 
-GLboolean CShader::isLoaded()
+GLboolean CShader::IsLoaded()
 {
 	return bLoaded;
 }
 
 /*-----------------------------------------------
 
-Name:	getShaderID
+Name:	GetShaderID
 
 Params:	none
 
@@ -143,14 +143,14 @@ Result:	Returns ID of a generated shader.
 
 /*---------------------------------------------*/
 
-GLuint CShader::getShaderID()
+GLuint CShader::GetShaderID()
 {
 	return uiShader;
 }
 
 /*-----------------------------------------------
 
-Name:	deleteShader
+Name:	DeleteShader
 
 Params:	none
 
@@ -158,9 +158,9 @@ Result:	Deletes shader and frees memory in GPU.
 
 /*---------------------------------------------*/
 
-GLvoid CShader::deleteShader()
+GLvoid CShader::DeleteShader()
 {
-	if(!isLoaded())return;
+	if(!IsLoaded())return;
 	bLoaded = false;
 	glDeleteShader(uiShader);
 }
@@ -172,7 +172,7 @@ CShaderProgram::CShaderProgram()
 
 /*-----------------------------------------------
 
-Name:	createProgram
+Name:	CreateProgram
 
 Params:	none
 
@@ -180,14 +180,14 @@ Result:	Creates a new program.
 
 /*---------------------------------------------*/
 
-GLvoid CShaderProgram::createProgram()
+GLvoid CShaderProgram::CreateProgram()
 {
 	uiProgram = glCreateProgram();
 }
 
 /*-----------------------------------------------
 
-Name:	addShaderToProgram
+Name:	AddShaderToProgram
 
 Params:	sShader - shader to add
 
@@ -196,18 +196,18 @@ Result:	Adds a shader (like source file) to
 
 /*---------------------------------------------*/
 
-GLboolean CShaderProgram::addShaderToProgram(CShader* shShader)
+GLboolean CShaderProgram::AddShaderToProgram(CShader* shShader)
 {
-	if(!shShader->isLoaded())return false;
+	if(!shShader->IsLoaded())return false;
 
-	glAttachShader(uiProgram, shShader->getShaderID());
+	glAttachShader(uiProgram, shShader->GetShaderID());
 
 	return true;
 }
 
 /*-----------------------------------------------
 
-Name:	linkProgram
+Name:	LinkProgram
 
 Params:	none
 
@@ -215,7 +215,7 @@ Result:	Performs final linkage of OpenGL program.
 
 /*---------------------------------------------*/
 
-GLboolean CShaderProgram::linkProgram()
+GLboolean CShaderProgram::LinkProgram()
 {
 	glLinkProgram(uiProgram);
 	GLint iLinkStatus;
@@ -226,7 +226,7 @@ GLboolean CShaderProgram::linkProgram()
 
 /*-----------------------------------------------
 
-Name:	deleteProgram
+Name:	DeleteProgram
 
 Params:	none
 
@@ -234,7 +234,7 @@ Result:	Deletes program and frees memory on GPU.
 
 /*---------------------------------------------*/
 
-GLvoid CShaderProgram::deleteProgram()
+GLvoid CShaderProgram::DeleteProgram()
 {
 	if(!bLinked)return;
 	bLinked = false;
@@ -243,7 +243,7 @@ GLvoid CShaderProgram::deleteProgram()
 
 /*-----------------------------------------------
 
-Name:	useProgram
+Name:	UseProgram
 
 Params:	none
 
@@ -251,14 +251,14 @@ Result:	Tells OpenGL to use this program.
 
 /*---------------------------------------------*/
 
-GLvoid CShaderProgram::useProgram()
+GLvoid CShaderProgram::UseProgram()
 {
 	if(bLinked)glUseProgram(uiProgram);
 }
 
 /*-----------------------------------------------
 
-Name:		getProgramID
+Name:	GetProgramID
 
 Params:	none
 
@@ -266,7 +266,7 @@ Result:	Returns OpenGL generated shader program ID.
 
 /*---------------------------------------------*/
 
-GLuint CShaderProgram::getProgramID()
+GLuint CShaderProgram::GetProgramID()
 {
 	return uiProgram;
 }
@@ -339,13 +339,13 @@ GLvoid CShaderProgram::setUniform(string sName, const glm::vec4 vVector)
 GLvoid CShaderProgram::setUniform(string sName, glm::mat3* mMatrices, GLint iCount)
 {
 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
-	glUniformMatrix3fv(iLoc, iCount, FALSE, (GLfloat*)mMatrices);
+	glUniformMatrix3fv(iLoc, iCount, GL_FALSE, (GLfloat*)mMatrices);
 }
 
 GLvoid CShaderProgram::setUniform(string sName, const glm::mat3 mMatrix)
 {
 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
-	glUniformMatrix3fv(iLoc, 1, FALSE, (GLfloat*)&mMatrix);
+	glUniformMatrix3fv(iLoc, 1, GL_FALSE, (GLfloat*)&mMatrix);
 }
 
 // Setting 4x4 matrices
@@ -353,13 +353,13 @@ GLvoid CShaderProgram::setUniform(string sName, const glm::mat3 mMatrix)
 GLvoid CShaderProgram::setUniform(string sName, glm::mat4* mMatrices, GLint iCount)
 {
 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
-	glUniformMatrix4fv(iLoc, iCount, FALSE, (GLfloat*)mMatrices);
+	glUniformMatrix4fv(iLoc, iCount, GL_FALSE, (GLfloat*)mMatrices);
 }
 
 GLvoid CShaderProgram::setUniform(string sName, const glm::mat4 mMatrix)
 {
 	GLint iLoc = glGetUniformLocation(uiProgram, sName.c_str());
-	glUniformMatrix4fv(iLoc, 1, FALSE, (GLfloat*)&mMatrix);
+	glUniformMatrix4fv(iLoc, 1, GL_FALSE, (GLfloat*)&mMatrix);
 }
 
 // Setting integers
