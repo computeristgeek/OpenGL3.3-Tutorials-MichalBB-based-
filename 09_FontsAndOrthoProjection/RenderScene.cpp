@@ -111,7 +111,7 @@ GLvoid InitScene(GLvoid* lpParam)
 	ftFont.loadSystemFont("comic.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
-	cCamera = CWalkingCamera(glm::vec3(0.0f, 1.0f, -30.0f), glm::vec3(0.0f, 1.0f, -29.0f), glm::vec3(0.0f, 1.0f, 0.0f), 35.0f);
+	cCamera = CWalkingCamera(glm::vec3(0.0f, 1.0f, -30.0f), glm::vec3(0.0f, 1.0f, -29.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f);
 }
 
 /*-----------------------------------------------

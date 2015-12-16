@@ -137,7 +137,7 @@ GLvoid InitScene(GLvoid* lpParam)
 	ftFont.loadSystemFont("arial.ttf", 32);
 	ftFont.setShaderProgram(&spFont2D);
 	
-	cCamera = CFlyingCamera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+	cCamera = CFlyingCamera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f, 0.1f);
 	//cCamera.setMovingKeys('W', 'S', 'A', 'D'); moved to key_CB
 
 	sbMainSkybox.loadSkybox("data/skyboxes/jajdesert1/", "jajdesert1_ft.jpg", "jajdesert1_bk.jpg", "jajdesert1_lf.jpg", "jajdesert1_rt.jpg", "jajdesert1_up.jpg", "jajdesert1_dn.jpg");

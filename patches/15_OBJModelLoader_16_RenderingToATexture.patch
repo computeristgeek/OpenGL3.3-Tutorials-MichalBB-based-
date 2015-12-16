@@ -1821,7 +1821,7 @@ diff -up 15_OBJModelLoader/RenderScene.cpp 16_RenderingToATexture/RenderScene.cp
 +	ftFont.LoadSystemFont("arial.ttf", 32);
 +	ftFont.SetShaderProgram(&spFont2D);
  	
- 	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+ 	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f, 0.1f);
 -	cCamera.setMovingKeys('W', 'S', 'A', 'D');
 +	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
  

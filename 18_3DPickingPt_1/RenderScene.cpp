@@ -111,7 +111,7 @@ GLvoid InitScene(GLvoid* lpParam)
 	ftFont.LoadSystemFont("arial.ttf", 32);
 	ftFont.SetShaderProgram(&spFont2D);
 	
-	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
+	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 120.0f), glm::vec3(0.0f, 10.0f, 119.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f, 0.1f);
 	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
 
 	sbMainSkybox.LoadSkybox("data\\skyboxes\\jajdarkland1\\", "jajdarkland1_ft.jpg", "jajdarkland1_bk.jpg", "jajdarkland1_lf.jpg", "jajdarkland1_rt.jpg", "jajdarkland1_up.jpg", "jajdarkland1_dn.jpg");
