@@ -14,7 +14,9 @@ The original code can be found in branch: *original*. The code in master is curr
 9. Fonts And Ortho Projection
 10. Skybox
 11. Multitexturing
-12. Fog Outside*
+12. Fog Outside
+13. Point Lights
+14. Geometry Shaders*
 
 *Disclaimer: I couldn't find a repository for Michal on github so I pushed these with him as an author and added him as a collaborator, the code and the tutorials are free [here](http://www.mbsoftworks.sk/index.php?page=tutorials&series=1)*
 
