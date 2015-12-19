@@ -172,18 +172,7 @@ GLvoid RenderScene(GLvoid* lpParam)
 
 	fRotationAngle += appMain.sof(120.0f);
 
-	// Add some handlers - with F2, you can toggle FPS showing, with F3 you can toggle V-Sync
-
-	if(glfwGetKey(appMain.hWnd,GLFW_KEY_F2))
-	{
-		bShowFPS = !bShowFPS;
-		if(!bShowFPS)glfwSetWindowTitle(appMain.hWnd, "04.) Going 3D With Transformations - Tutorial by Michal Bubnar (www.mbsoftworks.sk)");
-	}
-	if(glfwGetKey(appMain.hWnd,GLFW_KEY_F3))
-	{
-		bVerticalSync = !bVerticalSync;
-		oglControl->setVerticalSynchronization(bVerticalSync);
-	}
+	oglControl->setVerticalSynchronization(bVerticalSync);
 	if(bShowFPS)
 	{
 		char buf[55]; sprintf(buf, "FPS: %d, V-Sync: %s", oglControl->getFPS(), bVerticalSync ? "On": "Off");
@@ -233,17 +222,29 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 	glfwMakeContextCurrent(hWnd);
 	switch(key)
 	{
-		case GLFW_KEY_ESCAPE:
-			cout<<"Normal Exit:ESC Pressed"<<endl;
+	case GLFW_KEY_ESCAPE:
+		cout<<"Normal Exit:ESC Pressed"<<endl;
+		glfwSetWindowShouldClose(hWnd, GL_TRUE);
+		break;
+	case 'C':
+		if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
+		{
+			cout<<"Normal Exit:^C Pressed"<<endl;
 			glfwSetWindowShouldClose(hWnd, GL_TRUE);
-			break;
-		case 'C':
-			if(action==GLFW_PRESS && mods==GLFW_MOD_CONTROL)
-			{
-				cout<<"Normal Exit:^C Pressed"<<endl;
-				glfwSetWindowShouldClose(hWnd, GL_TRUE);
-			}
-			break;
+		}
+		break;
+// Add some handlers - with F2, you can toggle FPS showing, with F3 you can toggle V-Sync
+
+	case GLFW_KEY_F2:
+		if(action==GLFW_PRESS)
+		{
+			bShowFPS = !bShowFPS;
+			if(!bShowFPS)glfwSetWindowTitle(appMain.hWnd, "04.) Going 3D With Transformations - Tutorial by Michal Bubnar (www.mbsoftworks.sk)");
+		}
+		break;
+	case GLFW_KEY_F3:
+		if(action==GLFW_PRESS) bVerticalSync = !bVerticalSync;
+		break;
 	}
 }
 
