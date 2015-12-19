@@ -115,7 +115,7 @@ GLvoid InitScene(GLvoid* lpParam)
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0);
 	
-	cCamera = CWalkingCamera(glm::vec3(0.0f, 3.0f, -20.0f), glm::vec3(0.0f, 3.0f, -19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f);
+	cCamera = CWalkingCamera(glm::vec3(0.0f, 3.0f, -20.0f), glm::vec3(0.0f, 3.0f, -19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 35.0f);
 }
 
 /*-----------------------------------------------
@@ -285,10 +285,10 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 			cCamera.rotateViewY(appMain.sof(-90.0f));
 			break;
 		case GLFW_KEY_LEFT:
-			fSunAngle -= appMain.sof(90.0f);
+			fSunAngle -= appMain.sof(45.0f);
 			break;
 		case GLFW_KEY_RIGHT:
-			fSunAngle += appMain.sof(90.0f);
+			fSunAngle += appMain.sof(45.0f);
 			break;
 	}
 }

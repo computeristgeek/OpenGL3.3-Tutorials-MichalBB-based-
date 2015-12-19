@@ -112,7 +112,7 @@ GLvoid InitScene(GLvoid* lpParam)
 	glClearDepth(1.0);
 	glClearColor(0.2f, 0.32f, 0.5f, 1.0f);
 	
-	cCamera = CWalkingCamera(glm::vec3(0.0f, 0.0f, -20.0f), glm::vec3(0.0f, 0.0f, -19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f);
+	cCamera = CWalkingCamera(glm::vec3(0.0f, 0.0f, -20.0f), glm::vec3(0.0f, 0.0f, -19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 15.0f);
 }
 
 /*-----------------------------------------------

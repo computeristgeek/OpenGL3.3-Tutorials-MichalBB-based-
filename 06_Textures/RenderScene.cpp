@@ -296,16 +296,16 @@ GLvoid key_CB(GLFWwindow* hWnd, int key, int scancode, int action, int mods)
 			}
 			break;
 		case GLFW_KEY_UP:
-			fCubeRotationSpeed -= appMain.sof(155.0f);
+			fCubeRotationSpeed -= appMain.sof(60.0f);
 			break;
 		case GLFW_KEY_DOWN:
-			fCubeRotationSpeed += appMain.sof(155.0f);
+			fCubeRotationSpeed += appMain.sof(60.0f);
 			break;
 		case GLFW_KEY_RIGHT:
-			fPyramidRotationSpeed += appMain.sof(155.0f);
+			fPyramidRotationSpeed += appMain.sof(60.0f);
 			break;
 		case GLFW_KEY_LEFT:
-			fPyramidRotationSpeed -= appMain.sof(155.0f);
+			fPyramidRotationSpeed -= appMain.sof(60.0f);
 			break;
 	}
 }

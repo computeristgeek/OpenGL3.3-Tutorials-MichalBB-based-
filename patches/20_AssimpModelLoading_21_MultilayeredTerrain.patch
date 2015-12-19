@@ -81,8 +81,8 @@ diff -up 20_AssimpModelLoading/RenderScene.cpp 21_MultilayeredTerrain/RenderScen
  	ftFont.LoadSystemFont("arial.ttf", 32);
  	ftFont.SetShaderProgram(&spFont2D);
  	
--	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 20.0f), glm::vec3(0.0f, 10.0f, 19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f, 0.1f);
-+	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 155.0f, 0.1f);
+-	cCamera = CFlyingCamera(glm::vec3(0.0f, 10.0f, 20.0f), glm::vec3(0.0f, 10.0f, 19.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
++	cCamera = CFlyingCamera(glm::vec3(0.0f, 30.0f, 100.0f), glm::vec3(0.0f, 30.0f, 99.0f), glm::vec3(0.0f, 1.0f, 0.0f), 25.0f, 0.1f);
  	cCamera.SetMovingKeys('W', 'S', 'A', 'D');
  
  	sbMainSkybox.LoadSkybox("data/skyboxes/elbrus/", "elbrus_front.jpg", "elbrus_back.jpg", "elbrus_right.jpg", "elbrus_left.jpg", "elbrus_top.jpg", "elbrus_top.jpg");
